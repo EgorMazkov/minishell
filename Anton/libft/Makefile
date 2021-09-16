@@ -12,7 +12,7 @@ RLIB		=	ranlib
 RM			=	rm -f
 CFLAGS		=	-Wall -Wextra -Werror
 .c.o:
-				${GCC} ${CFLAGS} -c $< -o ${<:.c=.o} -I${INCS}
+				@${GCC} ${CFLAGS} -c $< -o ${<:.c=.o} -I${INCS}
 
 all:			${NAME}
 

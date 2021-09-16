@@ -64,24 +64,20 @@ void	ft_cd(char *arg, char **env, t_built *old)
 		*/
 }
 
-void	ft_echo(char *arg)
+void	ft_echo(char **arg)
 {
-	int i;
+	int str;
+	int line;
 
-	i = 0;
-	if (!ft_strncmp(arg, "-n", 2))
+	str = -1;
+	while (arg[++str])
 	{
-		while (arg[++i]== 'n')
-			;
-		i++;
+		line = -1;
+		while (arg[str][++line])
+			write(1, &arg[str][line], 1);
+		write(1, " ", 1);
 	}
-	while (arg[i])
-		write(1, &arg[i++], 1);
-	if (ft_strncmp(arg, "-n", 2))
-		write(1, "\n", 1);
-	/*
-	можно сделать двойным массивом аргументы
-	*/
+	write(1, "\n", 1);
 }
 
 void	jopa(int signum)
@@ -97,12 +93,11 @@ void	jopa(int signum)
 
 int main (int argc, char **argv, char **ev)
 {
-	// int fd_output;
-	int fd1;
-	char *cat[] = {"/bin/cat", NULL};
+	char *cat[] = {"/bin/cat", "-e", "123", NULL};
 	t_built built;
 	(void)argc, (void)argv;
 	char *input;
+	pid_t pid;
 
 	built.oldpwd = getcwd(NULL, 0);
 	while (1)
@@ -110,16 +105,25 @@ int main (int argc, char **argv, char **ev)
 		signal(SIGINT, jopa);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		if (!input)
+			break ;
+		if (*input)
+			add_history(input);
 		if (input[0])
 		{
 			if (!ft_strncmp(input, "pwd", 4))
 				ft_pwd(ev);
 			else if (!ft_strncmp(input, "cd", 2))
 				ft_cd(input + 3, ev, &built);
+			else if (!ft_strncmp(input, "echo ", 5))
+				ft_echo(ft_split(input + 4, ' '));
 			else if (!ft_strncmp(input, "cat", 3))
 			{
-				fd1 = open("123",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
-				execve(cat[0], cat, ev);
+				pid = fork();
+				if (!pid)
+					execve(cat[0], cat, ev);
+				wait(NULL);
+				write(1, "\n", 1);
 			}
 		}
 	}
