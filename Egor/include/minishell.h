@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/16 16:06:38 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/16 19:53:40 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,20 @@ typedef struct s_ms
     char **env;
     char **way;
 } t_ms;
+
+typedef struct s_cmd
+{
+    char *util_cmd;//* Утилита
+    char **argv;//* Здесь команда с аргументами или файл
+    char *file;//* Файл если был какой-нибудь редирект
+    short operator;//* Здесь какой-либо оператор : < > << >> |
+} t_cmd;
+
+void	null_struct(t_ms *minishell, t_cmd *cmd);
+void	get_path(t_ms *minishell, char **ev);
+char	*slash_path(char *way, char *line);
+char	*right_way(t_ms *minishell);
+void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
 
 
 /*readline*/
