@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/16 19:53:40 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/18 12:22:30 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ void	get_path(t_ms *minishell, char **ev);
 char	*slash_path(char *way, char *line);
 char	*right_way(t_ms *minishell);
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
+void	main_writing_to_char(t_cmd *cmd, t_ms *minishell);
+
+
+/*printf*/
+void	print_mass(t_cmd *cmd);
 
 
 /*readline*/
