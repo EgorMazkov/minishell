@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/18 13:57:23 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/18 15:13:49 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ int	main(int argc, char **argv, char **ev)
 		*minishell.way = right_way(&minishell);
 		if (*minishell.way == NULL)
 			continue ;
-		main_writing_to_char(&cmd, &minishell);
+		write_to_array(&cmd, &minishell);
 		print_mass(&cmd);
 	}
 }
 
-void	main_writing_to_char(t_cmd *cmd, t_ms *minishell)
+void	write_to_array(t_cmd *cmd, t_ms *minishell)
 {
 	int	i;
 	int	j;
@@ -47,6 +47,7 @@ void	main_writing_to_char(t_cmd *cmd, t_ms *minishell)
 	cmd->argv = (char **)malloc(len_for_line);
 	cmd->argv[i] = minishell->way[0];
 	i++;
+	parser(minishell, i);
 	while (minishell->line[j])
 	{
 		len_for_line = ft_strlen(minishell->line[j]);

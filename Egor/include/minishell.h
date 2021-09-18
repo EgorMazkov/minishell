@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/18 12:57:57 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/18 18:18:22 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ void	get_path(t_ms *minishell, char **ev);
 char	*slash_path(char *way, char *line);
 char	*right_way(t_ms *minishell);
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
-void	main_writing_to_char(t_cmd *cmd, t_ms *minishell);
-int	parser(t_ms *minishell);
+void	write_to_array(t_cmd *cmd, t_ms *minishell);
+void	parser(t_ms *minishell, int i);
 
 
 /*printf*/
@@ -60,4 +60,8 @@ void	rl_replace_line(const char *text, int clear_undo);
 void	rl_clear_history(void);
 
 
+
+
+
+char    *trimmer(char *str, char c);
 #endif
