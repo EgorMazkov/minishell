@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/18 12:37:02 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/18 13:57:23 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@ int	main(int argc, char **argv, char **ev)
 {
 	t_ms	minishell;
 	t_cmd	cmd;
+	int		a;
 
+	a = 0;
 	null_struct(&minishell, &cmd);
 	appropriation(argc, argv, ev, &minishell);
 	while (1)
