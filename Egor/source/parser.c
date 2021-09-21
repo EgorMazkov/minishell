@@ -49,3 +49,4 @@ char    *trimmer(char *str, char c)
     }
     return (str);
 }
+

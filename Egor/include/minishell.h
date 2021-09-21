@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/18 18:18:22 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/21 13:50:13 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void	rl_clear_history(void);
 
 
 
+char	**split_preparser(char const *s, char c);
 
 
 char    *trimmer(char *str, char c);
