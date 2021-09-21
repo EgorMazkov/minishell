@@ -22,10 +22,10 @@ LIB = ./libft/libft.a
 all:		$(NAME)
 
 %.o:		%.c
-			@$(CC) $(CFLAGS) $(INCLUDE) -c -g $< -o $@ 
+			$(CC) $(CFLAGS) $(INCLUDE) -c -g $< -o $@ 
 $(NAME):	$(OBJS)
-			@$(MAKE) -C $(dir $(LIB))
-			@$(CC) $(INCLUDE) ${READLINE} $(LIB) -o $(NAME) $(OBJS)
+			$(MAKE) -C $(dir $(LIB))
+			$(CC) $(INCLUDE) ${READLINE} $(LIB) -o $(NAME) $(OBJS)
 
 clean:
 			$(RM) $(OBJS)
