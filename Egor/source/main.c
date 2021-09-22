@@ -6,33 +6,92 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/21 17:06:49 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/22 17:03:54 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+/*
+echo "123 123 123 123 123 123 1"
+*/
+
 int	main(int argc, char **argv, char **ev)
 {
 	t_ms	minishell;
 	t_cmd	cmd;
+	t_se	se;
+	int		j;
 	int		a;
+	int		i;
+	int		double_quote;
 
 	a = 0;
+	j = 0;
+	i = 0;
+	double_quote = 0;
 	null_struct(&minishell, &cmd);
 	appropriation(argc, argv, ev, &minishell);
 	while (1)
 	{
 		minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		if (minishell.input[0])
-			minishell.line = split_preparser(minishell.input, ' ');
-		get_path(&minishell, ev);
-		*minishell.way = right_way(&minishell);
-		if (*minishell.way == NULL)
-			continue ;
-		write_to_array(&cmd, &minishell);
+		minishell.input_line = &minishell.input;
+		double_quote = preparser(&minishell, &se);
+		if (double_quote)
+		{
+			minishell.line = malloc(sizeof(char **) * 1);
+			minishell.line[j] = malloc(sizeof(char *) * se.start - 1);
+			while (a != double_quote - 1)
+			{
+				minishell.line[j][a] = minishell.input_line[j][a];
+				a++;
+			}
+			j++;
+			i = a + 2;
+			a = 0;
+			minishell.line[j] = malloc(sizeof(char *) * (se.end - se.start - 1));
+			while (minishell.input_line[0][i] != '\"' && minishell.input_line)
+			{
+				minishell.line[j][a] = minishell.input_line[0][i];
+				a++;
+				i++;
+			}
+			if (minishell.input_line[0][i + 1] != '\0')
+			{
+				a = 0;
+				while (minishell.input_line[0][i] != ' ')
+				{
+					a = i;
+					j++;
+					while (minishell.input_line[0][a] != ' ')
+						a++;
+					minishell.line[j] = malloc(sizeof(char) * a);
+					minishell.line[j][a] = minishell.input_line[0][i];
+					a++;
+					i++;
+				}
+			}
+			qwe(&minishell, &cmd, ev);
+		}
+		else
+		{
+			if (minishell.input[0])
+				minishell.line = ft_split(minishell.input, ' ');
+			qwe(&minishell, &cmd, ev);
+		}
 		print_mass(&cmd);
+		j = 0;
+		a = 0;
 	}
+}
+
+void	qwe(t_ms *minishell, t_cmd *cmd, char **ev)
+{
+	get_path(minishell, ev);
+	*minishell->way = right_way(minishell);
+	if (*minishell->way == NULL)
+		return ;
+	write_to_array(cmd, minishell);
 }
 
 void	write_to_array(t_cmd *cmd, t_ms *minishell)
@@ -42,16 +101,20 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 	int	len_for_line;
 
 	i = 0;
-	j = 1;
-	len_for_line = ft_strlen(minishell->way[0]);
-	cmd->argv = (char **)malloc(len_for_line);
+	j = 0;
+	while (minishell->line[j])
+		j++;
+	printf("%d\n", j);
+	cmd->argv = (char **)malloc(j - 1);
 	cmd->argv[i] = minishell->way[0];
 	i++;
-	// parser(minishell, i);
-	while (minishell->line[j])
+	j = 1;
+	len_for_line = ft_strlen(minishell->line[j]);
+	printf("%d\n", len_for_line);
+	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
+	
+	while (minishell->line[j - 1])
 	{
-		len_for_line = ft_strlen(minishell->line[j]);
-		cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
 		cmd->argv[i] = minishell->line[j];
 		i++;
 		j++;
@@ -59,13 +122,12 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 }
 
 
-/*
-echo "123 123 123 123 123 123 1"
-*/
+
 
 
 int	check_double_quote(char const *s, char c)
 {
+	(void)c;
 	int	i;
 	int	double_quote;
 
@@ -104,7 +166,7 @@ char	**split_preparser(char const *s, char c)
 	len_for_sc = len_for_s(s, c);
 	double_quote = 0;
 	i = 0;
-	// dest = NULL;
+	dest = NULL;
 	j = 0;
 	double_quote = check_double_quote(s, '\"');
 	while (s[i])

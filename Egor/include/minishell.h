@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/21 13:50:13 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/22 14:11:49 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,12 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
+typedef struct s_se
+{
+    int start;
+    int end;
+}   t_se;
+
 typedef struct s_ms
 {
     char *input;
@@ -32,7 +38,10 @@ typedef struct s_ms
     char **argv;
     char **env;
     char **way;
+    char **input_line;
+    struct s_se *se;
 } t_ms;
+
 
 typedef struct s_cmd
 {
@@ -65,4 +74,11 @@ char	**split_preparser(char const *s, char c);
 
 
 char    *trimmer(char *str, char c);
+int preparser(t_ms *minishell, t_se *se);
+
+
+
+
+//
+void	qwe(t_ms *minishell, t_cmd *cmd, char **ev);
 #endif

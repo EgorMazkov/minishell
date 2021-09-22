@@ -50,3 +50,30 @@ char    *trimmer(char *str, char c)
     return (str);
 }
 
+int preparser(t_ms *minishell, t_se *se)
+{
+    int i;
+    int len;
+    int j;
+    int double_quote;
+
+    i = 0;
+    j = 0;
+    double_quote = 0;
+    len = ft_strlen(&minishell->input_line[j][i]);
+    while (minishell->input_line[i][j] != '\"' && j != len)
+        j++;
+    if (j == len)
+        return (double_quote);
+    else
+    {
+        double_quote = j;
+        se->start = j;
+        j++;
+        while (minishell->input_line[i][j] != '\"')
+            j++;
+        se->end = j;
+        return (double_quote);
+    }
+
+}

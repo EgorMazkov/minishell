@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:18:04 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/18 12:18:05 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/22 13:54:48 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 void	null_struct(t_ms *minishell, t_cmd *cmd)
 {
+	t_se *se;
+	
+	se = malloc(sizeof(t_se));
 	minishell->argc = 0;
 	minishell->argv = NULL;
 	minishell->env = NULL;
@@ -23,6 +26,8 @@ void	null_struct(t_ms *minishell, t_cmd *cmd)
 	minishell->way = NULL;
 	cmd->file = NULL;
 	cmd->util_cmd = NULL;
+	se->start = 0;
+	se->end = 0;
 }
 
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell)
