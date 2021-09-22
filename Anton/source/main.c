@@ -1,16 +1,41 @@
 #include "../include/minishell.h"
 
-void    ft_pwd(char **env)
+
+char **wc(void) //! DELeeeeeeeeeeeeTe
 {
-	if (!*env)
-	{
-		exit(0);
-	}
-		printf("%s\n", getcwd(NULL, 0));
-	// printf("%s\n", getenv("PWD"));
+	char **wc;
+
+	wc = (char **)malloc(3 * sizeof(char *));
+	wc[2] = NULL;
+	wc[0] = ft_strdup("/usr/bin/wc");
+	wc[1] = ft_strdup("-l");
+	return (wc);
 }
 
-t_cmd *new_cmd (char **cmd, int oper)
+char **cat(void) //! DELeeeeeeeeeeeeTe
+{
+	char **wc;
+
+	wc = (char **)malloc(4 * sizeof(char *));
+	wc[2] = NULL;
+	wc[0] = ft_strdup("/bin/cat");
+	wc[1] = ft_strdup("-e");
+	// wc[2] = ft_strdup("123");
+	return (wc);
+}
+
+char **grep(void) //! DELeeeeeeeeeeeeTe
+{
+	char **wc;
+
+	wc = (char **)malloc(3 * sizeof(char *));
+	wc[2] = NULL;
+	wc[0] = ft_strdup("/usr/bin/grep");
+	wc[1] = ft_strdup("a");
+	return (wc);
+}
+
+t_cmd *new_cmd (int oper) //! DELeeeeeeeeeeeeTe
 {
 	t_cmd			*el;
 
@@ -18,18 +43,19 @@ t_cmd *new_cmd (char **cmd, int oper)
 	if (!el)
 		return (NULL);
 	el->util_cmd = NULL;
-	el->argv = ft_envdup(cmd);
 	el->file = NULL;
 	el->next = NULL;
 	el->back = NULL;
-	if (oper)
-		el->operator = 1;
-	else
-		el->operator = 0;
+	if (oper == 1)
+		el->argv = cat();
+	else if (oper == 2)
+		el->argv = grep();
+	else if (oper == 3)
+		el->argv = wc();
 	return (el);
 }
 
-void ladd (t_cmd **lst, t_cmd *el)
+void ladd (t_cmd **lst, t_cmd *el) //! DELeeeeeeeeeeeeTe
 {
 	if (!el)
 		return ;
@@ -41,80 +67,6 @@ void ladd (t_cmd **lst, t_cmd *el)
 	el->next = *lst;
 	(*lst)->back = el;
 	*lst = el;
-}
-
-char *level_down(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s[i])
-		i++;
-	while (s[i] != '/')
-		i--;
-	s[i] = '\0';
-	return (s);
-}
-
-void	ft_cd(char *arg, char **env, t_built *old)
-{
-	char *oldpath;
-	(void)env;
-
-	if (!arg || !arg[0])
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(getenv("HOME"));
-	}
-	else if (!ft_strncmp(arg, "..", 3))
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(level_down(getcwd(NULL, 0)));
-	}
-	else if (!ft_strncmp(arg, "-", 2))
-	{
-		oldpath = old->oldpwd;
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(oldpath);
-	}
-	else if (!ft_strncmp(arg, "~", 1))
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		if (arg[1] == '\0')
-			chdir(getenv("HOME"));
-		else
-			chdir(ft_strjoin(getenv("HOME"), ++arg));
-	}
-	else
-		chdir(arg);
-		/*
-		необходимо допилить: изменение путия в env;
-		*/
-}
-
-void	ft_echo(char **arg)
-{
-	int str;
-	int line;
-
-	str = -1;
-	while (arg[++str])
-	{
-		line = -1;
-		while (arg[str][++line])
-			write(1, &arg[str][line], 1);
-		write(1, " ", 1);
-	}
-	write(1, "\n", 1);
-}
-
-void	ft_env(t_built *ev)
-{
-	int i;
-
-	i = 0;
-	while (ev->env[++i])
-		printf("%s\n", ev->env[i]);
 }
 
 void	cmd_c(int signum)
@@ -143,8 +95,8 @@ int is_pipes (char *str)
 void	pipes(t_cmd *cmd, int input, char **env)
 {
 	// char *grep[] = {"/usr/bin/env", NULL};
-	char *grep[] = {"/bin/cat", "123", NULL};
-	char *wc[] = {"/usr/bin/wc", "-l", NULL};
+	// char *grep[] = {"/bin/cat", "123", NULL};
+	// char *wc[] = {"/usr/bin/wc", "-l", NULL};
 	// char **inpt;
 	int a[2];
 	int b[2];
@@ -178,6 +130,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	// 	wait(0);
 	// return ;
 
+	int fd_file = open("123", O_RDONLY);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	while (cmd)
@@ -198,11 +151,13 @@ void	pipes(t_cmd *cmd, int input, char **env)
 					dup2(b[0], 0);
 				else
 					dup2(a[0], 0);
-				execve(wc[0], wc, env);
+				dup2(open("1234",  O_WRONLY | O_TRUNC | O_CREAT, 0666), 1);//! chtob poslednyaya comanda write v file 1234
+				execve(cmd->argv[0], cmd->argv, env);
 			}
 			if (!flag && !cmd->back)
 			{
 				close(a[0]);
+				dup2(fd_file, 0);//! chtob pervaya cmda read iz 123 file)))
 				dup2(a[1], 1);
 				close(a[1]);
 			}
@@ -218,7 +173,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 				close(b[0]);
 				dup2(b[1], 1);
 			}
-				execve(grep[0], grep, env);
+			execve(cmd->argv[0], cmd->argv, env);
 		}
 		else
 		{
@@ -291,23 +246,22 @@ void	pipes(t_cmd *cmd, int input, char **env)
 		wait(0);
 		i++;
 	}
+	close(fd_file);
 }
 
-void	hardcode (char *input, t_built *built, char **ev)
+void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 {
-	char *cat[] = {"/bin/cat", "-e", "123", NULL};
-	char *grep[] = {"/usr/bin/grep", "a", NULL};
-	char *wc[] = {"/usr/bin/wc", "-l", NULL};
-	pid_t pid;
 	int pipe;
 	t_cmd *cmd = NULL;
+	pid_t	pid;
 
-	ladd(&cmd, new_cmd(wc, 0));
-	ladd(&cmd, new_cmd(grep, 1));
-	ladd(&cmd, new_cmd(cat, 1));
+	char *minishell[] = {"/Users/tharodon/Desktop/minishell/Anton/minishell", NULL};
+	char *make[] = {"/usr/bin/make", NULL};
+	char *makef[] = {"/usr/bin/make", "fclean", NULL};
+	ladd(&cmd, new_cmd(3));
+	ladd(&cmd, new_cmd(2));
+	ladd(&cmd, new_cmd(1));
 
-	while (cmd->back)
-		cmd = cmd->back;
 
 	if (is_pipes(input))
 	{
@@ -322,15 +276,38 @@ void	hardcode (char *input, t_built *built, char **ev)
 	else if (!ft_strncmp(input, "echo ", 5))
 		ft_echo(ft_split(input + 4, ' '));
 	else if (!ft_strncmp(input, "env", 4))
-		ft_env(built);
-	else if (!ft_strncmp(input, "cat", 3))
+		ft_env(*env);
+	else if (!ft_strncmp(input, "exit", 4))
+	{
+		printf("exit\n");
+		exit(0);
+	}
+	else if (!ft_strncmp(input, "./minishell", 12))
 	{
 		pid = fork();
 		if (!pid)
-			execve(cat[0], cat, ev);
-		wait(NULL);
-		write(1, "\n", 1);
+			execve(minishell[0], minishell, ev);
+		else
+			wait(&pid);
 	}
+	else if (!ft_strncmp(input, "make fcl", 8))
+	{
+		pid = fork();
+		if (!pid)
+			execve(makef[0], makef, ev);
+		else
+			wait(0);
+	}
+	else if (!ft_strncmp(input, "make", 4))
+	{
+		pid = fork();
+		if (!pid)
+			execve(make[0], make, ev);
+		else
+			wait(0);
+	}
+	else if (!ft_strncmp(input, "unset", 5))
+		ft_unset(env, ft_split(input + 6, ' '));
 	else
 		printf("command not found: %s\n", input);
 }
@@ -338,21 +315,26 @@ void	hardcode (char *input, t_built *built, char **ev)
 int main (int argc, char **argv, char **ev)
 {
 	t_built built;
+	t_env *env = NULL;
 	(void)argc, (void)argv;
 	char *input;
 	// pid_t pid;
+
+	env_record(&env, ev);
 	while (1)
 	{
 		signal(SIGINT, cmd_c);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		built.env = ft_envdup(ev);
 		if (!input)
+		{
+			printf("exit\n");
 			break ;
+		}
 		if (*input)
 			add_history(input);
 		if (input[0])
-			hardcode(input, &built, ev);
+			hardcode(input, &built, ev, &env);
 	}
 }
 

@@ -33,11 +33,23 @@ typedef struct s_cmd
 	struct s_cmd *back;
 } t_cmd;
 
+typedef struct s_env
+{
+	char *value;
+	struct s_env *next;
+	struct s_env *back;
+} t_env;
+
+
 typedef struct s_built
 {
 	char *oldpwd;
 	char **env;
 } t_built;
+
+
+
+
 
 /*readline*/
 void rl_replace_line(const char *text, int clear_undo);
@@ -45,5 +57,13 @@ void rl_clear_history(void);
 
 char **ft_envdup(char **env);
 void	ft_env_add (t_built *lst, char *el);
+void	env_record(t_env **env, char **ev);
+void	ft_unset (t_env **env, char **value);
+
+/*builtin*/
+void	ft_env(t_env *ev);
+void	ft_echo(char **arg);
+void	ft_cd(char *arg, char **env, t_built *old);
+void    ft_pwd(char **env);
 
 #endif
