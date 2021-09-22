@@ -339,3 +339,4 @@ int main (int argc, char **argv, char **ev)
 }
 
 	// fd = open("our way",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	
