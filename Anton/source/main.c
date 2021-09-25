@@ -20,7 +20,7 @@ char **cat(void) //! DELeeeeeeeeeeeeTe
 	wc[2] = NULL;
 	wc[0] = ft_strdup("/bin/cat");
 	wc[1] = ft_strdup("-e");
-	// wc[2] = ft_strdup("123");
+	wc[2] = ft_strdup("123");
 	return (wc);
 }
 
@@ -31,9 +31,10 @@ char **grep(void) //! DELeeeeeeeeeeeeTe
 	wc = (char **)malloc(3 * sizeof(char *));
 	wc[2] = NULL;
 	wc[0] = ft_strdup("/usr/bin/grep");
-	wc[1] = ft_strdup("a");
+	wc[1] = ft_strdup("thar");
 	return (wc);
 }
+
 
 t_cmd *new_cmd (int oper) //! DELeeeeeeeeeeeeTe
 {
@@ -79,6 +80,21 @@ void	cmd_c(int signum)
 	rl_redisplay();
 }
 
+int lenlist (t_cmd *list)
+{
+	int i;
+
+	i = 0;
+	while (list->back)
+		list = list->back;
+	while (list)
+	{
+		list = list->next;
+		i++;
+	}
+	return (i);
+}
+
 int is_pipes (char *str)
 {
 	int i;
@@ -101,38 +117,11 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	int a[2];
 	int b[2];
 	int flag;
+	int len;
 	pid_t pid;
 (void)input;
 	flag = 0;
-
-	// pipe(a);
-	// pid = fork();
-	// if (!pid)
-	// {
-	// 	close(a[0]);
-	// 	dup2(a[1], 1);
-	// 	close(a[1]);
-	// 	execve(cat[0], cat, env);
-	// }
-	// else
-	// {
-	// 	close(a[1]);
-	// 	pid = fork();
-	// 	if (!pid)
-	// 	{
-	// 		dup2(a[0], 0);
-	// 		close(a[0]);
-	// 		execve(wc[0], wc, env);
-	// 	}
-	// }
-	// int iq = 0;
-	// while (iq++ < 2)
-	// 	wait(0);
-	// return ;
-
-	int fd_file = open("123", O_RDONLY);
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	len = lenlist(cmd);
 	while (cmd)
 	{
 		if (cmd->next)
@@ -142,22 +131,30 @@ void	pipes(t_cmd *cmd, int input, char **env)
 			else
 				pipe(b);
 		}
+		printf("pipe a:    %d, %d\n", a[0], a[1]);
+		printf("pipe b:    %d, %d\n", b[0], b[1]);
+		// if (!cmd->back)//ervreververververrev
+		// {
+		// 	close(a[0]);
+		// }
 		pid = fork();
 		if (!pid)
 		{
 			if (!cmd->next)
 			{
 				if (!flag)
+				{
 					dup2(b[0], 0);
+				}
 				else
+				{
 					dup2(a[0], 0);
-				dup2(open("1234",  O_WRONLY | O_TRUNC | O_CREAT, 0666), 1);//! chtob poslednyaya comanda write v file 1234
+				}
 				execve(cmd->argv[0], cmd->argv, env);
 			}
-			if (!flag && !cmd->back)
+			else if (!flag && !cmd->back)
 			{
 				close(a[0]);
-				dup2(fd_file, 0);//! chtob pervaya cmda read iz 123 file)))
 				dup2(a[1], 1);
 				close(a[1]);
 			}
@@ -170,6 +167,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 			else if (flag)
 			{
 				dup2(a[0], 0);
+				close(a[0]);//rvferrbrbr
 				close(b[0]);
 				dup2(b[1], 1);
 			}
@@ -188,13 +186,21 @@ void	pipes(t_cmd *cmd, int input, char **env)
 				close(b[0]);
 			}
 			if (!flag)
+			{
+				close(b[0]);//tbbrbrvbrvr
 				close(a[1]);
+			}
 			else
+			{
+				close(a[0]);//tkbmltgbkmtlbkm
 				close(b[1]);
-			if (!flag)
+			}
+			if (!flag && cmd->next)
 				flag = 1;
-			else
+			else if (flag && cmd->next)
 				flag = 0;
+			printf("PIOOEPE A:    %d, %d\n", a[0], a[1]);
+			printf("PIOOEPE B:    %d, %d\n", b[0], b[1]);
 			cmd = cmd->next;
 		}
 	}
@@ -208,6 +214,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	// 		close(a[0]);
 	// 		dup2(a[1], 1);
 	// 		close(a[1]);
+
 	// 		execve(cat[0], cat, env);
 	// 	}
 	// }
@@ -241,12 +248,13 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	// }
 
 	int i = 0;//количество fork
-	while(i < 3)
+	while(i < len)
 	{
 		wait(0);
 		i++;
 	}
-	close(fd_file);
+	printf("{ipe a:    %d, %d\n", a[0], a[1]);
+	printf("}ipe b:    %d, %d", b[0], b[1]);
 }
 
 void	hardcode (char *input, t_built *built, char **ev, t_env **env)
@@ -258,9 +266,22 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 	char *minishell[] = {"/Users/tharodon/Desktop/minishell/Anton/minishell", NULL};
 	char *make[] = {"/usr/bin/make", NULL};
 	char *makef[] = {"/usr/bin/make", "fclean", NULL};
-	ladd(&cmd, new_cmd(3));
-	ladd(&cmd, new_cmd(2));
-	ladd(&cmd, new_cmd(1));
+	int qwer = 0;
+		ladd(&cmd, new_cmd(3));
+		//
+		while (qwer++ != 300)
+			ladd(&cmd, new_cmd(1));
+		//теряется пайп по середине
+		ladd(&cmd, new_cmd(3));
+		//
+		ladd(&cmd, new_cmd(1));
+		ladd(&cmd, new_cmd(1));
+		ladd(&cmd, new_cmd(1));
+		ladd(&cmd, new_cmd(1));
+
+	// ladd(&cmd, new_cmd(2));
+	// ladd(&cmd, new_cmd(2));
+	// 	ladd(&cmd, new_cmd(1));
 
 
 	if (is_pipes(input))

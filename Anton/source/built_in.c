@@ -87,15 +87,16 @@ void	ft_echo(char **arg)
 	int line;
 
 	str = -1;
-	if (is_slash_n(arg[0]))
-		str++;
 	while (arg[++str])
 	{
-		line = -1;
-		while (arg[str][++line])
-			write(1, &arg[str][line], 1);
-		if (arg[str + 1])
-			write(1, " ", 1);
+		if (!is_slash_n(arg[str]))
+		{
+			line = -1;
+			while (arg[str][++line])
+				write(1, &arg[str][line], 1);
+			if (arg[str + 1])
+				write(1, " ", 1);
+		}
 	}
 	if (!is_slash_n(arg[0]))
 		write(1, "\n", 1);
