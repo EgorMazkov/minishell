@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/25 16:31:54 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/25 18:04:58 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,55 +77,122 @@ int	main(int argc, char **argv, char **ev)
 		{
 			if (minishell.input[0])
 				minishell.line = ft_split(minishell.input, ' ');
-			i = 0;
-			while (minishell.line[i])
-				printf("%s\n", minishell.line[i++]);
 			qwe(&minishell, &cmd, ev);
 		}
-		print_mass(&cmd);
 		j = 0;
 		a = 0;
+		null_argv(&cmd);
 	}
+}
+
+void	null_argv(t_cmd *cmd)
+{
+	int i;
+
+	i = 0;
+	while (cmd->argv[i])
+	{
+		cmd->argv[i] = NULL;
+		i++;
+	}
+}
+
+void	free_argv(t_cmd *cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd->argv[i])
+	{
+		free(cmd->argv[i]);
+		i++;
+	}
+	free(cmd->argv);
+}
+
+int		check_bin(t_ms *minishell)
+{
+	int	 i;
+
+	i = 0;
+	if (!ft_strncmp(minishell->line[i], "cd", 2))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "env", 3))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "echo", 4))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "pwd", 3))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "unset", 5))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "exit", 4))
+		return (1);
+	if (!ft_strncmp(minishell->line[i], "export", 6))
+		return (1);
+	return  (0);
 }
 
 void	qwe(t_ms *minishell, t_cmd *cmd, char **ev)
 {
+	int	check;
+
+	check = 0;
+	check = check_bin(minishell);
+	if (check)
+	{
+		write_to_array(cmd, minishell);
+		return ;
+	}
 	get_path(minishell, ev);
 	minishell->way[0] = right_way(minishell);
-	cmd->argv[0] = minishell->way[0];
 	if (*minishell->way == NULL)
 	{
 		printf("command not found\n");
 		return ;
 	}
-	write_to_array(cmd, minishell);
+	cmd->argv[0] = minishell->way[0];
+	printf("123 : %s\n", cmd->argv[0]);
+	if (minishell->line[1])
+		write_to_array(cmd, minishell);
 }
 
 void	write_to_array(t_cmd *cmd, t_ms *minishell)
 {
 	int	i;
 	int	j;
+	// int	a;
 	int	len_for_line;
 
 	i = 0;
 	j = 0;
+	// a = 0;
+	len_for_line = 0;
 
 	i++;
 	j = 1;
-	len_for_line = ft_strlen(minishell->line[j]);
-	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
-	while (minishell->line[j - 1])
+	if (minishell->line[j])
+		len_for_line = ft_strlen(minishell->line[j]);
+	else
 	{
-		if (minishell->line[j] == 124)
-		{
-			cmd->operator = '|';
-			i = 0;
-			cmd->argv = cmd.
-		}
+		i = 0;
+		j = 0;
+		len_for_line = ft_strlen(minishell->line[j]);
+	}
+	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
+	while (minishell->line[j])
+	{
 		cmd->argv[i] = minishell->line[j];
 		i++;
 		j++;
+		// if (minishell->line[j][a] == '|')
+		// {
+		// 	cmd->operator = '|';
+		// 	i = 0;
+		// 	cmd = cmd->next;
+		// 	continue ;
+		// }
 	}
+	printf("123 : %s\n", cmd->argv[0]);
 }
 
 int	check_double_quote(char const *s, char c)

@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/25 16:31:18 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/25 18:02:53 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ typedef struct s_cmd
     char **argv;//* Здесь команда с аргументами или файл
     char *file;//* Файл если был какой-нибудь редирект
     short operator;//* Здесь какой-либо оператор : < > << >> |
+    struct s_cmd *next;
+	struct s_cmd *back;
 } t_cmd;
 
 void	null_struct(t_ms *minishell, t_cmd *cmd);
@@ -76,4 +78,5 @@ char    *trimmer(char *str, char c);
 int preparser(t_ms *minishell, t_se *se);
 //
 void	qwe(t_ms *minishell, t_cmd *cmd, char **ev);
+void	null_argv(t_cmd *cmd);
 #endif
