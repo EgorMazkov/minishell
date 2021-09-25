@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/22 17:03:54 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/25 16:31:54 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,13 @@ int	main(int argc, char **argv, char **ev)
 			if (minishell.input_line[0][i + 1] != '\0')
 			{
 				a = 0;
+				minishell.line[j] = malloc(sizeof(char) * a);
 				while (minishell.input_line[0][i] != ' ')
 				{
 					a = i;
 					j++;
 					while (minishell.input_line[0][a] != ' ')
 						a++;
-					minishell.line[j] = malloc(sizeof(char) * a);
 					minishell.line[j][a] = minishell.input_line[0][i];
 					a++;
 					i++;
@@ -77,6 +77,9 @@ int	main(int argc, char **argv, char **ev)
 		{
 			if (minishell.input[0])
 				minishell.line = ft_split(minishell.input, ' ');
+			i = 0;
+			while (minishell.line[i])
+				printf("%s\n", minishell.line[i++]);
 			qwe(&minishell, &cmd, ev);
 		}
 		print_mass(&cmd);
@@ -88,9 +91,13 @@ int	main(int argc, char **argv, char **ev)
 void	qwe(t_ms *minishell, t_cmd *cmd, char **ev)
 {
 	get_path(minishell, ev);
-	*minishell->way = right_way(minishell);
+	minishell->way[0] = right_way(minishell);
+	cmd->argv[0] = minishell->way[0];
 	if (*minishell->way == NULL)
+	{
+		printf("command not found\n");
 		return ;
+	}
 	write_to_array(cmd, minishell);
 }
 
@@ -102,28 +109,24 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 
 	i = 0;
 	j = 0;
-	while (minishell->line[j])
-		j++;
-	printf("%d\n", j);
-	cmd->argv = (char **)malloc(j - 1);
-	cmd->argv[i] = minishell->way[0];
+
 	i++;
 	j = 1;
 	len_for_line = ft_strlen(minishell->line[j]);
-	printf("%d\n", len_for_line);
 	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
-	
 	while (minishell->line[j - 1])
 	{
+		if (minishell->line[j] == 124)
+		{
+			cmd->operator = '|';
+			i = 0;
+			cmd->argv = cmd.
+		}
 		cmd->argv[i] = minishell->line[j];
 		i++;
 		j++;
 	}
 }
-
-
-
-
 
 int	check_double_quote(char const *s, char c)
 {
