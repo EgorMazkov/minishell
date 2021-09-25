@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/25 18:04:58 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/25 19:18:28 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ int	main(int argc, char **argv, char **ev)
 	appropriation(argc, argv, ev, &minishell);
 	while (1)
 	{
-		minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		// minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		minishell.input = "cd ..";
 		minishell.input_line = &minishell.input;
 		double_quote = preparser(&minishell, &se);
 		if (double_quote)
@@ -151,7 +152,6 @@ void	qwe(t_ms *minishell, t_cmd *cmd, char **ev)
 		return ;
 	}
 	cmd->argv[0] = minishell->way[0];
-	printf("123 : %s\n", cmd->argv[0]);
 	if (minishell->line[1])
 		write_to_array(cmd, minishell);
 }
@@ -160,12 +160,12 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 {
 	int	i;
 	int	j;
-	// int	a;
+	int	a;
 	int	len_for_line;
 
 	i = 0;
 	j = 0;
-	// a = 0;
+	a = 0;
 	len_for_line = 0;
 
 	i++;
@@ -181,18 +181,17 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
 	while (minishell->line[j])
 	{
+		if (minishell->line[j][a] == '|')
+		{
+			cmd->operator = '|';
+			i = 0;
+			cmd = cmd->next;
+			continue ;
+		}
 		cmd->argv[i] = minishell->line[j];
 		i++;
 		j++;
-		// if (minishell->line[j][a] == '|')
-		// {
-		// 	cmd->operator = '|';
-		// 	i = 0;
-		// 	cmd = cmd->next;
-		// 	continue ;
-		// }
 	}
-	printf("123 : %s\n", cmd->argv[0]);
 }
 
 int	check_double_quote(char const *s, char c)
