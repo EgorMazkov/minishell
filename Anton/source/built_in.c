@@ -23,33 +23,60 @@ char *level_down(char *s)
 	return (s);
 }
 
-void	ft_cd(char *arg, char **env, t_built *old)
+char *get_old_path_to_env(t_env *ev)
+{
+	while (ev->back)
+		ev = ev->back;
+	while (ev)
+	{
+		if (!ft_strncmp("OLDPWD=", ev->variable, 7))
+			return (ev->value);
+		ev = ev->next;
+	}
+	return (NULL);
+}
+
+void	ft_cd(char *arg, t_env **env, t_built *old)
 {
 	char *oldpath;
-	(void)env;
 
 	if (!arg || !arg[0])
 	{
 		old->oldpwd = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD=", getcwd(NULL, 0));
 		if (chdir(getenv("HOME")) == -1)
 			printf("newerni put\n");
+		overwrite_env(env, "PWD=", getcwd(NULL, 0));
 	}
 	else if (!ft_strncmp(arg, "..", 3))
 	{
 		old->oldpwd = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD=", getcwd(NULL, 0));
 			if (chdir(level_down(getcwd(NULL, 0))) == -1)
 				printf("newerni put\n");
+		overwrite_env(env, "PWD=", getcwd(NULL, 0));
 	}
 	else if (!ft_strncmp(arg, "-", 2))
 	{
-		oldpath = old->oldpwd;
+		if (!get_old_path_to_env(*env))
+		{
+			printf("cd: OLDPWD not set\n");
+			return ;
+		}
+		oldpath = get_old_path_to_env(*env);
+		if (!oldpath)
+			oldpath = old->oldpwd;
 		old->oldpwd = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD=", getcwd(NULL, 0));
 		if (chdir(oldpath) == -1)
 			printf("newerni put\n");
+		overwrite_env(env, "PWD=", getcwd(NULL, 0));
+		printf("%s\n", getcwd(NULL, 0));
 	}
 	else if (!ft_strncmp(arg, "~", 1))
 	{
 		old->oldpwd = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD=", getcwd(NULL, 0));
 		if (arg[1] == '\0')
 		{
 			if (chdir(getenv("HOME")) == -1)
@@ -58,13 +85,16 @@ void	ft_cd(char *arg, char **env, t_built *old)
 		else
 			if (chdir(ft_strjoin(getenv("HOME"), ++arg)) == -1)
 				printf("newerni put\n");
+		overwrite_env(env, "PWD=", getcwd(NULL, 0));
 	}
 	else
+	{
+		old->oldpwd = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD=", getcwd(NULL, 0));
 		if (chdir(arg) == -1)
 			printf("no such file in directory: %s\n", arg);
-		/*
-		необходимо допилить: изменение путия в env;
-		*/
+		overwrite_env(env, "PWD=", getcwd(NULL, 0));
+	}
 }
 
 int	is_slash_n(char *str)
@@ -72,7 +102,7 @@ int	is_slash_n(char *str)
 	int	i;
 
 	i = 0;
-	if (str[i] != '-')
+	if (str[i] != '-' || (str[i] == '-' && ft_strlen(str) == 1))
 		return (0);
 	if (str[i] == '-')
 		while (str[++i])
@@ -102,13 +132,15 @@ void	ft_echo(char **arg)
 		write(1, "\n", 1);
 }
 
-void	ft_env(t_env *ev)
+void	ft_env(t_env **ev)
 {
-	while (ev->back)
-		ev = ev->back;
-	while (ev)
+	while ((*ev)->back)
+		*ev = (*ev)->back;
+	while (*ev)
 	{
-		printf("%s\n", ev->value);
-		ev = ev->next;
+		printf("%s%s\n", (*ev)->variable, (*ev)->value);
+		*ev = (*ev)->next;
+		if (!(*ev)->next)
+			break ;
 	}
 }

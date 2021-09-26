@@ -33,7 +33,7 @@
 // 	char **env_copy;
 
 // 	str = -1;
-// 	env_copy = (char **)malloc(len_env(env) * sizeof(char *));
+// 	env_copy = (char **)malloc(len_argvs(env) * sizeof(char *));
 // 	if (!env_copy)
 // 		return (NULL);
 // 	env_copy[len_argvs(env)] = NULL;
@@ -56,14 +56,61 @@ void env_value_add (t_env **lst, t_env *el)
 	*lst = el;
 }
 
-t_env *new_env_value(char *value)
+
+char *value_of_variable(char *s)
+{
+	int len;
+	int ps_val;
+	char *value;
+
+	len = 0;
+	ps_val = 0;
+	while (s[len] && s[len] != '=')
+		len++;
+	value = (char *)malloc(sizeof(char) * ((ft_strlen(s) - len) + 1));
+	if (!value)
+		return (NULL);
+	while (s[++len])
+	{
+		value[ps_val] = s[len];
+		ps_val++;
+	}
+	value[ps_val] = '\0';
+	return (value);
+}
+
+
+char *name_of_variable(char *s)
+{
+	int len;
+	int i;
+
+	len = 0;
+	i = 0;
+	char *name;
+	while (s[len] && s[len] != '=')
+		len++;
+	name = (char *)malloc(sizeof(char) * len + 1);
+	if (!name)
+		return (NULL);
+	while (i <= len)
+	{
+		name[i] = s[i];
+		i++;
+	}
+	name[i] = '\0';
+	return (name);
+}
+
+t_env *new_env_value(char *variable)
 {
 	t_env *str;
 
 	str = (t_env *)malloc(sizeof(t_env));
 	str->next = NULL;
 	str->back = NULL;
-	str->value = ft_strdup(value);
+	str->variable = name_of_variable(variable);
+	str->value = value_of_variable(variable);
 	return (str);
 }
 
@@ -85,7 +132,7 @@ void	value_delete(t_env **env, char *value)
 		*env = (*env)->back;
 	while (*env)
 	{
-		if (!ft_strncmp((*env)->value, ft_strjoin(value, "="), ft_strlen(value) + 1))
+		if (!ft_strncmp((*env)->variable, ft_strjoin(value, "="), ft_strlen(value) + 1))
 		{
 			del = *env;
 			*env = (*env)->next;
@@ -117,5 +164,34 @@ void	ft_unset (t_env **env, char **value)
 		value_delete(env, value[str++]);
 }
 
+void	overwrite_env(t_env **env, char *variable, char *new_value)//Принимает название переменной и на какое значение изменить ее содержимое
+{
+	while((*env)->back)
+		*env = (*env)->back;
+	while (*env)
+	{
+		if (!ft_strncmp(variable, (*env)->variable, ft_strlen(variable)))
+		{
+			free((*env)->value);
+			(*env)->value = ft_strdup(new_value);
+			return ;
+		}
+		if (!(*env)->next)
+			break ;
+		*env = (*env)->next;
+	}
+}
 
+char *value_of_env(t_env *env, char *value)
+{
+	while(env->back)
+		env = env->back;
+	while (env)
+	{
+		if (!ft_strncmp(value, env->value, ft_strlen(value)))
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
 

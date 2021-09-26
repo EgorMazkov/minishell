@@ -271,13 +271,6 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 		//
 		while (qwer++ != 300)
 			ladd(&cmd, new_cmd(1));
-		//теряется пайп по середине
-		ladd(&cmd, new_cmd(3));
-		//
-		ladd(&cmd, new_cmd(1));
-		ladd(&cmd, new_cmd(1));
-		ladd(&cmd, new_cmd(1));
-		ladd(&cmd, new_cmd(1));
 
 	// ladd(&cmd, new_cmd(2));
 	// ladd(&cmd, new_cmd(2));
@@ -293,14 +286,15 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 	if (!ft_strncmp(input, "pwd", 4))
 		ft_pwd(ev);
 	else if (!ft_strncmp(input, "cd", 2))
-		ft_cd(input + 3, ev, built);
+		ft_cd(input + 3, env, built);
 	else if (!ft_strncmp(input, "echo ", 5))
 		ft_echo(ft_split(input + 4, ' '));
 	else if (!ft_strncmp(input, "env", 4))
-		ft_env(*env);
+		ft_env(env);
 	else if (!ft_strncmp(input, "exit", 4))
 	{
 		printf("exit\n");
+		free_all(env);
 		exit(0);
 	}
 	else if (!ft_strncmp(input, "./minishell", 12))
@@ -335,13 +329,16 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 
 int main (int argc, char **argv, char **ev)
 {
-	t_built built;
+	t_built *built = NULL;
 	t_env *env = NULL;
 	(void)argc, (void)argv;
 	char *input;
 	// pid_t pid;
 
+	// built = (t_built *)malloc(sizeof(t_built));
+
 	env_record(&env, ev);
+	// overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
 	while (1)
 	{
 		signal(SIGINT, cmd_c);
@@ -355,7 +352,7 @@ int main (int argc, char **argv, char **ev)
 		if (*input)
 			add_history(input);
 		if (input[0])
-			hardcode(input, &built, ev, &env);
+			hardcode(input, built, ev, &env);
 	}
 }
 
