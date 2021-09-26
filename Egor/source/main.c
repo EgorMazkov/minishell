@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/25 19:18:28 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/26 13:28:49 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ int	main(int argc, char **argv, char **ev)
 	appropriation(argc, argv, ev, &minishell);
 	while (1)
 	{
-		// minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		minishell.input = "cd ..";
+		minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		// minishell.input = "cat -e | echo -n";
 		minishell.input_line = &minishell.input;
 		double_quote = preparser(&minishell, &se);
 		if (double_quote)
@@ -72,15 +72,22 @@ int	main(int argc, char **argv, char **ev)
 					i++;
 				}
 			}
-			qwe(&minishell, &cmd, ev);
+			qwe(&minishell, &cmd, ev, 0);
 		}
 		else
 		{
 			if (minishell.input[0])
 				minishell.line = ft_split(minishell.input, ' ');
-			qwe(&minishell, &cmd, ev);
+			qwe(&minishell, &cmd, ev, 0);
 		}
 		j = 0;
+		a = 0;
+		printf("%hd\n", cmd.operator);
+		while (cmd.argv[i] != NULL)
+		{
+			printf("%s\n", cmd.argv[a]);
+			a++;
+		}
 		a = 0;
 		null_argv(&cmd);
 	}
@@ -111,11 +118,8 @@ void	free_argv(t_cmd *cmd)
 	free(cmd->argv);
 }
 
-int		check_bin(t_ms *minishell)
+int		check_bin(t_ms *minishell, int i)
 {
-	int	 i;
-
-	i = 0;
 	if (!ft_strncmp(minishell->line[i], "cd", 2))
 		return (1);
 	if (!ft_strncmp(minishell->line[i], "env", 3))
@@ -133,43 +137,49 @@ int		check_bin(t_ms *minishell)
 	return  (0);
 }
 
-void	qwe(t_ms *minishell, t_cmd *cmd, char **ev)
+void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 {
-	int	check;
+	static int flag;
+	int	j;
 
-	check = 0;
-	check = check_bin(minishell);
+	j = check;
+	flag = 1;
+	check = check_bin(minishell, check);
 	if (check)
 	{
-		write_to_array(cmd, minishell);
+		cmd->argv[j] = minishell->line[j];
+		j++;
+		if (minishell->line[j])
+			write_to_array(cmd, minishell, j);
 		return ;
 	}
 	get_path(minishell, ev);
 	minishell->way[0] = right_way(minishell);
 	if (*minishell->way == NULL)
 	{
+		printf("\033[0;29mDungeonMaster: \033[0;29m %s :", minishell->line[0]);
 		printf("command not found\n");
 		return ;
 	}
-	cmd->argv[0] = minishell->way[0];
+	if (flag)
+	{
+		cmd->argv[0] = minishell->way[0];
+		flag = 0;
+	}
 	if (minishell->line[1])
-		write_to_array(cmd, minishell);
+		write_to_array(cmd, minishell, 1);
 }
 
-void	write_to_array(t_cmd *cmd, t_ms *minishell)
+void	write_to_array(t_cmd *cmd, t_ms *minishell, int j)
 {
 	int	i;
-	int	j;
 	int	a;
 	int	len_for_line;
 
-	i = 0;
-	j = 0;
+	i = 1;
 	a = 0;
 	len_for_line = 0;
 
-	i++;
-	j = 1;
 	if (minishell->line[j])
 		len_for_line = ft_strlen(minishell->line[j]);
 	else
@@ -184,9 +194,8 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell)
 		if (minishell->line[j][a] == '|')
 		{
 			cmd->operator = '|';
-			i = 0;
-			cmd = cmd->next;
-			continue ;
+			j++;
+			qwe(minishell, cmd, minishell->env, j);
 		}
 		cmd->argv[i] = minishell->line[j];
 		i++;
@@ -288,3 +297,71 @@ char	**split_preparser(char const *s, char c)
 		}
 		printf("%s\n", dest[j]);
 		*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
