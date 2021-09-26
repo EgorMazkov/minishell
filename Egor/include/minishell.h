@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/26 12:39:57 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/26 13:46:19 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ typedef struct s_cmd
 void	null_struct(t_ms *minishell, t_cmd *cmd);
 void	get_path(t_ms *minishell, char **ev);
 char	*slash_path(char *way, char *line);
-char	*right_way(t_ms *minishell);
+char	*right_way(t_ms *minishell, int j);
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
 void	write_to_array(t_cmd *cmd, t_ms *minishell, int j);
 void	parser(t_ms *minishell, int i);

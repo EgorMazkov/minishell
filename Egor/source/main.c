@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/26 13:28:49 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/26 16:58:48 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int	main(int argc, char **argv, char **ev)
 				minishell.line[j][a] = minishell.input_line[j][a];
 				a++;
 			}
+			// printf("%s\n", minishell.line[j]);
 			j++;
 			i = a + 2;
 			a = 0;
@@ -57,6 +58,7 @@ int	main(int argc, char **argv, char **ev)
 				a++;
 				i++;
 			}
+			// printf("%s\n", minishell.line[j]);
 			if (minishell.input_line[0][i + 1] != '\0')
 			{
 				a = 0;
@@ -72,24 +74,25 @@ int	main(int argc, char **argv, char **ev)
 					i++;
 				}
 			}
+			if (!minishell.line)
+				continue ;
 			qwe(&minishell, &cmd, ev, 0);
 		}
 		else
 		{
 			if (minishell.input[0])
 				minishell.line = ft_split(minishell.input, ' ');
+			if (!minishell.line)
+				continue ;
 			qwe(&minishell, &cmd, ev, 0);
 		}
 		j = 0;
 		a = 0;
-		printf("%hd\n", cmd.operator);
-		while (cmd.argv[i] != NULL)
-		{
-			printf("%s\n", cmd.argv[a]);
-			a++;
-		}
-		a = 0;
+		printf("%s\n", cmd.argv[0]);
+		printf("%s\n", cmd.argv[1]);
 		null_argv(&cmd);
+		// printf("%s\n", cmd.argv[0]);
+		// printf("%s\n", cmd.argv[1]);
 	}
 }
 
@@ -120,53 +123,52 @@ void	free_argv(t_cmd *cmd)
 
 int		check_bin(t_ms *minishell, int i)
 {
-	if (!ft_strncmp(minishell->line[i], "cd", 2))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "env", 3))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "echo", 4))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "pwd", 3))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "unset", 5))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "exit", 4))
-		return (1);
-	if (!ft_strncmp(minishell->line[i], "export", 6))
-		return (1);
+	if (minishell->line)
+	{
+		if (!ft_strncmp(minishell->line[i], "cd", 2))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "env", 3))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "echo", 4))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "pwd", 3))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "unset", 5))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "exit", 4))
+			return (1);
+		if (!ft_strncmp(minishell->line[i], "export", 6))
+			return (1);
+	}
 	return  (0);
 }
 
 void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 {
-	static int flag;
 	int	j;
 
 	j = check;
-	flag = 1;
 	check = check_bin(minishell, check);
 	if (check)
 	{
 		cmd->argv[j] = minishell->line[j];
+		// printf("1 :%s\n", cmd->argv[j]);
 		j++;
 		if (minishell->line[j])
 			write_to_array(cmd, minishell, j);
 		return ;
 	}
 	get_path(minishell, ev);
-	minishell->way[0] = right_way(minishell);
+	minishell->way[0] = right_way(minishell, j);
 	if (*minishell->way == NULL)
 	{
 		printf("\033[0;29mDungeonMaster: \033[0;29m %s :", minishell->line[0]);
 		printf("command not found\n");
 		return ;
 	}
-	if (flag)
-	{
-		cmd->argv[0] = minishell->way[0];
-		flag = 0;
-	}
-	if (minishell->line[1])
+	cmd->argv[j] = minishell->way[0];
+	// printf("1 :%s\n", cmd->argv[j]);
+	if (minishell->line[++j])
 		write_to_array(cmd, minishell, 1);
 }
 
@@ -196,8 +198,10 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell, int j)
 			cmd->operator = '|';
 			j++;
 			qwe(minishell, cmd, minishell->env, j);
+			return ;
 		}
 		cmd->argv[i] = minishell->line[j];
+		// printf("1 2 : %s\n", cmd->argv[i]);
 		i++;
 		j++;
 	}
@@ -223,69 +227,6 @@ int	check_double_quote(char const *s, char c)
 	return (double_quote);
 }
 
-static size_t	len_for_s(char const *s, char c)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] != c)
-		i++;
-	return (i);
-}
-
-char	**split_preparser(char const *s, char c)
-{
-	int	i;
-	int	j;
-	int	double_quote;
-	char	**dest;
-	int		len_for_sc;
-
-	len_for_sc = len_for_s(s, c);
-	double_quote = 0;
-	i = 0;
-	dest = NULL;
-	j = 0;
-	double_quote = check_double_quote(s, '\"');
-	while (s[i])
-	{
-		if (double_quote)
-		{
-			if (s[i] != double_quote)
-			{
-				while (s[i] != c)
-				{
-					printf("%d\n", len_for_sc);
-					while (len_for_sc--)
-					{
-						dest[j][i] = s[i];
-						i++;
-					}
-					dest[j][i] = '\0';
-					printf("%s\n", dest[j]);
-					break ;
-				}
-			}
-			int a = 0;
-			j++;
-			len_for_sc = len_for_s(&s[i], c);
-			dest[j][i] = (char)malloc(len_for_sc);
-			while (s[i])
-			{
-				dest[j][a] = s[i];
-				i++;
-				a++;
-			}
-			printf("%s\n", dest[j]);
-		}
-		else
-		{
-			dest = ft_split(s, ' ');
-			return (dest);
-		}
-	}
-	return (dest);
-}
 
 /*
 		j++;
