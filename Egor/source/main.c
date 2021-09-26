@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/26 16:58:48 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/26 18:25:31 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,15 @@ int	main(int argc, char **argv, char **ev)
 	appropriation(argc, argv, ev, &minishell);
 	while (1)
 	{
-		minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		// minishell.input = "cat -e | echo -n";
+		// minishell.input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		minishell.input = "echo \"1 2 3\""; // echo "1 2 3"
 		minishell.input_line = &minishell.input;
 		double_quote = preparser(&minishell, &se);
 		if (double_quote)
 		{
-			minishell.line = malloc(sizeof(char **) * 1);
-			minishell.line[j] = malloc(sizeof(char *) * se.start - 1);
+			minishell.line = (char **)malloc(sizeof(char *) * 1);
+			minishell.line[2] = NULL;
+			minishell.line[j] = malloc(sizeof(char) * se.start - 1);
 			while (a != double_quote - 1)
 			{
 				minishell.line[j][a] = minishell.input_line[j][a];
@@ -51,7 +52,7 @@ int	main(int argc, char **argv, char **ev)
 			j++;
 			i = a + 2;
 			a = 0;
-			minishell.line[j] = malloc(sizeof(char *) * (se.end - se.start - 1));
+			minishell.line[j] = malloc(sizeof(char) * (se.end - se.start - 1));
 			while (minishell.input_line[0][i] != '\"' && minishell.input_line)
 			{
 				minishell.line[j][a] = minishell.input_line[0][i];
@@ -59,21 +60,21 @@ int	main(int argc, char **argv, char **ev)
 				i++;
 			}
 			// printf("%s\n", minishell.line[j]);
-			if (minishell.input_line[0][i + 1] != '\0')
-			{
-				a = 0;
-				minishell.line[j] = malloc(sizeof(char) * a);
-				while (minishell.input_line[0][i] != ' ')
-				{
-					a = i;
-					j++;
-					while (minishell.input_line[0][a] != ' ')
-						a++;
-					minishell.line[j][a] = minishell.input_line[0][i];
-					a++;
-					i++;
-				}
-			}
+			// if (minishell.input_line[0][i + 1] != '\0')
+			// {
+			// 	a = 0;
+			// 	minishell.line[j] = malloc(sizeof(char) * a);
+			// 	while (minishell.input_line[0][i] != ' ')
+			// 	{
+			// 		a = i;
+			// 		j++;
+			// 		while (minishell.input_line[0][a] != ' ')
+			// 			a++;
+			// 		minishell.line[j][a] = minishell.input_line[0][i];
+			// 		a++;
+			// 		i++;
+			// 	}
+			// }
 			if (!minishell.line)
 				continue ;
 			qwe(&minishell, &cmd, ev, 0);
@@ -152,7 +153,6 @@ void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 	if (check)
 	{
 		cmd->argv[j] = minishell->line[j];
-		// printf("1 :%s\n", cmd->argv[j]);
 		j++;
 		if (minishell->line[j])
 			write_to_array(cmd, minishell, j);
@@ -167,7 +167,7 @@ void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 		return ;
 	}
 	cmd->argv[j] = minishell->way[0];
-	// printf("1 :%s\n", cmd->argv[j]);
+	printf("1 :%s\n", cmd->argv[j]);
 	if (minishell->line[++j])
 		write_to_array(cmd, minishell, 1);
 }
@@ -175,11 +175,9 @@ void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 void	write_to_array(t_cmd *cmd, t_ms *minishell, int j)
 {
 	int	i;
-	int	a;
 	int	len_for_line;
 
 	i = 1;
-	a = 0;
 	len_for_line = 0;
 
 	if (minishell->line[j])
@@ -191,20 +189,21 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell, int j)
 		len_for_line = ft_strlen(minishell->line[j]);
 	}
 	cmd->argv[i] = (char *)malloc(sizeof(char) * (len_for_line));
+	cmd->argv[i][len_for_line] = '\0';
 	while (minishell->line[j])
 	{
-		if (minishell->line[j][a] == '|')
+		if (minishell->line[j][0] == '|')// сега блять, когда подаешь echo "1 2 3"
 		{
 			cmd->operator = '|';
 			j++;
 			qwe(minishell, cmd, minishell->env, j);
 			return ;
 		}
-		cmd->argv[i] = minishell->line[j];
-		// printf("1 2 : %s\n", cmd->argv[i]);
+		cmd->argv[i] = ft_strdup(minishell->line[j]);
 		i++;
 		j++;
 	}
+	
 }
 
 int	check_double_quote(char const *s, char c)
