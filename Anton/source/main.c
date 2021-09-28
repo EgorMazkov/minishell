@@ -290,7 +290,9 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 	else if (!ft_strncmp(input, "echo ", 5))
 		ft_echo(ft_split(input + 4, ' '));
 	else if (!ft_strncmp(input, "env", 4))
-		ft_env(env);
+		ft_env(*env);
+	else if (!ft_strncmp(input, "export", 6))
+		ft_export(env, ft_split(input + 6, ' ')[0]);
 	else if (!ft_strncmp(input, "exit", 4))
 	{
 		printf("exit\n");
@@ -334,11 +336,10 @@ int main (int argc, char **argv, char **ev)
 	(void)argc, (void)argv;
 	char *input;
 	// pid_t pid;
-
-	// built = (t_built *)malloc(sizeof(t_built));
+	built = (t_built *)malloc(sizeof(t_built));
 
 	env_record(&env, ev);
-	// overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
+	overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
 	while (1)
 	{
 		signal(SIGINT, cmd_c);
@@ -353,6 +354,9 @@ int main (int argc, char **argv, char **ev)
 			add_history(input);
 		if (input[0])
 			hardcode(input, built, ev, &env);
+
+
+		printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));
 	}
 }
 
