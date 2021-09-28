@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/26 13:46:19 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/28 19:10:54 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_cmd
 	struct s_cmd *back;
 } t_cmd;
 
-void	null_struct(t_ms *minishell, t_cmd *cmd);
+t_se	*null_struct(t_ms *minishell, t_cmd *cmd);
 void	get_path(t_ms *minishell, char **ev);
 char	*slash_path(char *way, char *line);
 char	*right_way(t_ms *minishell, int j);

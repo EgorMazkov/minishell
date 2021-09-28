@@ -6,13 +6,13 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:18:04 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/25 16:17:33 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/28 19:10:22 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	null_struct(t_ms *minishell, t_cmd *cmd)
+t_se	*null_struct(t_ms *minishell, t_cmd *cmd)
 {
 	t_se *se;
 	
@@ -26,8 +26,10 @@ void	null_struct(t_ms *minishell, t_cmd *cmd)
 	minishell->way = NULL;
 	cmd->file = NULL;
 	cmd->util_cmd = NULL;
+	cmd->argv = NULL;
 	se->start = 0;
 	se->end = 0;
+	return (se);
 }
 
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell)

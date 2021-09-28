@@ -30,7 +30,7 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Egor/minishell",
+            "program": "${workspaceFolder}/libft_tharodon_jopa/libft/a.out",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
