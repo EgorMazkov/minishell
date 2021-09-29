@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 21:50:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/28 21:50:36 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/29 14:36:59 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static size_t	schet (char const *s, char c)
 		if (s[i] == '\"')
 		{
 			sep++;
-			while (s[++i] != '\"')
+			while (s[++i] != '\"' || s[++i] != '\'')
 				;
 			while (s[i] == c)
 			{
@@ -55,7 +55,7 @@ static size_t	schet (char const *s, char c)
 				i++;
 			}
 			i--;
-			if (s[i + 1] != '\"')
+			if (s[i + 1] != '\"' || s[i + 1] != '\'')
 				sep++;
 		}
 		i++;
@@ -73,12 +73,11 @@ static	size_t	len_word (const char *src, size_t start, char c)
 	// 	start++;
 	// 	i--;
 	// }
-	while ((src[start] != '\"' && src[start] != c) && src[start] != '\0')
+	while (((src[start] != '\"' || src[start] == '\'') && src[start] != c) && src[start] != '\0')
 	{
 		start++;
 		i++;
 	}
-	printf("len_word : %d\n", i);
 	return (i);
 }
 
@@ -90,17 +89,19 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 	word = 0;
 	while (s[i])
 	{
-		if (s[i] == '\"')
+		if (s[i] == '\"' || s[i] == '\'')
 		{
 			quote++;
 			if (quote % 2 != 0)
 			{
-				mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
-				printf(" : %s$\n", mass[word]);
+				if (s[i] == '\'')
+					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
+				else
+					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
 				if (mass[word] == NULL)
 					jango(mass, word);
 				word++;
-				while (s[++i] != '\"' && s[i] != '\0')
+				while ((s[++i] != '\"' || s[++i] != '\'') && s[i] != '\0')
 					;
 				i++;
 				quote++;
@@ -123,7 +124,7 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 		{
 			while (s[i] != c && s[i] != '\0')
 			{
-				if (s[i + 1] == '\"')
+				if (s[i + 1] == '\"' || s[i + 1] == '\'')
 					break ;
 				i++;
 			}
@@ -139,7 +140,7 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 	return (mass);
 }
 
-char	**ft_split (char const *s, char c)
+char	**ft_split_for_minishell(char const *s, char c)
 {
 	size_t	i;
 	char	**mass;

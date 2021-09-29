@@ -25,17 +25,6 @@ void    parser(t_ms *minishell, int i)
     tmp = trimmer(tmp, '\"');
     printf("%s\n", tmp);
 }
-    // if (minishell->line[j][a] == '\"')
-    // {
-    //     while (minishell->line[j][a] != '\"')
-    //     {
-    //         tmp1 = minishell->line[j];
-    //         tmp = ft_strjoin(tmp, tmp1);
-    //         j++;
-    //     }
-    // }
-
-//echo "123 123 123 123 123 123 1"
 
 char    *trimmer(char *str, char c)
 {
@@ -50,18 +39,5 @@ char    *trimmer(char *str, char c)
     return (str);
 }
 
-int preparser(t_ms *minishell, t_se *se)
-{
-    int len;
-    int j;
-    int i;
 
-    i = 0;
-    j = 0;
-    len = ft_strlen(&minishell->input[j]);
-    while (minishell->input[i] != '\"' && j != len)
-        j++;
-    if (j == len)
-        j = 0;
-    return (j);
-}
+

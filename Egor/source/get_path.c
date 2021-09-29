@@ -6,20 +6,20 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:17:21 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/26 16:55:41 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/29 13:13:43 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	get_path(t_ms *minishell, char **ev)
+void	get_path(t_ms *minishell)
 {
 	int	i;
 
 	i = -1;
-	while (ev[++i])
+	while (minishell->env[++i])
 	{
-		if (ft_strncmp(ev[i], "PATH=", 5) == 0)
+		if (ft_strncmp(minishell->env[i], "PATH=", 5) == 0)
 			minishell->way = ft_split(minishell->env[i], ':');
 	}
 }
@@ -41,11 +41,16 @@ char	*right_way(t_ms *minishell, int j)
 	char	*res;
 
 	i = 0;
-	while (minishell->way[i])
+	while (minishell->way || minishell->way[i])
 	{
+		if (minishell->way[i] == NULL)
+			return (NULL);
 		if (minishell->line == NULL)
 			return (NULL);
-		res = slash_path(minishell->way[i], minishell->line[j]);
+		if (i == 0)
+			res = slash_path(minishell->way[i] + 5, minishell->line[j]);
+		else
+			res = slash_path(minishell->way[i], minishell->line[j]);
 		fd = open(res, O_RDONLY);
 		free(res);
 		if (fd != -1)

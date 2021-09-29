@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/28 19:12:14 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/29 14:37:24 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,70 +19,41 @@ echo "123 123 123 123 123 123 1"
 int	main(int argc, char **argv, char **ev)
 {
 	t_ms	*minishell = NULL;
-	t_cmd	cmd;
-	t_se	se;
+	t_cmd	*cmd = NULL;
+	// t_se	se;
 	int		j;
 	int		a;
 	int		i;
 	int		double_quote;
 
 	minishell = (t_ms *)malloc(sizeof(t_ms));
+	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	a = 0;
 	j = 0;
 	i = 0;
 	double_quote = 0;
-	null_struct(minishell, &cmd);
+	null_struct(minishell, cmd);
 	appropriation(argc, argv, ev, minishell);
 	minishell->input_line = (char **)malloc(sizeof(char *) + 1);
 	minishell->input_line[1] = NULL;
 	while (1)
 	{
+		cmd->argv = malloc(sizeof(char *));
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		// minishell->input = "echo \"1 2 3\""; // echo "1 2 3"
-		minishell->input_line[0] = ft_strdup(minishell->input);
-		double_quote = preparser(minishell, &se);
-		if (double_quote)
-		{
-			minishell->line = (char **)malloc(sizeof(char *) * 1);
-			minishell->line[2] = NULL;
-			minishell->line[j] = malloc(sizeof(char) * double_quote - 1);
-			minishell->line[j][double_quote - 1] = '\0';
-			while (a != double_quote - 1)
-			{
-				minishell->line[j][a] = minishell->input_line[j][a];
-				a++;
-			}
-			j++;
-			i = a + 2;
-			a = 0;
-			minishell->line[j] = malloc(sizeof(char) * (se.end - se.start - 1));
-			minishell->line[j][se.end - se.start - 1] = '\0';
-			while (minishell->input_line[0][i] != '\"' && minishell->input_line)
-			{
-				minishell->line[j][a] = minishell->input_line[0][i];
-				a++;
-				i++;
-			}
-			if (!minishell->line)
-				continue ;
-			qwe(minishell, &cmd, ev, 0);
-		}
-		else
-		{
-			if (minishell->input[0])
-				minishell->line = ft_split(minishell->input, ' ');
-			if (!minishell->line)
-				continue ;
-			qwe(minishell, &cmd, ev, 0);
-		}
+		// minishell->input = "cat -e | make";
+		if (minishell->input[0])
+			minishell->line = ft_split_for_minishell(minishell->input, ' ');
+		if (!minishell->line)
+			continue ;
+		qwe(minishell, cmd, 0, 0);
 		j = 0;
 		a = 0;
-		printf("%s\n", cmd.argv[0]);
-		printf("%s\n", cmd.argv[1]);
-		null_argv(&cmd);
-		// printf("%s\n", cmd.argv[0]);
-		// printf("%s\n", cmd.argv[1]);
+		printf("exit\n");
+		printf("%s\n", cmd->argv[0]);
+		printf("%s\n", cmd->argv[1]);
+		// null_argv(&cmd);
 	}
+	// printf("%s\n", cmd.argv[1]);
 }
 
 void	null_argv(t_cmd *cmd)
@@ -132,7 +103,7 @@ int		check_bin(t_ms *minishell, int i)
 	return  (0);
 }
 
-void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
+void	qwe(t_ms *minishell, t_cmd *cmd, int check, int i)
 {
 	int	j;
 
@@ -140,23 +111,24 @@ void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check)
 	check = check_bin(minishell, check);
 	if (check)
 	{
-		cmd->argv = malloc(sizeof(char *));
-		cmd->argv[j] = ft_strdup(minishell->line[j]);
+		cmd->argv[i] = ft_strdup(minishell->line[j]);
 		j++;
 		if (minishell->line[j])
 			write_to_array(cmd, minishell, j);
 		return ;
 	}
-	get_path(minishell, ev);
+	get_path(minishell);
 	minishell->way[0] = right_way(minishell, j);
 	if (*minishell->way == NULL)
 	{
 		printf("\033[0;29mDungeonMaster: \033[0;29m %s :", minishell->line[0]);
 		printf("command not found\n");
+		free (cmd->argv);
 		return ;
 	}
-	cmd->argv[j] = minishell->way[0];
-	printf("1 :%s\n", cmd->argv[j]);
+	// if (minishell->i)
+	// 	cmd->argv = malloc(sizeof(char *));
+	cmd->argv[i] = ft_strdup(minishell->way[0]);
 	if (minishell->line[++j])
 		write_to_array(cmd, minishell, 1);
 }
@@ -181,19 +153,20 @@ void	write_to_array(t_cmd *cmd, t_ms *minishell, int j)
 	cmd->argv[i][len_for_line] = '\0';
 	while (minishell->line[j])
 	{
-		// if (*minishell->line[j] == '|')// сега блять, когда подаешь echo "1 2 3"
-		// {
-		// 	cmd->operator = '|';
-		// 	j++;
-		// 	qwe(minishell, cmd, minishell->env, j);
-		// 	return ;
-		// }
+		if (*minishell->line[j] == '|')
+		{
+			cmd->operator = '|';
+			i = 0;
+			j++;
+			minishell->i = 1;
+			cmd = cmd->next;
+			qwe(minishell, cmd, j, i);
+			return ;
+		}
 		cmd->argv[i] = ft_strdup(minishell->line[j]);
 		i++;
-		printf("%d : %s\n", j, minishell->line[j]);
 		j++;
 	}
-	
 }
 
 int	check_double_quote(char const *s, char c)
@@ -215,83 +188,3 @@ int	check_double_quote(char const *s, char c)
 	}
 	return (double_quote);
 }
-
-
-/*
-		j++;
-		while (s[i])
-		{
-			dest[j][a] = s[i];
-			i++;
-			a++;
-		}
-		printf("%s\n", dest[j]);
-		*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

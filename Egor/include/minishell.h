@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/28 19:10:54 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/29 13:43:47 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ typedef struct s_ms
     char **env;
     char **way;
     char **input_line;
-    struct s_se *se;
 } t_ms;
 
 typedef struct s_cmd
@@ -53,7 +52,7 @@ typedef struct s_cmd
 } t_cmd;
 
 t_se	*null_struct(t_ms *minishell, t_cmd *cmd);
-void	get_path(t_ms *minishell, char **ev);
+void	get_path(t_ms *minishell);
 char	*slash_path(char *way, char *line);
 char	*right_way(t_ms *minishell, int j);
 void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
@@ -77,7 +76,8 @@ char	**split_preparser(char const *s, char c);
 char    *trimmer(char *str, char c);
 int preparser(t_ms *minishell, t_se *se);
 //
-void	qwe(t_ms *minishell, t_cmd *cmd, char **ev, int check);
+void	qwe(t_ms *minishell, t_cmd *cmd, int check, int i);
 void	null_argv(t_cmd *cmd);
+char	**ft_split_for_minishell(char const *s, char c);
 
 #endif
