@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/29 13:43:47 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/30 16:00:47 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,13 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
-typedef struct s_se
-{
-    int start;
-    int end;
-}   t_se;
-
 typedef struct s_ms
 {
     char *input;
     char **line;
-    int i;
-    int argc;
-    char **argv;
     char **env;
     char **way;
-    char **input_line;
+    // char **way;
 } t_ms;
 
 typedef struct s_cmd
@@ -51,33 +42,16 @@ typedef struct s_cmd
 	struct s_cmd *back;
 } t_cmd;
 
-t_se	*null_struct(t_ms *minishell, t_cmd *cmd);
-void	get_path(t_ms *minishell);
-char	*slash_path(char *way, char *line);
-char	*right_way(t_ms *minishell, int j);
-void	appropriation(int argc, char **argv, char **ev, t_ms *minishell);
-void	write_to_array(t_cmd *cmd, t_ms *minishell, int j);
-void	parser(t_ms *minishell, int i);
-
-
-/*printf*/
-void	print_mass(t_cmd *cmd);
-
-
-/*readline*/
-void	rl_replace_line(const char *text, int clear_undo);
-void	rl_clear_history(void);
-
-
-
-char	**split_preparser(char const *s, char c);
-
-
-char    *trimmer(char *str, char c);
-int preparser(t_ms *minishell, t_se *se);
-//
-void	qwe(t_ms *minishell, t_cmd *cmd, int check, int i);
-void	null_argv(t_cmd *cmd);
+int len_tab(char **str);
+char **jopa(t_ms *minishell, int i);
+char **record_cmd2(t_ms *minishell);
+t_cmd *new_cmd(t_ms *minishell);
+void lst_add (t_cmd **lst, t_cmd *el);
+void	record_cmd(t_cmd **cmd, t_ms *minishell);
+char *check_path(t_ms *minishell);
+int		check_bin(t_ms *minishell);
+void	null_struct(t_ms *minishell, char **ev);
 char	**ft_split_for_minishell(char const *s, char c);
-
+void	get_path(t_ms *minishell);
+char	*right_way(t_ms *minishell);
 #endif

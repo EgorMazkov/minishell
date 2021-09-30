@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:17:21 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/29 13:13:43 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/30 16:10:27 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*slash_path(char *way, char *line)
 	return (res);
 }
 
-char	*right_way(t_ms *minishell, int j)
+char	*right_way(t_ms *minishell)
 {
 	int		i;
 	int		fd;
@@ -48,9 +48,9 @@ char	*right_way(t_ms *minishell, int j)
 		if (minishell->line == NULL)
 			return (NULL);
 		if (i == 0)
-			res = slash_path(minishell->way[i] + 5, minishell->line[j]);
+			res = slash_path(minishell->way[i] + 5, minishell->line[0]);
 		else
-			res = slash_path(minishell->way[i], minishell->line[j]);
+			res = slash_path(minishell->way[i], minishell->line[0]);
 		fd = open(res, O_RDONLY);
 		free(res);
 		if (fd != -1)
