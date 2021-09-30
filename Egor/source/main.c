@@ -47,14 +47,27 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell)
 	{
 		while (minishell->line[i])
 		{
-			if (minishell->line[i] && *minishell->line[i] == '|')
+			if (*minishell->line[i] == '|')
 			{
 				lst_add(cmd, new_cmd(minishell));
 				break ;
 			}
 			i++;
 		}
+		if (!*minishell->line)
+			break ;
+		i = 0;
 	}
+	// int q;
+	// while ((*cmd)->back)
+	// 	*cmd = (*cmd)->back;
+	// while (*cmd)
+	// {
+	// 	q = -1;
+	// 	while ((*cmd)->argv[++q])
+	// 		printf("%s\n", (*cmd)->argv[q]);
+	// 	*cmd = (*cmd)->next;
+	// }
 }
 
 t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
@@ -71,8 +84,14 @@ t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
 	el->file = NULL;
 	el->next = NULL;
 	el->back = NULL; 
-	el->operator = '|';
+	el->operator = -999;
 	el->argv = record_cmd2(minishell);
+
+
+	int qw = -1;
+	while (el->argv[++qw])
+		printf("%s\n", el->argv[qw]);
+
 	return (el);
 }
 
@@ -115,14 +134,16 @@ int len_tab(char **str)
 char **jopa(t_ms *minishell, int i)
 {
 	char **dest;
+	int str = 0;
 
-	dest = malloc(sizeof(char *) * len_tab(minishell->line + i) + 1);
+	dest = malloc(sizeof(char *) * len_tab(minishell->line + i + 1) + 1);
 	i++;
 	while (minishell->line[i] != '\0')
 	{
-		dest[i] = minishell->line[i];
+		dest[str++] = ft_strdup(minishell->line[i]);
 		i++;
 	}
+	dest[str] = NULL;
 	return (dest);
 }
 
@@ -131,19 +152,18 @@ char **record_cmd2(t_ms *minishell)
 	int	i;
 	char **dest;
 
-	dest = 0;
 	i = 0;
 	while (*minishell->line[i] != '|' && minishell->line[i])
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
-	dest[i] = NULL;
 	i = 0;
 	minishell->line[0] = check_path(minishell);
 	while (*minishell->line[i] != '|' && minishell->line[i])
 	{
-		dest[i] = minishell->line[i];
+		dest[i] = ft_strdup(minishell->line[i]);
 		i++;
 	}
+	dest[i] = NULL;
 	minishell->line = jopa(minishell, i);
 	return (dest);
 }
