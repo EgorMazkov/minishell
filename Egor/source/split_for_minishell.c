@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 21:50:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/29 14:36:59 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/30 18:05:32 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,11 @@ static size_t	schet (char const *s, char c)
 		i++;
 	while (s[i])
 	{
-		if (s[i] == '\"')
+		if (s[i] == 34)
 		{
 			sep++;
-			while (s[++i] != '\"' || s[++i] != '\'')
+			i++;
+			while (s[++i] != '\"')
 				;
 			while (s[i] == c)
 			{
@@ -46,7 +47,7 @@ static size_t	schet (char const *s, char c)
 				i++;
 			}
 		}
-		if (s[i] == c)
+		else if (s[i] == c)
 		{
 			while (s[i] == c)
 			{

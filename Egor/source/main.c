@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/30 16:14:37 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/09/30 20:31:17 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,34 @@ int	main(int argc, char **argv, char **ev)
 void	record_cmd(t_cmd **cmd, t_ms *minishell)
 {
 	int	i;
+	int	check_pipe;
 
 	i = 0;
+	check_pipe = 0;
 	while (minishell->line[i])
 	{
 		while (minishell->line[i])
 		{
 			if (*minishell->line[i] == '|')
 			{
+				check_pipe = 1;
 				lst_add(cmd, new_cmd(minishell));
 				break ;
 			}
 			i++;
 		}
+		if (check_pipe)
+			lst_add(cmd, new_cmd(minishell));
 		if (!*minishell->line)
 			break ;
 		i = 0;
+		if (check_pipe == 0)
+		{
+			lst_add(cmd, new_cmd(minishell));
+			break ;
+		}
 	}
+	i = 0;
 	// int q;
 	// while ((*cmd)->back)
 	// 	*cmd = (*cmd)->back;
@@ -91,6 +102,7 @@ t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
 	int qw = -1;
 	while (el->argv[++qw])
 		printf("%s\n", el->argv[qw]);
+	printf("CHLENLokjbrekjlvfnewkljkneffjlnlfbndklEM\n");
 
 	return (el);
 }
@@ -153,18 +165,19 @@ char **record_cmd2(t_ms *minishell)
 	char **dest;
 
 	i = 0;
-	while (*minishell->line[i] != '|' && minishell->line[i])
+	while (minishell->line[i] && *minishell->line[i] != '|')
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
 	i = 0;
 	minishell->line[0] = check_path(minishell);
-	while (*minishell->line[i] != '|' && minishell->line[i])
+	while (minishell->line[i] && *minishell->line[i] != '|')
 	{
 		dest[i] = ft_strdup(minishell->line[i]);
 		i++;
 	}
 	dest[i] = NULL;
-	minishell->line = jopa(minishell, i);
+	if (minishell->line[i] && *minishell->line[i] == '|')
+		minishell->line = jopa(minishell, i);
 	return (dest);
 }
 
@@ -190,7 +203,7 @@ char *check_path(t_ms *minishell)
 
 	check = check_bin(minishell);
 	if (check)
-		return (minishell->line[0]);
+		return (ft_strdup(minishell->line[0]));
 	else
 	{
 		get_path(minishell);
