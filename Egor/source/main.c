@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/02 17:48:32 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/02 21:02:37 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 /*
 echo "123 123 123 123 123 123 1"
 */
+static void	null_minishell(t_ms *minishell)
+{
+	free(minishell);
+}
 
 int	main(int argc, char **argv, char **ev)
 {
@@ -25,50 +29,65 @@ int	main(int argc, char **argv, char **ev)
 
 	minishell = NULL;
 	cmd = NULL;
-	minishell = (t_ms *)malloc(sizeof(t_ms));
-	null_struct(minishell, ev);
 	while (1)
 	{
+		minishell = (t_ms *)malloc(sizeof(t_ms));
+		null_struct(minishell, ev);
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
 		if (minishell->input[0])
 			minishell->line = ft_split_for_minishell(minishell->input, ' ');
 		if (!minishell->line)
 			continue;
 		record_cmd(&cmd, minishell);
+		null_minishell(minishell);
 	}
 }
 
-void	record_cmd(t_cmd **cmd, t_ms *minishell)
+void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 {
 	int	i;
-	int	check_pipe;
 
 	i = 0;
-	check_pipe = 0;
+	while (minishell->line[i++])
+		printf("%s\n", minishell->line[i]);
+	i = 0;
+	while (1); // теряет всю строку после того как была написана команда echo "1 2 3"
 	while (minishell->line[i])
 	{
 		while (minishell->line[i])
 		{
 			if (*minishell->line[i] == '|')
 			{
-				check_pipe = 1;
 				lst_add(cmd, new_cmd(minishell));
+				i = 0;
 				break ;
 			}
 			i++;
-		}
-		if (check_pipe)
-			lst_add(cmd, new_cmd(minishell));
-		if (!*minishell->line)
-			break ;
-		i = 0;
-		if (check_pipe == 0)
-		{
-			lst_add(cmd, new_cmd(minishell));
-			break ;
+		printf("123 : %s\n", minishell->line[i]);
 		}
 	}
+	lst_add(cmd, new_cmd(minishell));
+}
+
+void	record_cmd(t_cmd **cmd, t_ms *minishell)
+{
+	int	i;
+	int	check_pipe;
+	
 	i = 0;
+	check_pipe = 0;
+	while (minishell->line[i])
+	{
+		if (*minishell->line[i] == '|')
+		{
+			check_pipe = 1;
+			record_cmd_pipe(cmd, minishell);
+			break ;
+		}
+		i++;
+	}
+	if (check_pipe == 0)
+		lst_add(cmd, new_cmd(minishell));
 }
 
 t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
@@ -89,10 +108,10 @@ t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
 	el->argv = record_cmd2(minishell);
 
 
-	// int qw = -1;
-	// while (el->argv[++qw])
-	// 	printf("%s\n", el->argv[qw]);
-	// printf("CHLENLokjbrekjlvfnewkljkneffjlnlfbndklEM\n");
+	int qw = -1;
+	while (el->argv[++qw])
+		printf("%s\n", el->argv[qw]);
+	printf("-------------------------------------\n");
 	return (el);
 }
 
@@ -217,45 +236,13 @@ char **record_cmd2(t_ms *minishell)
 {
 	int	i;
 	char **dest;
-	char **line;
-	int	flag = 0;
 
 	i = 0;
-	line = NULL;
-	line = (char **)malloc(sizeof(char **) * 1);
-	line[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
-	line[0] = ft_strdup(minishell->line[0]);
 	while (minishell->line[i] && *minishell->line[i] != '|')
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
+	minishell->line[0] = check_path(minishell);
 	i = 0;
-	while (minishell->line[0][i])
-	{
-		if (minishell->line[0][i] == '/')
-			printf("/\n");// minishell->line[0] = check_path_for_slash(minishell, &line[0]);
-		else if (minishell->line[0][i] == '.')
-		{
-			minishell->line[0] = pwd_check(minishell);
-			printf("%s\n", minishell->line[0]);
-			flag = 1;
-			break ;
-		}
-		i++;
-	}
-	if (!flag)
-		minishell->line[0] = check_path(minishell);
-	i = 0;
-	if (minishell->line[0] == NULL)
-	{
-		printf("\033[1;31mDungeonMaster\033[0;29m: %s: ", line[0]);
-		printf("command not fount\n");
-		return (NULL);
-	}
-	else
-	{
-		free(line[0]);
-		line[0] = NULL;
-	}
 	while (minishell->line[i] && *minishell->line[i] != '|')
 	{
 		dest[i] = ft_strdup(minishell->line[i]);
