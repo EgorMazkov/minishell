@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:18:04 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/30 14:52:21 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/02 16:21:03 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	null_struct(t_ms *minishell, char **ev)
 {
-	minishell->env = NULL;
 	minishell->input = NULL;
 	minishell->line = NULL;
 	minishell->env = ev;

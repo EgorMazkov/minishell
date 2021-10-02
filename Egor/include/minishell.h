@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/30 16:00:47 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/02 16:12:25 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,7 @@ void	null_struct(t_ms *minishell, char **ev);
 char	**ft_split_for_minishell(char const *s, char c);
 void	get_path(t_ms *minishell);
 char	*right_way(t_ms *minishell);
+char    *check_path_for_slash(t_ms *minishell, char **line);
+char	*pwd_check(t_ms *minishell);
+char	*slash_path(char *way, char *line);
 #endif

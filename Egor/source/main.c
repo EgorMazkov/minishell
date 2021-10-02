@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/30 20:31:17 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/02 17:48:32 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,16 +69,6 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell)
 		}
 	}
 	i = 0;
-	// int q;
-	// while ((*cmd)->back)
-	// 	*cmd = (*cmd)->back;
-	// while (*cmd)
-	// {
-	// 	q = -1;
-	// 	while ((*cmd)->argv[++q])
-	// 		printf("%s\n", (*cmd)->argv[q]);
-	// 	*cmd = (*cmd)->next;
-	// }
 }
 
 t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
@@ -99,11 +89,10 @@ t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
 	el->argv = record_cmd2(minishell);
 
 
-	int qw = -1;
-	while (el->argv[++qw])
-		printf("%s\n", el->argv[qw]);
-	printf("CHLENLokjbrekjlvfnewkljkneffjlnlfbndklEM\n");
-
+	// int qw = -1;
+	// while (el->argv[++qw])
+	// 	printf("%s\n", el->argv[qw]);
+	// printf("CHLENLokjbrekjlvfnewkljkneffjlnlfbndklEM\n");
 	return (el);
 }
 
@@ -159,17 +148,114 @@ char **jopa(t_ms *minishell, int i)
 	return (dest);
 }
 
+// char *check_path_for_slash(t_ms *minishell, char **line)
+// {
+// 	char *way;
+// 	int	check;
+
+// 	check = check_bin(minishell);
+// 	if (check)
+// 		return (ft_strdup(minishell->line[0]));
+// 	else
+// 	{
+// 		get_path(minishell);
+// 		way = right_way(minishell);
+// 		return (way);
+// 	}
+// 	return (NULL);
+// }
+
+char	*pwd_check(t_ms *minishell)
+{
+	char **dest;
+	char *tmp;
+	int	 i;
+	int	j;
+	
+	i = 0;
+	j = 0;
+	dest = NULL;
+	tmp = NULL;
+	dest = malloc(sizeof(char *) * 1);
+	if (minishell->line[0][i + 1] == '/')
+	{
+		while (minishell->env[++i])
+		{
+			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
+			{
+				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
+				dest[0] = ft_strdup(minishell->env[i]);
+			}
+		}
+		dest[0] = slash_path(dest[0] + 4, minishell->line[0] + 2);
+	}
+	else
+	{
+		while (minishell->env[++i])
+		{
+			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
+			{
+				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
+				dest[0] = ft_strdup(minishell->env[i] + 4);
+			}
+		}
+		i = 0;
+		while (dest[0][i++] != '\0')
+			;
+		while (dest[0][i--] != '/')
+			;
+		while (j++ != i)
+			tmp = ft_substr(dest[0], 0, i + 1);
+		dest[0] = NULL;
+		dest[0] = ft_strjoin(tmp, minishell->line[0] + 2);
+		free(tmp);
+	}
+	return (dest[0]);
+}
+
 char **record_cmd2(t_ms *minishell)
 {
 	int	i;
 	char **dest;
+	char **line;
+	int	flag = 0;
 
 	i = 0;
+	line = NULL;
+	line = (char **)malloc(sizeof(char **) * 1);
+	line[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
+	line[0] = ft_strdup(minishell->line[0]);
 	while (minishell->line[i] && *minishell->line[i] != '|')
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
 	i = 0;
-	minishell->line[0] = check_path(minishell);
+	while (minishell->line[0][i])
+	{
+		if (minishell->line[0][i] == '/')
+			printf("/\n");// minishell->line[0] = check_path_for_slash(minishell, &line[0]);
+		else if (minishell->line[0][i] == '.')
+		{
+			minishell->line[0] = pwd_check(minishell);
+			printf("%s\n", minishell->line[0]);
+			flag = 1;
+			break ;
+		}
+		i++;
+	}
+	if (!flag)
+		minishell->line[0] = check_path(minishell);
+	i = 0;
+	if (minishell->line[0] == NULL)
+	{
+		printf("\033[1;31mDungeonMaster\033[0;29m: %s: ", line[0]);
+		printf("command not fount\n");
+		return (NULL);
+	}
+	else
+	{
+		free(line[0]);
+		line[0] = NULL;
+	}
 	while (minishell->line[i] && *minishell->line[i] != '|')
 	{
 		dest[i] = ft_strdup(minishell->line[i]);
