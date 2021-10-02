@@ -179,8 +179,18 @@ void	ft_unset (t_env **env, char **value)
 int	overwrite_env(t_env **env, char *variable, char *new_value)//Принимает название переменной и на какое значение изменить ее содержимое
 {
 	t_env *temp;
+	int concat;
+	char *twin_varbs;
 
 	temp = *env;
+	concat = 0;
+	if (variable[ft_strlen(variable) - 1] == '+' && new_value && *new_value)
+	{
+		twin_varbs = variable;
+		free(twin_varbs);//lkjnklkm
+		variable = ft_substr(variable, 0, ft_strlen(variable) - 1);
+		concat++;
+	}
 	while(temp->back)
 		*env = temp->back;
 	while (temp)
@@ -192,8 +202,17 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 				temp->value = NULL;
 				return (1);
 			}
-			free(temp->value);
-			temp->value = ft_strdup(new_value);
+			if (concat)
+			{
+				twin_varbs = temp->value;
+				temp->value = ft_strjoin(temp->value, new_value);
+				free(twin_varbs);
+			}
+			else
+			{
+				free(temp->value);
+				temp->value = ft_strdup(new_value);
+			}
 			return (1);
 		}
 		temp = temp->next;

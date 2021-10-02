@@ -135,7 +135,7 @@ void	ft_env(t_env *ev)
 		ev = ev->back;
 	while (ev)
 	{
-		if (ev->value)
+		if (ev->value && *ev->value)
 			printf("%s=%s\n", ev->variable, ev->value);
 		ev = ev->next;
 	}
@@ -155,9 +155,9 @@ void	ft_export(t_env **ev, char *arg)
 		{
 			if (temp->variable && temp->variable[0])
 				printf("declare -x %s", temp->variable);
-			if (temp->variable && temp->value && !ft_strcmp(temp->value, "\"\""))
+			if (temp->variable && temp->value && *temp->value && !ft_strcmp(temp->value, "\"\""))
 				printf("=\"\"\n");
-			else if (temp->variable && temp->value)
+			else if (temp->variable && temp->value && *temp->value)
 				printf("=\"%s\"\n", temp->value);
 			else
 				printf("\n");

@@ -17,7 +17,7 @@ char **cat(void) //! DELeeeeeeeeeeeeTe
 	char **wc;
 
 	wc = (char **)malloc(4 * sizeof(char *));
-	wc[2] = NULL;
+	wc[3] = NULL;
 	wc[0] = ft_strdup("/bin/cat");
 	wc[1] = ft_strdup("-e");
 	wc[2] = ft_strdup("123");
@@ -187,7 +187,8 @@ void	pipes(t_cmd *cmd, int input, char **env)
 			}
 			if (!flag)
 			{
-				close(b[0]);//tbbrbrvbrvr
+				if (b[0])
+					close(b[0]);//tbbrbrvbrvr
 				close(a[1]);
 			}
 			else
@@ -263,11 +264,12 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 	t_cmd *cmd = NULL;
 	pid_t	pid;
 
-	char *minishell[] = {"/Users/tharodon/Desktop/minishell/Anton/minishell", NULL};
+	char *minishell[] = {"/Users/tharodon/Desktop/minishell/Anton/./minishell", NULL};
 	char *make[] = {"/usr/bin/make", NULL};
 	char *makef[] = {"/usr/bin/make", "fclean", NULL};
 	int qwer = 0;
 		ladd(&cmd, new_cmd(3));
+		ladd(&cmd, new_cmd(2));
 		//
 		while (qwer++ != 300)
 			ladd(&cmd, new_cmd(1));
@@ -288,7 +290,15 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 	else if (!ft_strncmp(input, "cd", 2))
 		ft_cd(input + 3, env, built);
 	else if (!ft_strncmp(input, "echo ", 5))
+	{
+		pipe = open("1234",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
+		qwer = dup(1);
+		dup2(pipe, 1);
+		close(pipe);
+		/*echo --- > 1234*/
 		ft_echo(ft_split(input + 4, ' '));
+		dup2(qwer, 1);
+	}
 	else if (!ft_strncmp(input, "env", 4))
 		ft_env(*env);
 	else if (!ft_strncmp(input, "export", 6))
@@ -356,9 +366,9 @@ int main (int argc, char **argv, char **ev)
 			hardcode(input, built, ev, &env);
 
 
-		printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));
+		// printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));
 	}
 }
-
+	//export a+=b
 	// fd = open("our way",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	
