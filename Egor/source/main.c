@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/02 21:02:37 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/03 14:05:21 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,12 @@ int	main(int argc, char **argv, char **ev)
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
 		if (minishell->input[0])
 			minishell->line = ft_split_for_minishell(minishell->input, ' ');
+		// int i = 0;
+		// while (minishell->line[i])
+		// {
+		// 	printf("%s\n", minishell->line[i]);
+		// 	i++;
+		// }
 		if (!minishell->line)
 			continue;
 		record_cmd(&cmd, minishell);
@@ -47,11 +53,14 @@ void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 {
 	int	i;
 
+	// i = 0;
+	// while (minishell->line[i])
+	// {
+	// 	printf("%s\n", minishell->line[i]);
+	// 	i++;
+	// }
 	i = 0;
-	while (minishell->line[i++])
-		printf("%s\n", minishell->line[i]);
-	i = 0;
-	while (1); // теряет всю строку после того как была написана команда echo "1 2 3"
+	// while (1); // теряет всю строку после того как была написана команда echo "1 2 3"
 	while (minishell->line[i])
 	{
 		while (minishell->line[i])
@@ -63,7 +72,7 @@ void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 				break ;
 			}
 			i++;
-		printf("123 : %s\n", minishell->line[i]);
+		// printf("123 : %s\n", minishell->line[i]);
 		}
 	}
 	lst_add(cmd, new_cmd(minishell));
@@ -184,53 +193,53 @@ char **jopa(t_ms *minishell, int i)
 // 	return (NULL);
 // }
 
-char	*pwd_check(t_ms *minishell)
-{
-	char **dest;
-	char *tmp;
-	int	 i;
-	int	j;
+// char	*pwd_check(t_ms *minishell)
+// {
+// 	char **dest;
+// 	char *tmp;
+// 	int	 i;
+// 	int	j;
 	
-	i = 0;
-	j = 0;
-	dest = NULL;
-	tmp = NULL;
-	dest = malloc(sizeof(char *) * 1);
-	if (minishell->line[0][i + 1] == '/')
-	{
-		while (minishell->env[++i])
-		{
-			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
-			{
-				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
-				dest[0] = ft_strdup(minishell->env[i]);
-			}
-		}
-		dest[0] = slash_path(dest[0] + 4, minishell->line[0] + 2);
-	}
-	else
-	{
-		while (minishell->env[++i])
-		{
-			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
-			{
-				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
-				dest[0] = ft_strdup(minishell->env[i] + 4);
-			}
-		}
-		i = 0;
-		while (dest[0][i++] != '\0')
-			;
-		while (dest[0][i--] != '/')
-			;
-		while (j++ != i)
-			tmp = ft_substr(dest[0], 0, i + 1);
-		dest[0] = NULL;
-		dest[0] = ft_strjoin(tmp, minishell->line[0] + 2);
-		free(tmp);
-	}
-	return (dest[0]);
-}
+// 	i = 0;
+// 	j = 0;
+// 	dest = NULL;
+// 	tmp = NULL;
+// 	dest = malloc(sizeof(char *) * 1);
+// 	if (minishell->line[0][i + 1] == '/')
+// 	{
+// 		while (minishell->env[++i])
+// 		{
+// 			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
+// 			{
+// 				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
+// 				dest[0] = ft_strdup(minishell->env[i]);
+// 			}
+// 		}
+// 		dest[0] = slash_path(dest[0] + 4, minishell->line[0] + 2);
+// 	}
+// 	else
+// 	{
+// 		while (minishell->env[++i])
+// 		{
+// 			if (ft_strncmp(minishell->env[i], "PWD=", 4) == 0)
+// 			{
+// 				dest[0] = (char *)malloc(sizeof(char *) * ft_strlen(minishell->env[i]));
+// 				dest[0] = ft_strdup(minishell->env[i] + 4);
+// 			}
+// 		}
+// 		i = 0;
+// 		while (dest[0][i++] != '\0')
+// 			;
+// 		while (dest[0][i--] != '/')
+// 			;
+// 		while (j++ != i)
+// 			tmp = ft_substr(dest[0], 0, i + 1);
+// 		dest[0] = NULL;
+// 		dest[0] = ft_strjoin(tmp, minishell->line[0] + 2);
+// 		free(tmp);
+// 	}
+// 	return (dest[0]);
+// }
 
 char **record_cmd2(t_ms *minishell)
 {
