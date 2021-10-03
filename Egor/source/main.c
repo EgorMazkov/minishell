@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:16:23 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/03 14:05:21 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/03 15:33:49 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,24 @@ echo "123 123 123 123 123 123 1"
 static void	null_minishell(t_ms *minishell)
 {
 	free(minishell);
+}
+
+void test(t_cmd **cmd)
+{
+	t_cmd *temp;
+	int i = -1;
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (temp)
+	{
+		while (temp->argv[++i])
+			printf("%s\n", temp->argv[i]);
+		printf("----------------((Anton))------------------\n");
+		temp = temp->next;
+		i = -1;
+		
+	}
 }
 
 int	main(int argc, char **argv, char **ev)
@@ -45,6 +63,7 @@ int	main(int argc, char **argv, char **ev)
 		if (!minishell->line)
 			continue;
 		record_cmd(&cmd, minishell);
+		test(&cmd);
 		null_minishell(minishell);
 	}
 }
@@ -117,10 +136,10 @@ t_cmd *new_cmd(t_ms *minishell) //! DELeeeeeeeeeeeeTe
 	el->argv = record_cmd2(minishell);
 
 
-	int qw = -1;
-	while (el->argv[++qw])
-		printf("%s\n", el->argv[qw]);
-	printf("-------------------------------------\n");
+	// int qw = -1;
+	// while (el->argv[++qw])
+	// 	printf("%s\n", el->argv[qw]);
+	// printf("-------------------------------------\n");
 	return (el);
 }
 
@@ -272,8 +291,8 @@ void lst_add (t_cmd **lst, t_cmd *el) //! DELeeeeeeeeeeeeTe
 		*lst = el;
 		return ;
 	}
-	el->next = *lst;
-	(*lst)->back = el;
+	el->back = *lst;
+	(*lst)->next = el;
 	*lst = el;
 }
 
