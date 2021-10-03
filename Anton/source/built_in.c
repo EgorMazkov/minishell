@@ -1,11 +1,11 @@
 #include "../include/minishell.h"
 
-void    ft_pwd(char **env)
+void    ft_pwd()
 {
-	if (!*env)
-	{
-		exit(0);
-	}
+	// if (!*env)
+	// {
+	// 	exit(0);
+	// }
 		printf("%s\n", getcwd(NULL, 0));
 	// printf("%s\n", getenv("PWD"));
 }
@@ -36,13 +36,13 @@ char *get_old_path_to_env(t_env *ev)
 	return (NULL);
 }
 
-void	ft_cd(char *arg, t_env **env, t_built *old)
+void	ft_cd(char *arg, t_env **env)
 {
 	char *oldpath;
 
 	if (!arg || !arg[0])
 	{
-		old->oldpwd = getcwd(NULL, 0);
+		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (chdir(getenv("HOME")) == -1)
 			printf("newerni put\n");
@@ -50,7 +50,7 @@ void	ft_cd(char *arg, t_env **env, t_built *old)
 	}
 	else if (!ft_strncmp(arg, "..", 3))
 	{
-		old->oldpwd = getcwd(NULL, 0);
+		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (chdir(level_down(getcwd(NULL, 0))) == -1)
 			printf("newerni put\n");
@@ -72,7 +72,7 @@ void	ft_cd(char *arg, t_env **env, t_built *old)
 	}
 	else if (!ft_strncmp(arg, "~", 1))
 	{
-		old->oldpwd = getcwd(NULL, 0);
+		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (arg[1] == '\0')
 		{
@@ -86,7 +86,7 @@ void	ft_cd(char *arg, t_env **env, t_built *old)
 	}
 	else
 	{
-		old->oldpwd = getcwd(NULL, 0);
+		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (chdir(arg) == -1)
 			printf("no such file in directory: %s\n", arg);

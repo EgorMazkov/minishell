@@ -1,75 +1,5 @@
 #include "../include/minishell.h"
 
-
-char **wc(void) //! DELeeeeeeeeeeeeTe
-{
-	char **wc;
-
-	wc = (char **)malloc(3 * sizeof(char *));
-	wc[2] = NULL;
-	wc[0] = ft_strdup("/usr/bin/wc");
-	wc[1] = ft_strdup("-l");
-	return (wc);
-}
-
-char **cat(void) //! DELeeeeeeeeeeeeTe
-{
-	char **wc;
-
-	wc = (char **)malloc(4 * sizeof(char *));
-	wc[3] = NULL;
-	wc[0] = ft_strdup("/bin/cat");
-	wc[1] = ft_strdup("-e");
-	wc[2] = ft_strdup("123");
-	return (wc);
-}
-
-char **grep(void) //! DELeeeeeeeeeeeeTe
-{
-	char **wc;
-
-	wc = (char **)malloc(3 * sizeof(char *));
-	wc[2] = NULL;
-	wc[0] = ft_strdup("/usr/bin/grep");
-	wc[1] = ft_strdup("thar");
-	return (wc);
-}
-
-
-t_cmd *new_cmd (int oper) //! DELeeeeeeeeeeeeTe
-{
-	t_cmd			*el;
-
-	el = (t_cmd *)malloc(sizeof(t_cmd));
-	if (!el)
-		return (NULL);
-	el->util_cmd = NULL;
-	el->file = NULL;
-	el->next = NULL;
-	el->back = NULL;
-	if (oper == 1)
-		el->argv = cat();
-	else if (oper == 2)
-		el->argv = grep();
-	else if (oper == 3)
-		el->argv = wc();
-	return (el);
-}
-
-void ladd (t_cmd **lst, t_cmd *el) //! DELeeeeeeeeeeeeTe
-{
-	if (!el)
-		return ;
-	if (!*lst)
-	{
-		*lst = el;
-		return ;
-	}
-	el->next = *lst;
-	(*lst)->back = el;
-	*lst = el;
-}
-
 void	cmd_c(int signum)
 {
 	(void)signum;
@@ -108,7 +38,51 @@ int is_pipes (char *str)
 	return (pipess);
 }
 
-void	pipes(t_cmd *cmd, int input, char **env)
+int is_builtin (char *command)
+{
+	if (!ft_strcmp("echo", command))
+		return (1);
+	else if (!ft_strcmp("unset", command))
+		return (1);
+	else if (!ft_strcmp("export", command))
+		return (1);
+	else if (!ft_strcmp("cd", command))
+		return (1);
+	else if (!ft_strcmp("exit", command))
+		return (1);
+	else if (!ft_strcmp("env", command))
+		return (1);
+	else if (!ft_strcmp("pwd", command))
+		return (1);
+	return (0);
+}
+
+
+int built_in_run (t_cmd *cmd, t_env **ev)
+{
+	if (is_builtin(cmd->argv[0]))
+	{
+		if (!ft_strcmp("echo", cmd->argv[0]))
+			ft_echo(cmd->argv + 1);
+		else if (!ft_strcmp("unset", cmd->argv[0]))
+			ft_unset(ev, cmd->argv + 1);
+		else if (!ft_strcmp("export", cmd->argv[0]))
+			ft_export(ev, cmd->argv[1]);
+		else if (!ft_strcmp("cd", cmd->argv[0]))
+			ft_cd(cmd->argv[1], ev);
+		else if (!ft_strcmp("exit", cmd->argv[0]))
+			exit(0);
+		else if (!ft_strcmp("env", cmd->argv[0]))
+			ft_env(*ev);
+		else if (!ft_strcmp("pwd", cmd->argv[0]))
+			ft_pwd();
+		return (1);
+	}
+	return (0);
+}
+
+
+void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 {
 	// char *grep[] = {"/usr/bin/env", NULL};
 	// char *grep[] = {"/bin/cat", "123", NULL};
@@ -118,10 +92,16 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	int b[2];
 	int flag;
 	int len;
+	(void)ev;
 	pid_t pid;
 (void)input;
 	flag = 0;
 	len = lenlist(cmd);
+
+	while (cmd->back)
+		cmd = cmd->back;
+
+
 	while (cmd)
 	{
 		if (cmd->next)
@@ -150,7 +130,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 				{
 					dup2(a[0], 0);
 				}
-				execve(cmd->argv[0], cmd->argv, env);
+				// execve(wc[0], wc, env);
 			}
 			else if (!flag && !cmd->back)
 			{
@@ -171,7 +151,13 @@ void	pipes(t_cmd *cmd, int input, char **env)
 				close(b[0]);
 				dup2(b[1], 1);
 			}
-			execve(cmd->argv[0], cmd->argv, env);
+			if (built_in_run(cmd, ev))
+			{
+				exit(0);
+			}
+			else
+			    execve(cmd->argv[0], cmd->argv, env);
+			// execve(grep[0], grep, env);
 		}
 		else
 		{
@@ -193,7 +179,8 @@ void	pipes(t_cmd *cmd, int input, char **env)
 			}
 			else
 			{
-				close(a[0]);//tkbmltgbkmtlbkm
+				if (a[0])
+					close(a[0]);//tkbmltgbkmtlbkm
 				close(b[1]);
 			}
 			if (!flag && cmd->next)
@@ -257,7 +244,7 @@ void	pipes(t_cmd *cmd, int input, char **env)
 	printf("{ipe a:    %d, %d\n", a[0], a[1]);
 	printf("}ipe b:    %d, %d", b[0], b[1]);
 }
-
+/*
 void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 {
 	int pipe;
@@ -295,7 +282,7 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 		qwer = dup(1);
 		dup2(pipe, 1);
 		close(pipe);
-		/*echo --- > 1234*/
+		// echo --- > 1234
 		ft_echo(ft_split(input + 4, ' '));
 		dup2(qwer, 1);
 	}
@@ -337,16 +324,54 @@ void	hardcode (char *input, t_built *built, char **ev, t_env **env)
 		ft_unset(env, ft_split(input + 6, ' '));
 	else
 		printf("command not found: %s\n", input);
+}*/
+void test(t_cmd **cmd)
+{
+	t_cmd *temp;
+	int i = -1;
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (temp)
+	{
+		while (temp->argv[++i])
+			printf("%s\n", temp->argv[i]);
+		printf("----------------((Anton))------------------\n");
+		temp = temp->next;
+		i = -1;
+	}
 }
+
+
+void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
+{
+	pid_t pid;
+
+	record_cmd(cmd, minishell, env);
+	if ((*cmd)->next || (*cmd)->back)
+		pipes(*cmd, 123, minishell->env, env);
+	else if (!built_in_run(*cmd, env))
+	{
+		pid = fork();
+		if (!pid)
+			execve((*cmd)->argv[0], (*cmd)->argv, minishell->env);
+		else
+			wait(NULL);
+	}
+}
+
 
 int main (int argc, char **argv, char **ev)
 {
-	t_built *built = NULL;
+	t_cmd	*cmd;
 	t_env *env = NULL;
+	t_ms	*minishell;
+
 	(void)argc, (void)argv;
-	char *input;
+
+	minishell = NULL;
+	cmd = NULL;
 	// pid_t pid;
-	built = (t_built *)malloc(sizeof(t_built));
 
 	env_record(&env, ev);
 	overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
@@ -354,17 +379,25 @@ int main (int argc, char **argv, char **ev)
 	{
 		signal(SIGINT, cmd_c);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		if (!input)
+		minishell = (t_ms *)malloc(sizeof(t_ms));
+		null_struct(minishell, ev);
+		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		if (!minishell->input)
 		{
 			printf("exit\n");
 			break ;
 		}
-		if (*input)
-			add_history(input);
-		if (input[0])
-			hardcode(input, built, ev, &env);
-
+		if (*minishell->input)
+			add_history(minishell->input);
+		if (minishell->input[0])
+		{
+			minishell->line = ft_split_for_minishell(minishell->input, ' ');
+			exec(&cmd, minishell, &env);
+		}
+		// record_cmd(&cmd, minishell);
+		// test(&cmd);
+		// pipes(cmd, 123, ev);
+		cmd = NULL; // Clear cmd &7 minishell
 
 		// printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));
 	}

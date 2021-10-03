@@ -25,6 +25,14 @@
 # define MAX 1
 # define MIN 0
 
+typedef struct s_ms
+{
+    char *input;
+    char **line;
+    char **env;
+    char **way;
+} t_ms;
+
 typedef struct s_cmd
 {
 	char *util_cmd; //* Утилита
@@ -46,11 +54,6 @@ typedef struct s_env
 } t_env;
 
 
-typedef struct s_built
-{
-	char *oldpwd;
-	char **env;
-} t_built;
 
 
 
@@ -68,21 +71,42 @@ void	alpha_variables (t_env *env);
 t_env	*get_maxmin_variable (t_env *variable, _Bool min_max);
 
 char 	**ft_envdup(char **env);
-void	ft_env_add (t_built *lst, char *el);
 void	env_record(t_env **env, char **ev);
 void 	env_value_add (t_env **lst, t_env *el);
 t_env *new_env_value(char *varias);
 
+
+void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
 
 void	free_all(t_env **env);
 
 /*builtin*/
 void	ft_env(t_env *ev);
 void	ft_echo(char **arg);
-void	ft_cd(char *arg, t_env **env, t_built *old);
-void    ft_pwd(char **env);
+void	ft_cd(char *arg, t_env **env);
+void    ft_pwd();
 void	ft_unset (t_env **env, char **value);
 void	ft_export(t_env **ev, char *arg);
+
+
+
+
+int len_tab(char **str);
+char **jopa(t_ms *minishell, int i);
+char **record_cmd2(t_ms *minishell);
+t_cmd *new_cmd(t_ms *minishell);
+void lst_add (t_cmd **lst, t_cmd *el);
+void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env);
+char *check_path(t_ms *minishell);
+int		check_bin(t_ms *minishell);
+void	null_struct(t_ms *minishell, char **ev);
+char	**ft_split_for_minishell(char const *s, char c);
+void	get_path(t_ms *minishell);
+char	*right_way(t_ms *minishell);
+char    *check_path_for_slash(t_ms *minishell, char **line);
+char	*pwd_check(t_ms *minishell);
+char	*slash_path(char *way, char *line);
+
 
 
 
