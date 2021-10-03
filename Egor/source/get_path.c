@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/18 12:17:21 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/02 16:21:07 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/03 15:49:27 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,11 @@ char	*right_way(t_ms *minishell)
 		return (NULL);
 	else
 		return (res);
+}
+
+void	null_struct(t_ms *minishell, char **ev)
+{
+	minishell->input = NULL;
+	minishell->line = NULL;
+	minishell->env = ev;
 }
