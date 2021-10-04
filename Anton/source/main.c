@@ -25,19 +25,6 @@ int lenlist (t_cmd *list)
 	return (i);
 }
 
-int is_pipes (char *str)
-{
-	int i;
-	int pipess;
-
-	i = 0;
-	pipess = 0;
-	while (str[i])
-		if (str[i++] == '|')
-			pipess++;
-	return (pipess);
-}
-
 int is_builtin (char *command)
 {
 	if (!ft_strcmp("echo", command))
@@ -67,7 +54,7 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 		else if (!ft_strcmp("unset", cmd->argv[0]))
 			ft_unset(ev, cmd->argv + 1);
 		else if (!ft_strcmp("export", cmd->argv[0]))
-			ft_export(ev, cmd->argv[1]);
+			ft_export(ev, cmd->argv + 1);
 		else if (!ft_strcmp("cd", cmd->argv[0]))
 			ft_cd(cmd->argv[1], ev);
 		else if (!ft_strcmp("exit", cmd->argv[0]))
@@ -373,8 +360,11 @@ int main (int argc, char **argv, char **ev)
 	cmd = NULL;
 	// pid_t pid;
 
-	env_record(&env, ev);
-	overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
+	if (ev)
+	{
+		env_record(&env, ev);
+		overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
+	}
 	while (1)
 	{
 		signal(SIGINT, cmd_c);

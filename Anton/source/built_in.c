@@ -140,14 +140,16 @@ void	ft_env(t_env *ev)
 		ev = ev->next;
 	}
 }
-void	ft_export(t_env **ev, char *arg)
+void	ft_export(t_env **ev, char **arg)
 {
 	t_env *temp;
+	int i;
 	char *vals;
 	char *vars;
 
 	temp = *ev;
-	if (!arg)
+	i = -1;
+	if (!arg || !*arg)
 	{
 		while (temp->back_alpha)
 			temp = temp->back_alpha;
@@ -172,20 +174,23 @@ void	ft_export(t_env **ev, char *arg)
 	}
 	else
 	{
-		vals = value_of_variable(arg);
-		// if (!vals && arg[ft_strlen(arg) - 1] == '=')
-		// 	vals = ft_strdup("\"\"");
-		vars = name_of_variable(arg);
-		if (!overwrite_env(ev, vars, vals))
+		while (arg[++i])
 		{
-			while ((*ev)->next)
-				*ev = (*ev)->next;
-			env_value_add(ev, new_env_value(arg));
-			while ((*ev)->back)
-				*ev = (*ev)->back;
-			alpha_variables(*ev);
+			vals = value_of_variable(arg[i]);
+			// if (!vals && arg[ft_strlen(arg) - 1] == '=')
+			// 	vals = ft_strdup("\"\"");
+			vars = name_of_variable(arg[i]);
+			if (!overwrite_env(ev, vars, vals))
+			{
+				while ((*ev)->next)
+					*ev = (*ev)->next;
+				env_value_add(ev, new_env_value(arg[i]));
+				while ((*ev)->back)
+					*ev = (*ev)->back;
+				alpha_variables(*ev);
+			}
+			free(vals);
+			free(vars);
 		}
-		free(vals);
-		free(vars);
 	}
 }

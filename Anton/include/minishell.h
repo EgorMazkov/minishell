@@ -86,7 +86,7 @@ void	ft_echo(char **arg);
 void	ft_cd(char *arg, t_env **env);
 void    ft_pwd();
 void	ft_unset (t_env **env, char **value);
-void	ft_export(t_env **ev, char *arg);
+void	ft_export(t_env **ev, char **arg);
 
 
 
