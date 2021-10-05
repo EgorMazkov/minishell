@@ -12,6 +12,30 @@
 
 #include "../include/minishell.h"
 
+int check_quote(t_ms *minishell)
+{
+ int i;
+ int quote;
+ int duble_quote;
+
+ quote = 0;
+ duble_quote = 0;
+ i = 0;
+ while (minishell->input[i])
+ {
+  if (minishell->input[i] == '\"')
+   duble_quote++;
+  if (minishell->input[i] == '\'')
+   quote++;
+  i++;
+ }
+ if (duble_quote % 2 != 0)
+  return (0);
+ if (quote % 2 != 0)
+  return (0);
+ return (1);
+}
+
 void	lst_add(t_cmd **lst, t_cmd *el)
 {
 	if (!el)
@@ -57,13 +81,13 @@ char	**record_cmd2(t_ms *minishell)
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
 	minishell->line[0] = check_path(minishell);
+	i = 0;
 	if (minishell->line[0] == NULL)
 	{
-		printf("\033[0;31mDungeonMaster: \033[0;29m%s: ", line[0]);
-		printf("\033[0;34mcommand not found 🤔\n");
-		exit (0);
+		minishell->line[0] = ft_strdup(line[0]);
+		dest[i] = ft_strdup(line[0]);
+		i++;
 	}
-	i = 0;
 	while (minishell->line[i] && *minishell->line[i] != '|')
 	{
 		dest[i] = ft_strdup(minishell->line[i]);

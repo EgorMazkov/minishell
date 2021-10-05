@@ -99,58 +99,36 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 			if (quote % 2 != 0)
 			{
 				if (s[i] == '\'')
-				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
-					// printf("%s\n", mass[word]);
-				}
 				else
-				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
-					// printf("%s\n", mass[word]);
-				}
 				if (mass[word] == NULL)
 					jango(mass, word);
 				word++;
-				while ((s[i] != '\"' || s[i] != '\'' || s[i] != c) && s[i] != '\0' && check_quote != 2)
+				while ((s[i] != '\"' || s[i] != '\'' || \
+				s[i] != c) && s[i] != '\0' && check_quote != 2)
 				{
 					if (s[i] == '\"')
 						check_quote++;
-					// printf("%c\n", s[i]);
 					i++;
 				}
 				if (check_quote == 1)
 					return (NULL);
-				// i++;
-				// printf("%c\n", s[i]);
 				quote++;
 			}
 		}
 		else if (s[i] != c)
 		{
 			mass[word] = ft_substr(s, i, len_word(s, i, c));
-			// printf("%s\n", mass[word]);
 			if (mass[word] == NULL)
 				jango(mass, word);
 			word++;
 		}
-		// if (quote > 0)
-		// {
-		// 	while (s[i] != c && s[i] != '\0')
-		// 	{
-		// 		printf("s[i] : %c\n", s[i]);
-		// 		i++;
-		// 	}
-		// 	continue;
-		// }
-		// else
+		while (s[i] != c && s[i] != '\0')
 		{
-			while (s[i] != c && s[i] != '\0')
-			{
-				if (s[i + 1] == '\"' || s[i + 1] == '\'')
-					break ;
-				// printf("i daa : %c\n", s[i]);
-				i++;
-			}
+			if (s[i + 1] == '\"' || s[i + 1] == '\'')
+				break ;
+			i++;
 		}
 		if (s[i] == '\0')
 		{
@@ -166,22 +144,22 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 char	**ft_split_for_minishell(char const *s, char c)
 {
 	size_t	i;
-	int		check_quote = 0;
-	int		check_double_quote = 0;
+	// int		check_quote = 0;
+	// int		check_double_quote = 0;
 	char	**mass;
 
 	i = 0;
-	while (s[i])
-	{
-		if (s[i] == '\"')
-			check_double_quote++;
-		if (s[i] == '\'')
-			check_quote++;
-		i++;
-	}
-	if (check_quote % 2 != 0)
-		return (NULL);
-	i = 0;
+	// while (s[i])
+	// {
+	// 	if (s[i] == '\"')
+	// 		check_double_quote++;
+	// 	if (s[i] == '\'')
+	// 		check_quote++;
+	// 	i++;
+	// }
+	// if (check_quote % 2 != 0)
+	// 	return (NULL);
+	// i = 0;
 	if (!s)
 		return (NULL);
 	mass = (char **)malloc((schet(s, c) + 2) * sizeof(char *));

@@ -106,7 +106,7 @@ char	*right_way(t_ms *minishell);
 char    *check_path_for_slash(t_ms *minishell, char **line);
 char	*pwd_check(t_ms *minishell);
 char	*slash_path(char *way, char *line);
-
+int check_quote(t_ms *minishell);
 
 
 

@@ -333,6 +333,9 @@ void test(t_cmd **cmd)
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
+	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	// int qwe = open("qwe",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	// int eqw = open("eqw",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env);
 	if ((*cmd)->next || (*cmd)->back)
@@ -385,6 +388,11 @@ int main (int argc, char **argv, char **ev)
 		}
 		if (*minishell->input)
 			add_history(minishell->input);
+		if (!check_quote(minishell))
+  		{
+  			printf("Error\n");
+  			continue ;
+  		}
 		if (minishell->input[0])
 		{
 			minishell->line = ft_split_for_minishell(minishell->input, ' ');
