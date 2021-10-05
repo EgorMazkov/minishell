@@ -84,7 +84,7 @@ void	free_all(t_env **env);
 void	ft_env(t_env *ev);
 void	ft_echo(char **arg);
 void	ft_cd(char *arg, t_env **env);
-void    ft_pwd();
+void    ft_pwd(t_env *env);
 void	ft_unset (t_env **env, char **value);
 void	ft_export(t_env **ev, char **arg);
 

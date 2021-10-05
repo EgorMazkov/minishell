@@ -62,7 +62,7 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 		else if (!ft_strcmp("env", cmd->argv[0]))
 			ft_env(*ev);
 		else if (!ft_strcmp("pwd", cmd->argv[0]))
-			ft_pwd();
+			ft_pwd(*ev);
 		return (1);
 	}
 	return (0);
@@ -341,7 +341,13 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	{
 		pid = fork();
 		if (!pid)
-			execve((*cmd)->argv[0], (*cmd)->argv, minishell->env);
+		{
+			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
+			{
+				perror("Error\n");
+				exit(0);
+			}
+		}
 		else
 			wait(NULL);
 	}
@@ -363,7 +369,7 @@ int main (int argc, char **argv, char **ev)
 	if (ev)
 	{
 		env_record(&env, ev);
-		overwrite_env(&env, "OLDPWD=", getcwd(NULL, 0));
+		overwrite_env(&env, "OLDPWD", getcwd(NULL, 0));
 	}
 	while (1)
 	{

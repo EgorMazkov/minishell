@@ -1,12 +1,22 @@
 #include "../include/minishell.h"
 
-void    ft_pwd()
+void    ft_pwd(t_env *env)
 {
+	t_env *temp;
+
+	temp = env;
 	// if (!*env)
 	// {
 	// 	exit(0);
 	// }
-		printf("%s\n", getcwd(NULL, 0));
+	while(temp->back)
+		temp = temp->back;
+	while (temp)
+	{
+		if (!ft_strcmp("PWD", temp->variable))
+			printf("%s\n", temp->value);
+		temp = temp->next;
+	}
 	// printf("%s\n", getenv("PWD"));
 }
 
@@ -48,14 +58,14 @@ void	ft_cd(char *arg, t_env **env)
 			printf("newerni put\n");
 		overwrite_env(env, "PWD", getcwd(NULL, 0));
 	}
-	else if (!ft_strncmp(arg, "..", 3))
-	{
-		// old->oldpwd = getcwd(NULL, 0);
-		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
-		if (chdir(level_down(getcwd(NULL, 0))) == -1)
-			printf("newerni put\n");
-		overwrite_env(env, "PWD", getcwd(NULL, 0));
-	}
+	// else if (!ft_strncmp(arg, "..", 3))
+	// {
+	// 	// old->oldpwd = getcwd(NULL, 0);
+	// 	overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
+	// 	if (chdir(level_down(getcwd(NULL, 0))) == -1)
+	// 		printf("newerni put\n");
+	// 	overwrite_env(env, "PWD", getcwd(NULL, 0));
+	// }
 	else if (!ft_strncmp(arg, "-", 2))
 	{
 		if (!get_old_path_to_env(*env))
