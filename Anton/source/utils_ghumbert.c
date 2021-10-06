@@ -74,6 +74,8 @@ char	**record_cmd2(t_ms *minishell)
 	char	**line;
 
 	line = malloc(sizeof(char *) * 1);
+	if (!minishell->line[0])
+  		return (NULL);
 	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
 	line[0] = ft_strdup(minishell->line[0]);
 	i = 0;

@@ -143,7 +143,11 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				exit(0);
 			}
 			else
-			    execve(cmd->argv[0], cmd->argv, env);
+				if (execve(cmd->argv[0], cmd->argv, env) == -1)
+				{
+					perror(*cmd->argv);
+					exit(0);
+				}
 			// execve(grep[0], grep, env);
 		}
 		else
@@ -334,8 +338,6 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	// int qwe = open("qwe",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	// int eqw = open("eqw",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env);
 	if ((*cmd)->next || (*cmd)->back)
@@ -345,6 +347,11 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 		pid = fork();
 		if (!pid)
 		{
+			// int eqw0 = open("eqw",  O_RDONLY); /* < */
+			// int eqw1 = open("qwe", O_WRONLY | O_CREAT | O_APPEND, 0666); /* >> */
+			// int eqw1 = open("qwe", O_WRONLY | O_TRUNC | O_CREAT , 0666); /* > */
+			// dup2(eqw0, 0);
+			// dup2(eqw1, 1);
 			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
 			{
 				perror("Error\n");

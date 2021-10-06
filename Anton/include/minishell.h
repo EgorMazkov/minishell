@@ -53,7 +53,14 @@ typedef struct s_env
 	struct s_env *back_alpha;
 } t_env;
 
-
+typedef struct s_rdct
+{
+	int heredoc[2];
+	short rdct;
+	struct s_rdct *next;
+	struct s_rdct *back;
+	char *file;
+} t_rdct;
 
 
 
