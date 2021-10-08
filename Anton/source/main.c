@@ -1,5 +1,16 @@
 #include "../include/minishell.h"
 
+
+void	cmd_c_fork(int signum)
+{
+	(void)signum;
+	// g_param->ret = 1;
+	write(1, "\n", 1);
+	// rl_on_new_line();
+	// rl_replace_line("", 0);
+	// rl_redisplay();
+}
+
 void	cmd_c(int signum)
 {
 	(void)signum;
@@ -81,7 +92,7 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	int len;
 	(void)ev;
 	pid_t pid;
-(void)input;
+(void)input, (void)env;
 	flag = 0;
 	len = lenlist(cmd);
 
@@ -143,7 +154,7 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				exit(0);
 			}
 			else
-				if (execve(cmd->argv[0], cmd->argv, env) == -1)
+				if (execve(cmd->argv[0], cmd->argv, env_from_lists(*ev)) == -1)
 				{
 					perror(*cmd->argv);
 					exit(0);
@@ -334,12 +345,19 @@ void test(t_cmd **cmd)
 }
 
 
+
+
+
+
+
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env);
+	minishell->env = env_from_lists(*env);
+	(*cmd)->file = ft_strdup("<< eqw");
 	if ((*cmd)->next || (*cmd)->back)
 		pipes(*cmd, 123, minishell->env, env);
 	else if (!built_in_run(*cmd, env))
@@ -347,14 +365,39 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 		pid = fork();
 		if (!pid)
 		{
+			// signal(SIGINT, cmd_c_fork);
+			// signal(SIGQUIT, SIG_IGN);
 			// int eqw0 = open("eqw",  O_RDONLY); /* < */
 			// int eqw1 = open("qwe", O_WRONLY | O_CREAT | O_APPEND, 0666); /* >> */
 			// int eqw1 = open("qwe", O_WRONLY | O_TRUNC | O_CREAT , 0666); /* > */
 			// dup2(eqw0, 0);
 			// dup2(eqw1, 1);
+			if (01)
+			{
+				if (!ft_strcmp((*cmd)->file, "> eqw"))
+				{
+
+					rdct_right(*cmd);
+				}
+				if (!ft_strcmp((*cmd)->file, ">> eqw"))
+				{
+					
+					rdct_right_append(*cmd);
+				}
+				if (!ft_strcmp((*cmd)->file, "< eqw"))
+				{
+					
+					rdct_left_read(*cmd);
+				}
+				if (!ft_strcmp((*cmd)->file, "<< eqw"))
+				{
+
+					rdct_left_dock(*cmd);
+				}
+			}
 			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
 			{
-				perror("Error\n");
+				perror((*cmd)->argv[0]);
 				exit(0);
 			}
 		}
@@ -388,6 +431,7 @@ int main (int argc, char **argv, char **ev)
 		minishell = (t_ms *)malloc(sizeof(t_ms));
 		null_struct(minishell, ev);
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		signal(SIGINT, cmd_c_fork);
 		if (!minishell->input)
 		{
 			printf("exit\n");

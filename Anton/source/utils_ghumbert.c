@@ -36,6 +36,7 @@ int check_quote(t_ms *minishell)
  return (1);
 }
 
+
 void	lst_add(t_cmd **lst, t_cmd *el)
 {
 	if (!el)

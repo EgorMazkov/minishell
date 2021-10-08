@@ -27,20 +27,48 @@
 // 	lst->env[str] = ft_strdup(el);
 // }
 
-// char **ft_argvdup(char **env)//записать в листы
-// {
-// 	int str;
-// 	char **env_copy;
 
-// 	str = -1;
-// 	env_copy = (char **)malloc(len_argvs(env) * sizeof(char *));
-// 	if (!env_copy)
-// 		return (NULL);
-// 	env_copy[len_argvs(env)] = NULL;
-// 	while (env[++str])
-// 		env_copy[str] = ft_strdup(env[str]);//могут быть лики
-// 	return (env_copy);
-// }
+int lenlist_env (t_env *list)
+{
+	int i;
+
+	i = 0;
+	while (list->back)
+		list = list->back;
+	while (list)
+	{
+		list = list->next;
+		i++;
+	}
+	return (i);
+}
+
+char **env_from_lists (t_env *env)
+{
+	char **str;
+	char *join;
+	char *join1;
+	int i = 0;
+
+	while (env->back)
+		env = env->back;
+	str = (char **)malloc(sizeof(char *) * lenlist_env(env) + 1);
+	if (!str)
+		return (NULL);
+	while (env)
+	{
+		join1 = ft_strjoin(env->variable, "=");
+		join = ft_strjoin(join1, env->value);
+		str[i] = ft_strdup(join);
+		i++;
+		free(join1);
+		free(join);
+		env = env->next;
+	}
+	str[i] = NULL;
+	return (str);
+
+}
 
 void env_value_add (t_env **lst, t_env *el)
 {

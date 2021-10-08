@@ -71,6 +71,7 @@ void 	rl_replace_line(const char *text, int clear_undo);
 void 	rl_clear_history(void);
 
 char 	**ft_argvdup(char **env);
+char **env_from_lists (t_env *env);
 int		overwrite_env(t_env **env, char *value, char *new_value);
 char 	*name_of_variable(char *s);
 char 	*value_of_variable(char *s);
@@ -84,6 +85,14 @@ t_env *new_env_value(char *varias);
 
 
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
+
+
+void	cmd_c_fork(int signum);
+void	rdct_right(t_cmd *cmd);
+void	rdct_right_append(t_cmd *cmd);
+void	rdct_left_read(t_cmd *cmd);
+void	rdct_left_dock(t_cmd *cmd);
+
 
 void	free_all(t_env **env);
 
