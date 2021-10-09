@@ -6,30 +6,61 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:51:13 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/03 16:22:52 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/06 15:52:32 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	lst_add(t_cmd **lst, t_cmd *el)
+/*
+RDCT_R 112 >
+RDCT_RR 113 >>
+RDCT_L 114 <
+RDCT_LL 115 <<
+*/
+
+int check_quote(t_ms *minishell)
+{
+	int i;
+	int quote;
+	int duble_quote;
+
+	quote = 0;
+	duble_quote = 0;
+	i = 0;
+	while (minishell->input[i])
+	{
+		if (minishell->input[i] == '\"')
+			duble_quote++;
+		if (minishell->input[i] == '\'')
+			quote++;
+		i++;
+	}
+	if (duble_quote % 2 != 0)
+		return (0);
+	if (quote % 2 != 0)
+		return (0);
+	return (1);
+}
+
+void lst_add(t_cmd **lst, t_cmd *el)
 {
 	if (!el)
-		return ;
+		return;
 	if (!*lst)
 	{
 		*lst = el;
-		return ;
+		return;
 	}
 	el->back = *lst;
 	(*lst)->next = el;
 	*lst = el;
 }
 
-char	*check_path(t_ms *minishell)
+char *check_path(t_ms *minishell)
 {
-	char	*way;
-	int		check;
+	char *way;
+	int check;
 
 	check = check_bin(minishell);
 	if (check)
@@ -43,13 +74,15 @@ char	*check_path(t_ms *minishell)
 	return (0);
 }
 
-char	**record_cmd2(t_ms *minishell)
+char **record_cmd2(t_ms *minishell)
 {
-	int		i;
-	char	**dest;
-	char	**line;
+	int i;
+	char **dest;
+	char **line;
 
 	line = malloc(sizeof(char *) * 1);
+	if (!minishell->line[0])
+		return (NULL); // для того чтобы не была сега
 	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
 	line[0] = ft_strdup(minishell->line[0]);
 	i = 0;
@@ -57,13 +90,13 @@ char	**record_cmd2(t_ms *minishell)
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
 	minishell->line[0] = check_path(minishell);
+	i = 0;
 	if (minishell->line[0] == NULL)
 	{
-		printf("\033[0;31mDungeonMaster: \033[0;29m%s: ", line[0]);
-		printf("\033[0;34mcommand not found 🤔\n");
-		exit (0);
+		minishell->line[0] = ft_strdup(line[0]);
+		dest[i] = ft_strdup(line[0]);
+		i++;
 	}
-	i = 0;
 	while (minishell->line[i] && *minishell->line[i] != '|')
 	{
 		dest[i] = ft_strdup(minishell->line[i]);
@@ -75,9 +108,9 @@ char	**record_cmd2(t_ms *minishell)
 	return (dest);
 }
 
-int	len_tab(char **str)
+int len_tab(char **str)
 {
-	int	i;
+	int i;
 
 	i = -1;
 	while (str[++i])
@@ -85,10 +118,10 @@ int	len_tab(char **str)
 	return (i);
 }
 
-char	**jopa(t_ms *minishell, int i)
+char **jopa(t_ms *minishell, int i)
 {
-	char	**dest;
-	int		str;
+	char **dest;
+	int str;
 
 	str = 0;
 	dest = malloc(sizeof(char *) * len_tab(minishell->line + i + 1) + 1);
