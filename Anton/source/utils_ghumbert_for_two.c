@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:57:22 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/09 16:10:49 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/10 16:54:37 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,17 +166,17 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *rdct)
 	i = 0;
 	j = 0;
 	check_pipe = 0;
-	while (minishell->line[i][j] && minishell->line[i][j] != ' ' && minishell->line[i])
-	{
-		if ((minishell->line[i][j] == '>' && minishell->line[i][j + 1] != '>') || 
-		(minishell->line[i][j] == '<'  && minishell->line[i][j + 1] != '<') ||
-		(minishell->line[i][j] == '>' && minishell->line[i][j + 1] == '>') || 
-		(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
-			record_rdct_together(minishell, rdct);
-		else if (minishell->line[i][j] == ' ')
-			break ;
-		j++;
-	}
+	// while (minishell->line[i][j] && minishell->line[i][j] != ' ' && minishell->line[i])
+	// {
+	// 	if ((minishell->line[i][j] == '>' && minishell->line[i][j + 1] != '>') || 
+	// 	(minishell->line[i][j] == '<'  && minishell->line[i][j + 1] != '<') ||
+	// 	(minishell->line[i][j] == '>' && minishell->line[i][j + 1] == '>') || 
+	// 	(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
+	// 		record_rdct_together(minishell, rdct);
+	// 	else if (minishell->line[i][j] == ' ')
+	// 		break ;
+	// 	j++;
+	// }
 	while (minishell->line[i])
 	{
 		if (*minishell->line[i] == '|')
