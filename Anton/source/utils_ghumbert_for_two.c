@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:57:22 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/10 16:54:37 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/10 20:25:16 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,12 @@ void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 	lst_add(cmd, new_cmd(minishell));
 }
 
-void	record_rdct(t_rdct *rdct, t_ms *minishell)
+void	record_rdct(t_rdct **rdct, t_ms *minishell, t_cmd *cmd)
 {
 	int	i;
 
 	i = 0;
+	(void)cmd;
 	while (minishell->line[i])
 	{
 		while (minishell->line[i])
@@ -73,7 +74,8 @@ void	record_rdct(t_rdct *rdct, t_ms *minishell)
 		(*minishell->line[i] == '>' && minishell->line[i][1] == '>') || 
 		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
 			{
-				lstadd_rdct(&rdct, new_rcdt(minishell));
+				lstadd_rdct(rdct, new_rcdt(minishell));
+				lstadd_rdct(&cmd->rdct, *rdct);
 				i = 0;
 				break ;
 			}
@@ -131,7 +133,7 @@ char	**write_rdct(t_ms *minishell, int i)
 	return (0);
 }
 
-void	record_rdct_together(t_ms *minishell, t_rdct *rdct)
+void	record_rdct_together(t_ms *minishell, t_rdct **rdct)
 {
 	int	i;
 	int	j;
@@ -146,13 +148,13 @@ void	record_rdct_together(t_ms *minishell, t_rdct *rdct)
 		(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
 		{
 			minishell->line = write_rdct(minishell, j);
-			lstadd_rdct(&rdct, new_rcdt(minishell));
+			lstadd_rdct(rdct, new_rcdt(minishell));
 		}
 		j++;
 	}
 }
 
-void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *rdct)
+void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 {
 	int	i;
 	int	check_pipe;
@@ -166,19 +168,21 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *rdct)
 	i = 0;
 	j = 0;
 	check_pipe = 0;
-	// while (minishell->line[i][j] && minishell->line[i][j] != ' ' && minishell->line[i])
-	// {
-	// 	if ((minishell->line[i][j] == '>' && minishell->line[i][j + 1] != '>') || 
-	// 	(minishell->line[i][j] == '<'  && minishell->line[i][j + 1] != '<') ||
-	// 	(minishell->line[i][j] == '>' && minishell->line[i][j + 1] == '>') || 
-	// 	(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
-	// 		record_rdct_together(minishell, rdct);
-	// 	else if (minishell->line[i][j] == ' ')
-	// 		break ;
-	// 	j++;
-	// }
+	while (minishell->line[i][j] && minishell->line[i][j] != ' ' && minishell->line[i])
+	{
+		if ((minishell->line[i][j] == '>' && minishell->line[i][j + 1] != '>') || 
+		(minishell->line[i][j] == '<'  && minishell->line[i][j + 1] != '<') ||
+		(minishell->line[i][j] == '>' && minishell->line[i][j + 1] == '>') || 
+		(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
+			record_rdct_together(minishell, rdct);
+		else if (minishell->line[i][j] == ' ')
+			break ;
+		j++;
+	}
 	while (minishell->line[i])
 	{
+		if (*minishell->line == NULL)
+			break ;
 		if (*minishell->line[i] == '|')
 		{
 			check_pipe = 1;
@@ -193,11 +197,12 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *rdct)
 		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
 		{
 			check_rc = 1;
-			record_rdct(rdct, minishell);
+			lst_add(cmd, new_cmd(minishell));
+			record_rdct(rdct, minishell, *cmd);
 		}
 		i++;
-		if (check_pipe)
-			break ;
+		// if (check_pipe || check_rc)
+		// 	break ;
 	}
 	if (!check_pipe && !check_rc)
 		lst_add(cmd, new_cmd(minishell));

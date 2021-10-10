@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/09 12:21:43 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/10 18:55:00 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ typedef struct s_cmd
 	char *file;		//* Файл если был какой-нибудь редирект
 	short operator; //* Здесь какой-либо оператор : < > << >> |
 	struct s_cmd *next;
+	struct s_rdct *rdct;
 	struct s_cmd *back;
 } t_cmd;
 
@@ -108,7 +109,6 @@ char **jopa(t_ms *minishell, int i);
 char **record_cmd2(t_ms *minishell);
 t_cmd *new_cmd(t_ms *minishell);
 void lst_add (t_cmd **lst, t_cmd *el);
-void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *tdct);
 char *check_path(t_ms *minishell);
 int		check_bin(t_ms *minishell);
 void	null_struct(t_ms *minishell, char **ev);
@@ -131,5 +131,5 @@ void	record_v_rdct(t_ms *minishell, int a);
 void *new_rcdt(t_ms *minishell);
 void lstadd_rdct(t_rdct **lst, t_rdct *el);
 char	*check_record_file(t_ms *minishell, int rc);
-
+void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct);
 #endif

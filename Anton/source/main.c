@@ -334,7 +334,7 @@ void test(t_cmd **cmd)
 }
 
 
-void exec(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct *rdct)
+void exec(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 {
 	pid_t pid;
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
@@ -405,7 +405,7 @@ int main (int argc, char **argv, char **ev)
 		if (minishell->input[0])
 		{
 			minishell->line = ft_split_for_minishell(minishell->input, ' ');
-			exec(&cmd, minishell, &env, rdct);
+			exec(&cmd, minishell, &env, &rdct);
 		}
 		// record_cmd(&cmd, minishell);
 		// test(&cmd);
