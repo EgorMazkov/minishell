@@ -25,6 +25,14 @@
 # define MAX 1
 # define MIN 0
 
+
+# define RDCT_R 112
+# define RDCT_RR 113
+# define RDCT_L 114
+# define RDCT_LL 115
+
+
+
 typedef struct s_ms
 {
     char *input;
@@ -41,7 +49,7 @@ typedef struct s_cmd
 	short operator; //* Здесь какой-либо оператор : < > << >> |
 	struct s_cmd *next;
 	struct s_cmd *back;
-} t_cmd;
+} t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать
 
 typedef struct s_env
 {
@@ -88,10 +96,11 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
 
 
 void	cmd_c_fork(int signum);
-void	rdct_right(t_cmd *cmd);
-void	rdct_right_append(t_cmd *cmd);
-void	rdct_left_read(t_cmd *cmd);
-void	rdct_left_dock(t_cmd *cmd);
+void	cmd_c(int signum);
+int	rdct_right(t_cmd *cmd);
+int	rdct_right_append(t_cmd *cmd);
+int	rdct_left_read(t_cmd *cmd);
+int	rdct_left_dock(t_cmd *cmd);
 
 
 void	free_all(t_env **env);

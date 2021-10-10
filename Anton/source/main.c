@@ -15,7 +15,9 @@ void	cmd_c(int signum)
 {
 	(void)signum;
 	// g_param->ret = 1;
-	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_redisplay();
+	write(1, "  \n", 3);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -80,6 +82,117 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 }
 
 
+int why_rdct(t_cmd *cmd)
+{
+	if (!cmd->file)
+		return (0);
+	if (!ft_strcmp(cmd->file, "> eqw"))
+		return (rdct_right(cmd));
+	else if (!ft_strcmp(cmd->file, "< eqw"))
+		return (rdct_left_read(cmd));
+	else if (!ft_strcmp(cmd->file, ">> eqw"))
+		return (rdct_right_append(cmd));
+	else if (!ft_strcmp(cmd->file, "<< eqw"))
+		return (rdct_left_dock(cmd));
+	return (0);
+}
+
+
+// int redirects_for_pipe_fork(int *a, int *b, int flag, t_cmd *cmd)
+// {
+// 	if (!cmd->next)
+// 	{
+// 		if (!flag)
+// 		{
+// 			if (why_rdct(cmd) == RDCT_R || why_rdct(cmd) == RDCT_RR)
+// 			{
+// 				dup2(b[0], 0);
+// 				return (1);
+// 			}
+// 			if (why_rdct(cmd) == RDCT_L || why_rdct(cmd) == RDCT_LL)
+// 			{
+// 				return (1);
+// 			}
+// 			// dup2(b[0], 0);
+// 		}
+// 		else
+// 		{
+// 			if (why_rdct(cmd) == RDCT_R || why_rdct(cmd) == RDCT_RR)
+// 			{
+// 				dup2(a[0], 0);
+// 				return (1);
+// 			}
+// 			if (why_rdct(cmd) == RDCT_L || why_rdct(cmd) == RDCT_LL)
+// 			{
+// 				return (1);
+// 			}
+// 			// dup2(a[0], 0);
+// 		}
+// 		// execve(wc[0], wc, env);
+// 	}
+// 	else if (!flag && !cmd->back)
+// 	{
+// 		if (why_rdct(cmd) == RDCT_R || why_rdct(cmd) == RDCT_RR)
+// 		{
+// 			close(a[0]);
+// 			close(a[1]);
+// 			return (1);
+// 		}
+// 		if (why_rdct(cmd) == RDCT_L || why_rdct(cmd) == RDCT_LL)
+// 		{
+// 			close(a[0]);
+// 			return (1);
+// 		}
+// 		// close(a[0]);
+// 		// dup2(a[1], 1);
+// 		// close(a[1]);
+// 		return (0);
+// 	}
+// 	else if (!flag)
+// 	{
+// 		if (why_rdct(cmd) == RDCT_R || why_rdct(cmd) == RDCT_RR)
+// 		{
+// 			dup2(b[0], 0);
+// 			close(a[0]);
+// 			close(a[1]);
+// 			return(1);
+// 		}
+// 		if (why_rdct(cmd) == RDCT_L || why_rdct(cmd) == RDCT_LL)
+// 		{
+// 			close(b[0]);
+// 			close(a[0]);
+// 			return (1);
+// 		}
+// 		// dup2(b[0], 0);
+// 		// close(a[0]);
+// 		// dup2(a[1], 1);
+// 		return (0);
+// 	}
+// 	else if (flag)
+// 	{
+// 		if (why_rdct(cmd) == RDCT_R || why_rdct(cmd) == RDCT_RR)
+// 		{
+// 			dup2(a[0], 0);
+// 			close(a[0]);
+// 			close(b[0]);
+// 			return (1);
+// 		}
+// 		if (why_rdct(cmd) == RDCT_L || why_rdct(cmd) == RDCT_LL)
+// 		{
+// 			close(a[0]);
+// 			close(b[0]);
+// 			dup2(b[1], 1);
+// 			return (1);
+// 		}
+// 		dup2(a[0], 0);
+// 		close(a[0]);//rvferrbrbr
+// 		close(b[0]);
+// 		dup2(b[1], 1);
+// 	}
+// 	return (0);
+// }
+
+
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 {
 	// char *grep[] = {"/usr/bin/env", NULL};
@@ -90,6 +203,7 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	int b[2];
 	int flag;
 	int len;
+	int was_red;
 	(void)ev;
 	pid_t pid;
 (void)input, (void)env;
@@ -99,9 +213,17 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	while (cmd->back)
 		cmd = cmd->back;
 
+	// cmd->file = ft_strdup("< eqw");
+	// cmd->next->next->file = ft_strdup(">> eqw");
+	// cmd->next->next->next->next->file = ft_strdup("> eqw");
+
+
+	// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
 
 	while (cmd)
 	{
+		// int in = dup(0);
+		// int out = dup(1);
 		if (cmd->next)
 		{
 			if (!flag)
@@ -118,36 +240,47 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 		pid = fork();
 		if (!pid)
 		{
+			was_red = why_rdct(cmd);
 			if (!cmd->next)
 			{
 				if (!flag)
 				{
-					dup2(b[0], 0);
+					if (was_red != RDCT_L && was_red != RDCT_LL)
+						dup2(b[0], 0);
 				}
 				else
 				{
-					dup2(a[0], 0);
+					// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
+					if (was_red != RDCT_L && was_red != RDCT_LL)
+						dup2(a[0], 0);
 				}
 				// execve(wc[0], wc, env);
 			}
 			else if (!flag && !cmd->back)
 			{
+				// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
 				close(a[0]);
-				dup2(a[1], 1);
+				if (was_red != RDCT_R && was_red != RDCT_RR)
+					dup2(a[1], 1);
 				close(a[1]);
 			}
 			else if (!flag)
 			{
-				dup2(b[0], 0);
+				if (was_red != RDCT_L && was_red != RDCT_LL)
+					dup2(b[0], 0);
+				close(b[0]);
 				close(a[0]);
-				dup2(a[1], 1);
+				if (was_red != RDCT_R && was_red != RDCT_RR)
+					dup2(a[1], 1);
 			}
 			else if (flag)
 			{
-				dup2(a[0], 0);
+				if (was_red != RDCT_L && was_red != RDCT_LL)
+					dup2(a[0], 0);
 				close(a[0]);//rvferrbrbr
 				close(b[0]);
-				dup2(b[1], 1);
+				if (was_red != RDCT_R && was_red != RDCT_RR)
+					dup2(b[1], 1);
 			}
 			if (built_in_run(cmd, ev))
 			{
@@ -357,7 +490,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
-	(*cmd)->file = ft_strdup("<< eqw");
+	// (*cmd)->file = ft_strdup("<< eqw");
 	if ((*cmd)->next || (*cmd)->back)
 		pipes(*cmd, 123, minishell->env, env);
 	else if (!built_in_run(*cmd, env))
@@ -372,7 +505,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			// int eqw1 = open("qwe", O_WRONLY | O_TRUNC | O_CREAT , 0666); /* > */
 			// dup2(eqw0, 0);
 			// dup2(eqw1, 1);
-			if (01)
+			if (0)
 			{
 				if (!ft_strcmp((*cmd)->file, "> eqw"))
 				{

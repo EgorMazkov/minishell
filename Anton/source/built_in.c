@@ -150,6 +150,38 @@ void	ft_env(t_env *ev)
 		ev = ev->next;
 	}
 }
+
+
+int	export_compare_not_value(t_env **ev, char *s)
+{
+	int i;
+	char *dest;
+	char *s1;
+
+	i = -1;
+	dest = (char *)malloc(sizeof(char) * 2);
+	dest[0] = 127;
+	dest[1] = 0;
+	while (s[++i] && s[i] != '=')
+		;
+	if (s[i] == '=' && !s[i + 1])
+	{
+		while ((*ev)->next)
+			*ev = (*ev)->next;
+		s1 = ft_strjoin(s, dest);
+		env_value_add(ev, new_env_value(s1));
+		free(dest);
+		free(s1);
+		while ((*ev)->back)
+			*ev = (*ev)->back;
+		alpha_variables(*ev);
+		return (1);
+	}
+	return (0);
+}
+
+
+
 void	ft_export(t_env **ev, char **arg)
 {
 	t_env *temp;
@@ -167,6 +199,12 @@ void	ft_export(t_env **ev, char **arg)
 		{
 			if (temp->variable && temp->variable[0])
 				printf("declare -x %s", temp->variable);
+			// if (temp->value[0] == 127)
+			// {
+			// 	printf("=\"\"\n");
+			// 	temp = temp->next_alpha;
+			// 	continue ;
+			// }
 			if (temp->variable && temp->value && *temp->value && !ft_strcmp(temp->value, "\"\""))
 				printf("=\"\"\n");
 			else if (temp->variable && temp->value && *temp->value)
@@ -186,21 +224,24 @@ void	ft_export(t_env **ev, char **arg)
 	{
 		while (arg[++i])
 		{
-			vals = value_of_variable(arg[i]);
-			// if (!vals && arg[ft_strlen(arg) - 1] == '=')
-			// 	vals = ft_strdup("\"\"");
-			vars = name_of_variable(arg[i]);
-			if (!overwrite_env(ev, vars, vals))
+			if (!export_compare_not_value(ev, arg[i]))
 			{
-				while ((*ev)->next)
-					*ev = (*ev)->next;
-				env_value_add(ev, new_env_value(arg[i]));
-				while ((*ev)->back)
-					*ev = (*ev)->back;
-				alpha_variables(*ev);
+				vals = value_of_variable(arg[i]);
+				// if (!vals && arg[ft_strlen(arg) - 1] == '=')
+				// 	vals = ft_strdup("\"\"");
+				vars = name_of_variable(arg[i]);
+				if (!overwrite_env(ev, vars, vals))
+				{
+					while ((*ev)->next)
+						*ev = (*ev)->next;
+					env_value_add(ev, new_env_value(arg[i]));
+					while ((*ev)->back)
+						*ev = (*ev)->back;
+					alpha_variables(*ev);
+				}
+				free(vals);
+				free(vars);
 			}
-			free(vals);
-			free(vars);
 		}
 	}
 }

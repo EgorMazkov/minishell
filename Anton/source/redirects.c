@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void	rdct_right(t_cmd *cmd)
+int	rdct_right(t_cmd *cmd)
 {
 	int record = open(ft_split(cmd->file, ' ')[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	if (record == -1)
@@ -10,9 +10,10 @@ void	rdct_right(t_cmd *cmd)
 	}
 	dup2(record, 1);
 	close(record);
+	return (RDCT_R);
 }
 
-void	rdct_right_append(t_cmd *cmd)
+int	rdct_right_append(t_cmd *cmd)
 {
 	int record = open(ft_split(cmd->file, ' ')[1], O_WRONLY | O_CREAT | O_APPEND, 0666);
 	if (record == -1)
@@ -22,10 +23,11 @@ void	rdct_right_append(t_cmd *cmd)
 	}
 	dup2(record, 1);
 	close(record);
+	return (RDCT_RR);
 }
 
 
-void	rdct_left_read(t_cmd *cmd)
+int	rdct_left_read(t_cmd *cmd)
 {
 	int record = open(ft_split(cmd->file, ' ')[1], O_RDONLY);
 	if (record == -1)
@@ -35,6 +37,7 @@ void	rdct_left_read(t_cmd *cmd)
 	}
 	dup2(record, 0);
 	close(record);
+	return (RDCT_L);
 }
 
 void	ctrl_wd(int signum)
@@ -43,7 +46,7 @@ void	ctrl_wd(int signum)
 	// g_param->ret = 130;
 }
 
-void	rdct_left_dock(t_cmd *cmd)
+int	rdct_left_dock(t_cmd *cmd)
 {
 	char *input;
 	int fd[2];
@@ -69,4 +72,5 @@ void	rdct_left_dock(t_cmd *cmd)
 	// signal(SIGINT, cmd_c);
 	(rl_getc_function = sgnl), signal(SIGINT, cmd_c_fork);
 	signal(SIGQUIT, SIG_IGN);
+	return (RDCT_LL);
 }
