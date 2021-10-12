@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void    ft_pwd(t_env *env)
+int    ft_pwd(t_env *env)
 {
 	t_env *temp;
 
@@ -17,6 +17,7 @@ void    ft_pwd(t_env *env)
 			printf("%s\n", temp->value);
 		temp = temp->next;
 	}
+	return (1);
 	// printf("%s\n", getenv("PWD"));
 }
 
@@ -46,7 +47,7 @@ char *get_old_path_to_env(t_env *ev)
 	return (NULL);
 }
 
-void	ft_cd(char *arg, t_env **env)
+int	ft_cd(char *arg, t_env **env)
 {
 	char *oldpath;
 
@@ -55,7 +56,11 @@ void	ft_cd(char *arg, t_env **env)
 		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (chdir(getenv("HOME")) == -1)
+		{
 			printf("newerni put\n");
+			overwrite_env(env, "PWD", getcwd(NULL, 0));
+			return (-1);
+		}
 		overwrite_env(env, "PWD", getcwd(NULL, 0));
 	}
 	// else if (!ft_strncmp(arg, "..", 3))
@@ -71,11 +76,17 @@ void	ft_cd(char *arg, t_env **env)
 		if (!get_old_path_to_env(*env))
 		{
 			printf("cd: OLDPWD not set\n");
-			return ;
+			return (-1);
 		}
 		oldpath = getcwd(NULL, 0);
 		if (chdir(get_old_path_to_env(*env)) == -1)
+		{
+			overwrite_env(env, "OLDPWD", oldpath);
+			overwrite_env(env, "PWD", getcwd(NULL, 0));
 			printf("newerni put\n");
+			printf("%s\n", getcwd(NULL, 0));
+			return (-1);
+		}
 		overwrite_env(env, "OLDPWD", oldpath);
 		overwrite_env(env, "PWD", getcwd(NULL, 0));
 		printf("%s\n", getcwd(NULL, 0));
@@ -87,11 +98,18 @@ void	ft_cd(char *arg, t_env **env)
 		if (arg[1] == '\0')
 		{
 			if (chdir(getenv("HOME")) == -1)
+			{
 				printf("newerni put\n");
+				return (-1);
+			}
 		}
 		else
 			if (chdir(ft_strjoin(getenv("HOME"), ++arg)) == -1)
+			{
+				overwrite_env(env, "PWD", getcwd(NULL, 0));
 				printf("newerni put\n");
+				return (-1);
+			}
 		overwrite_env(env, "PWD", getcwd(NULL, 0));
 	}
 	else
@@ -99,9 +117,14 @@ void	ft_cd(char *arg, t_env **env)
 		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
 		if (chdir(arg) == -1)
+		{
+			overwrite_env(env, "PWD", getcwd(NULL, 0));
 			printf("no such file in directory: %s\n", arg);
+			return (-1);
+		}
 		overwrite_env(env, "PWD", getcwd(NULL, 0));
 	}
+	return (1);
 }
 
 int	is_slash_n(char *str)
@@ -159,13 +182,13 @@ int	export_compare_not_value(t_env **ev, char *s)
 	char *s1;
 
 	i = -1;
-	dest = (char *)malloc(sizeof(char) * 2);
-	dest[0] = 127;
-	dest[1] = 0;
 	while (s[++i] && s[i] != '=')
 		;
 	if (s[i] == '=' && !s[i + 1])
 	{
+		dest = (char *)malloc(sizeof(char) * 2);
+		dest[0] = 127;
+		dest[1] = 0;
 		while ((*ev)->next)
 			*ev = (*ev)->next;
 		s1 = ft_strjoin(s, dest);
@@ -182,7 +205,7 @@ int	export_compare_not_value(t_env **ev, char *s)
 
 
 
-void	ft_export(t_env **ev, char **arg)
+int	ft_export(t_env **ev, char **arg)
 {
 	t_env *temp;
 	int i;
@@ -244,4 +267,5 @@ void	ft_export(t_env **ev, char **arg)
 			}
 		}
 	}
+	return (0);
 }

@@ -43,7 +43,10 @@ int	rdct_left_read(t_cmd *cmd)
 void	ctrl_wd(int signum)
 {
 	(void)signum;
-	// g_param->ret = 130;
+	g_params->exit_code = 130;
+	// rl_on_new_line();
+	// rl_replace_line("", 0);
+	// rl_redisplay();
 }
 
 int	rdct_left_dock(t_cmd *cmd)
@@ -51,26 +54,58 @@ int	rdct_left_dock(t_cmd *cmd)
 	char *input;
 	int fd[2];
 	int i;
+	pid_t pids;
 	pipe(fd);
-	void *sgnl;
-	signal(SIGINT, ctrl_wd), signal(SIGQUIT, SIG_IGN);
-	(sgnl = rl_getc_function);
-	rl_getc_function = getc;
-	while (1)
+	/* Делать форки до всего исполнения */
+	void *sgnl = NULL;
+	pids = fork();
+		signal(SIGINT, ctrl_wd), signal(SIGQUIT, SIG_IGN);
+		(sgnl = rl_getc_function);
+		rl_getc_function = getc;
+	if (!pids)
 	{
-		i = -1;
-		input = readline("\033[1;34mheredocccc $> \033[0;29m");
-		if (!input || !ft_strcmp(input, ft_split(cmd->file, ' ')[1]))
-			break ;
-		while (input[++i])
-			write(fd[1], &input[i], 1);
-		write(fd[1], "\n", 1);
+		while (1)
+		{
+			i = -1;
+			input = readline("\033[1;34mheredocccc $> \033[0;29m");
+			if (!input || !ft_strcmp(input, ft_split(cmd->file, ' ')[1]))
+				break ;
+			while (input[++i])
+				write(fd[1], &input[i], 1);
+			write(fd[1], "\n", 1);
+		}
+		close(fd[0]);
+		close(fd[1]);
+		if (g_params->exit_code == 130)
+			exit(130);
+		else
+		{
+			printf("go ot\n");
+			exit(0);
+		}
 	}
-	dup2(fd[0], 0);
-	close(fd[0]);
-	close(fd[1]);
-	// signal(SIGINT, cmd_c);
-	(rl_getc_function = sgnl), signal(SIGINT, cmd_c_fork);
-	signal(SIGQUIT, SIG_IGN);
+	else
+	{
+		wait(NULL);
+		// 	int out;
+		// waitpid(0, &out, 0);
+		// if (WIFEXITED(out))
+		// 	g_params->exit_code = WEXITSTATUS(out);
+		if (g_params->exit_code == 130)
+		{
+			printf("code 130\n");
+			close(fd[0]);
+			close(fd[1]);
+		}
+		else
+		{
+			close(fd[1]);
+			g_params->fd_read = fd[0];
+			cmd->fd_her = fd[0];
+		}
+	}
+	(rl_getc_function = sgnl);
+	signal(SIGINT, cmd_c_fork);
+	// signal(SIGQUIT, SIG_IGN);
 	return (RDCT_LL);
 }

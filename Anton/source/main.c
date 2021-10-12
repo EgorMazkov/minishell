@@ -1,6 +1,9 @@
 #include "../include/minishell.h"
 
 
+t_params *g_params;
+
+
 void	cmd_c_fork(int signum)
 {
 	(void)signum;
@@ -67,15 +70,15 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 		else if (!ft_strcmp("unset", cmd->argv[0]))
 			ft_unset(ev, cmd->argv + 1);
 		else if (!ft_strcmp("export", cmd->argv[0]))
-			ft_export(ev, cmd->argv + 1);
+			return(ft_export(ev, cmd->argv + 1));
 		else if (!ft_strcmp("cd", cmd->argv[0]))
-			ft_cd(cmd->argv[1], ev);
+			return(ft_cd(cmd->argv[1], ev));
 		else if (!ft_strcmp("exit", cmd->argv[0]))
-			exit(0);
+			return(ft_exit(cmd->argv + 1));
 		else if (!ft_strcmp("env", cmd->argv[0]))
 			ft_env(*ev);
 		else if (!ft_strcmp("pwd", cmd->argv[0]))
-			ft_pwd(*ev);
+			return(ft_pwd(*ev));
 		return (1);
 	}
 	return (0);
@@ -206,20 +209,24 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	int was_red;
 	(void)ev;
 	pid_t pid;
-(void)input, (void)env;
+	(void)input, (void)env;
 	flag = 0;
 	len = lenlist(cmd);
+	printf("%d\n", len);
+	int exit_builtin;
 
 	while (cmd->back)
 		cmd = cmd->back;
 
-	// cmd->file = ft_strdup("< eqw");
+	// cmd->file = ft_strdup("<< eqw");
+	// cmd->next->file = ft_strdup("< eqw");
 	// cmd->next->next->file = ft_strdup(">> eqw");
 	// cmd->next->next->next->next->file = ft_strdup("> eqw");
 
 
 	// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
 
+	int count = 0;
 	while (cmd)
 	{
 		// int in = dup(0);
@@ -231,8 +238,8 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 			else
 				pipe(b);
 		}
-		printf("pipe a:    %d, %d\n", a[0], a[1]);
-		printf("pipe b:    %d, %d\n", b[0], b[1]);
+		// printf("pipe a:    %d, %d\n", a[0], a[1]);
+		// printf("pipe b:    %d, %d\n", b[0], b[1]);
 		// if (!cmd->back)//ervreververververrev
 		// {
 		// 	close(a[0]);
@@ -282,7 +289,16 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				if (was_red != RDCT_R && was_red != RDCT_RR)
 					dup2(b[1], 1);
 			}
-			if (built_in_run(cmd, ev))
+			exit_builtin = built_in_run(cmd, ev);
+			if (g_params->exit_code == 130)
+			{
+				exit(1);
+			}
+			if (exit_builtin == -1)
+			{
+				exit(1);
+			}
+			else if (exit_builtin)
 			{
 				exit(0);
 			}
@@ -290,7 +306,7 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				if (execve(cmd->argv[0], cmd->argv, env_from_lists(*ev)) == -1)
 				{
 					perror(*cmd->argv);
-					exit(0);
+					exit(127);
 				}
 			// execve(grep[0], grep, env);
 		}
@@ -322,12 +338,13 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				flag = 1;
 			else if (flag && cmd->next)
 				flag = 0;
-			printf("PIOOEPE A:    %d, %d\n", a[0], a[1]);
-			printf("PIOOEPE B:    %d, %d\n", b[0], b[1]);
+			// printf("PIOOEPE A:    %d, %d\n", a[0], a[1]);
+			// printf("PIOOEPE B:    %d, %d\n", b[0], b[1]);
 			cmd = cmd->next;
 		}
+	count++;
 	}
-
+	
 	// if (pipe_orig != 0)
 	// {
 	// 	pipe(a);
@@ -371,13 +388,23 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	// }
 
 	int i = 0;//количество fork
+		int out;
 	while(i < len)
 	{
-		wait(0);
+		waitpid(0, &out, 0);
+		if (WIFEXITED(out))
+			g_params->exit_code = WEXITSTATUS(out);
+		// wait(0);
+		// i++;
+
+
 		i++;
 	}
-	printf("{ipe a:    %d, %d\n", a[0], a[1]);
-	printf("}ipe b:    %d, %d", b[0], b[1]);
+	printf("%d\n", count);
+	// printf("\033[1;33mEXITCODE:    %d\n\033[0;29m", g_params->exit_code);
+	// printf("%d\n", out);
+	// printf("{ipe a:    %d, %d\n", a[0], a[1]);
+	// printf("}ipe b:    %d, %d", b[0], b[1]);
 }
 /*
 void	hardcode (char *input, t_built *built, char **ev, t_env **env)
@@ -486,56 +513,69 @@ void test(t_cmd **cmd)
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
+	int built_ex;
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
-	// (*cmd)->file = ft_strdup("<< eqw");
+	// (*cmd)->file = ft_strdup(">> eqw");
+	// rdct_left_dock(*cmd);
+	if (!(*cmd)->next && !(*cmd)->back)
+		built_ex = built_in_run(*cmd, env);
 	if ((*cmd)->next || (*cmd)->back)
 		pipes(*cmd, 123, minishell->env, env);
-	else if (!built_in_run(*cmd, env))
+	else if (built_ex == -1)
+		g_params->exit_code = 1;
+	else if (built_ex == 1)
+		g_params->exit_code = 0;
+	else if (!built_ex)/*!отрабатывает лишняя команда*/
 	{
 		pid = fork();
 		if (!pid)
 		{
-			// signal(SIGINT, cmd_c_fork);
-			// signal(SIGQUIT, SIG_IGN);
-			// int eqw0 = open("eqw",  O_RDONLY); /* < */
-			// int eqw1 = open("qwe", O_WRONLY | O_CREAT | O_APPEND, 0666); /* >> */
-			// int eqw1 = open("qwe", O_WRONLY | O_TRUNC | O_CREAT , 0666); /* > */
-			// dup2(eqw0, 0);
-			// dup2(eqw1, 1);
+			// dup2(g_params->fd_read, 0);
+			// close(g_params->fd_read);
 			if (0)
 			{
 				if (!ft_strcmp((*cmd)->file, "> eqw"))
 				{
-
+					printf("a1\n");
 					rdct_right(*cmd);
 				}
 				if (!ft_strcmp((*cmd)->file, ">> eqw"))
 				{
-					
+					printf("a12\n");
 					rdct_right_append(*cmd);
 				}
 				if (!ft_strcmp((*cmd)->file, "< eqw"))
 				{
-					
+					printf("a13\n");
 					rdct_left_read(*cmd);
 				}
 				if (!ft_strcmp((*cmd)->file, "<< eqw"))
 				{
-
+					// printf("a14\n");
 					rdct_left_dock(*cmd);
 				}
+			}
+			if (g_params->exit_code == 130)
+			{
+				exit(1);
 			}
 			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
 			{
 				perror((*cmd)->argv[0]);
-				exit(0);
+				exit(127);
 			}
 		}
 		else
-			wait(NULL);
+		{
+			int out;
+			waitpid(0, &out, 0);
+			if (WIFEXITED(out))
+				g_params->exit_code = WEXITSTATUS(out);
+			// close(g_params->fd_read);
+		}
 	}
 }
 
@@ -545,6 +585,7 @@ int main (int argc, char **argv, char **ev)
 	t_cmd	*cmd;
 	t_env *env = NULL;
 	t_ms	*minishell;
+
 
 	(void)argc, (void)argv;
 
@@ -557,6 +598,7 @@ int main (int argc, char **argv, char **ev)
 		env_record(&env, ev);
 		overwrite_env(&env, "OLDPWD", getcwd(NULL, 0));
 	}
+	g_params = malloc(sizeof(t_params *));
 	while (1)
 	{
 		signal(SIGINT, cmd_c);
@@ -581,6 +623,7 @@ int main (int argc, char **argv, char **ev)
 		{
 			minishell->line = ft_split_for_minishell(minishell->input, ' ');
 			exec(&cmd, minishell, &env);
+			printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_params->exit_code);
 		}
 		// record_cmd(&cmd, minishell);
 		// test(&cmd);

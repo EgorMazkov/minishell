@@ -25,12 +25,12 @@
 # define MAX 1
 # define MIN 0
 
+# include "../readline/include/readline/readline.h"
 
 # define RDCT_R 112
 # define RDCT_RR 113
 # define RDCT_L 114
 # define RDCT_LL 115
-
 
 
 typedef struct s_ms
@@ -47,6 +47,7 @@ typedef struct s_cmd
 	char **argv;	//* Здесь команда с аргументами или файл
 	char *file;		//* Файл если был какой-нибудь редирект
 	short operator; //* Здесь какой-либо оператор : < > << >> |
+	int fd_her;
 	struct s_cmd *next;
 	struct s_cmd *back;
 } t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать
@@ -61,6 +62,17 @@ typedef struct s_env
 	struct s_env *back_alpha;
 } t_env;
 
+
+typedef struct s_params
+{
+	int fd_read;
+	int fd_write;
+	int exit_code;
+} t_params;
+
+
+extern t_params *g_params;
+
 typedef struct s_rdct
 {
 	int heredoc[2];
@@ -70,7 +82,7 @@ typedef struct s_rdct
 	char *file;
 } t_rdct;
 
-
+void	ctrl_wd(int signum);
 
 int		ft_strcmp(const char *s1, const char *s2);
 
@@ -95,6 +107,7 @@ t_env *new_env_value(char *varias);
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
 
 
+
 void	cmd_c_fork(int signum);
 void	cmd_c(int signum);
 int	rdct_right(t_cmd *cmd);
@@ -108,11 +121,11 @@ void	free_all(t_env **env);
 /*builtin*/
 void	ft_env(t_env *ev);
 void	ft_echo(char **arg);
-void	ft_cd(char *arg, t_env **env);
-void    ft_pwd(t_env *env);
+int		ft_cd(char *arg, t_env **env);
+int		ft_pwd(t_env *env);
 void	ft_unset (t_env **env, char **value);
-void	ft_export(t_env **ev, char **arg);
-
+int		ft_export(t_env **ev, char **arg);
+int	ft_exit (char **code);
 
 
 
