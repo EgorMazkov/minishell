@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/10 18:55:00 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/12 17:50:12 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,10 @@ char	*pwd_check(t_ms *minishell);
 char	*slash_path(char *way, char *line);
 int check_quote(t_ms *minishell);
 
+
+//utils
+t_cmd	*new_lst(t_ms *minishell);
+int	check_rdct(t_ms *minishell, int i);
 
 
 

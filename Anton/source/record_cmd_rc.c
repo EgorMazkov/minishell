@@ -9,8 +9,8 @@ void	lstadd_rdct(t_rdct **lst, t_rdct *el)
 		*lst = el;
 		return;
 	}
-	el->back = *lst;
-	(*lst)->next = el;
+	el->next = *lst;
+	(*lst)->back = el;
 	*lst = el;
 }
 
@@ -30,19 +30,7 @@ void	*new_rcdt(t_ms *minishell)
 	return (el);
 }
 
-// void	record_cmd_rc(t_cmd **cmd, t_ms *minishell)
-// {
-// 	int	i;
 
-// 	i = 0;
-// 	(void)cmd;
-// 	while (minishell->line[i])
-// 	{
-// 		if (*minishell->line[i] == '>' || *minishell->line[i] == '<')
-// 			record_cmd_rc_two(minishell);
-// 		i++;
-// 	}
-// }
 
 char	**record_cmd_rc_two(t_ms *minishell)
 {
@@ -50,14 +38,6 @@ char	**record_cmd_rc_two(t_ms *minishell)
 	char **dest;
 
 	i = 0;
-	// line = malloc(sizeof(char *) * 1);
-	// line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
-	// line[0] = ft_strdup(minishell->line[0]);
-	// while (*minishell->line[i] != '<' && *minishell->line[i] != '>')
-	// {
-	// 	printf("%s\n", minishell->line[i]);
-	// 	i++;
-	// }
 	new_rcdt(minishell);
 	printf("Error");
 	printf("%d\n", minishell->rdct->rdct);
@@ -73,6 +53,9 @@ int	check_record_rdct(t_ms *minishell)
 
 	dest = 0;
 	i = 0;
+	printf("%c\n", minishell->line[i][0]);
+	printf("%c\n", minishell->line[i][1]);
+	printf("%c\n", minishell->line[i][2]);
 	while (minishell->line[i])
 	{
 		if (*minishell->line[i] == '>' && minishell->line[i][1] != '>')

@@ -363,7 +363,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 	}
 }
 
-
+// ls -la >> 123 | wc -l < 3 | < 4 cat | make > 5 кейс говна кусок
 int main (int argc, char **argv, char **ev)
 {
 	t_cmd	*cmd;
@@ -411,6 +411,7 @@ int main (int argc, char **argv, char **ev)
 		// test(&cmd);
 		// pipes(cmd, 123, ev);
 		cmd = NULL; // Clear cmd &7 minishell
+		// cmd->rdct = NULL; 
 
 		// printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));
 	}

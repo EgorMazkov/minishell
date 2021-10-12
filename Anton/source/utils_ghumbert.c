@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:51:13 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/06 15:52:32 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/12 20:11:01 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,37 +74,97 @@ char *check_path(t_ms *minishell)
 	return (0);
 }
 
-char **record_cmd2(t_ms *minishell)
-{
-	int i;
-	char **dest;
-	char **line;
+// char **record_cmd2(t_ms *minishell)
+// {
+// 	int i;
+// 	char **dest;
+// 	char **line;
 
-	line = malloc(sizeof(char *) * 1);
-	if (!minishell->line[0])
-		return (NULL); // для того чтобы не была сега
-	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
-	line[0] = ft_strdup(minishell->line[0]);
+// 	i = 0;
+// 	line = malloc(sizeof(char *) * 1);
+// 	if (*minishell->line[i] == '|')
+// 		minishell->line = jopa(minishell, i);
+// 	if (!minishell->line[0])
+// 		return (NULL); // для того чтобы не была сега
+// 	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[i]));
+// 	line[0] = ft_strdup(minishell->line[i]);
+// 	i = 0;
+// 	while (minishell->line[i] && (*minishell->line[i] != '|' && *minishell->line[i] != '>' && *minishell->line[i] != '<'))
+// 		i++;
+// 	dest = (char **)malloc(sizeof(char *) * i);
+// 	i = 0;
+// 	minishell->line[i] = check_path(minishell);
+// 	if (minishell->line[0] == NULL)
+// 	{
+// 		minishell->line[0] = ft_strdup(line[0]);
+// 		dest[i] = ft_strdup(line[0]);
+// 		i++;
+// 	}
+// 	while (minishell->line[i] && (*minishell->line[i] != '|' && *minishell->line[i] != '>' && *minishell->line[i] != '<'))
+// 	{
+// 		dest[i] = ft_strdup(minishell->line[i]);
+// 		i++;
+// 	}
+// 	dest[i] = NULL;
+// 	if (minishell->line[i] && (*minishell->line[i] != '|' && *minishell->line[i] != '>' && *minishell->line[i] != '<'))
+// 		minishell->line = jopa(minishell, i);
+// 	return (dest);
+// }
+
+int	check_pipe_rct(t_ms *minishell, int i, int a)
+{
+	if (minishell->line[i])
+	{
+		if (*minishell->line[i] == '>' && minishell->line[i][1] != '>')
+			return (0);
+		if (*minishell->line[i] == '<' && minishell->line[i][1] != '<')
+			return (0);
+		if (*minishell->line[i] == '<' && minishell->line[i][1] == '<')
+			return (0);
+		if (*minishell->line[i] == '>' && minishell->line[i][1] == '>')
+			return (0);
+		if (*minishell->line[i] != '|')
+			return (1);
+		if (a)
+		{
+			if (*minishell->line[i] == '|')
+				return (1);
+		}
+	}
+	return (0);
+}
+
+char	**record_cmd2(t_ms *minishell)
+{
+	int	i;
+	char **line;
+	char **dest;
+
 	i = 0;
-	while (minishell->line[i] && *minishell->line[i] != '|')
+	line = malloc(sizeof(char *) * 1);
+	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[i]));
+	line[0] = ft_strdup(minishell->line[i]);
+	while (check_pipe_rct(minishell, i, 0))
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
-	minishell->line[0] = check_path(minishell);
 	i = 0;
+	minishell->line[i] = check_path(minishell);
 	if (minishell->line[0] == NULL)
 	{
 		minishell->line[0] = ft_strdup(line[0]);
 		dest[i] = ft_strdup(line[0]);
 		i++;
 	}
-	while (minishell->line[i] && *minishell->line[i] != '|')
+	i = 0;
+	while (check_pipe_rct(minishell, i, 0))
 	{
 		dest[i] = ft_strdup(minishell->line[i]);
 		i++;
 	}
 	dest[i] = NULL;
-	if (minishell->line[i] && *minishell->line[i] == '|')
+	if (check_pipe_rct(minishell, i, 1))
 		minishell->line = jopa(minishell, i);
+	free(line);
 	return (dest);
 }
 

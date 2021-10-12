@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:57:22 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/10 20:25:16 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/12 19:52:09 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,33 +49,33 @@ void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 			if (*minishell->line[i] == '|')
 			{
 				lst_add(cmd, new_cmd(minishell));
-				i = 0;
 				break ;
 			}
 			i++;
 		}
 	}
-	lst_add(cmd, new_cmd(minishell));
 }
 
-void	record_rdct(t_rdct **rdct, t_ms *minishell, t_cmd *cmd)
+void	record_rdct(t_cmd **cmd, t_ms *minishell)
 {
 	int	i;
+	t_rdct *rdct = NULL;
 
 	i = 0;
-	(void)cmd;
 	while (minishell->line[i])
 	{
 		while (minishell->line[i])
 		{
-			if (minishell->line[i] && 
-		((*minishell->line[i] == '>' && minishell->line[i][1] != '>') || 
-		(*minishell->line[i] == '<'  && minishell->line[i][1] != '<') ||
-		(*minishell->line[i] == '>' && minishell->line[i][1] == '>') || 
-		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
+			if (check_rdct(minishell, i))
 			{
-				lstadd_rdct(rdct, new_rcdt(minishell));
-				lstadd_rdct(&cmd->rdct, *rdct);
+				if (!check_rdct(minishell, 0))
+					lst_add(cmd, new_cmd(minishell));
+				lstadd_rdct(&rdct, new_rcdt(minishell));
+				if (*cmd == NULL)
+					lst_add(cmd, new_lst(minishell));
+				lstadd_rdct(&(*cmd)->rdct, rdct);
+				rdct = NULL;
+				free(rdct);
 				i = 0;
 				break ;
 			}
@@ -168,44 +168,42 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 	i = 0;
 	j = 0;
 	check_pipe = 0;
-	while (minishell->line[i][j] && minishell->line[i][j] != ' ' && minishell->line[i])
-	{
-		if ((minishell->line[i][j] == '>' && minishell->line[i][j + 1] != '>') || 
-		(minishell->line[i][j] == '<'  && minishell->line[i][j + 1] != '<') ||
-		(minishell->line[i][j] == '>' && minishell->line[i][j + 1] == '>') || 
-		(minishell->line[i][j] == '<' && minishell->line[i][j + 1] == '<'))
-			record_rdct_together(minishell, rdct);
-		else if (minishell->line[i][j] == ' ')
-			break ;
-		j++;
-	}
+	
 	while (minishell->line[i])
 	{
-		if (*minishell->line == NULL)
-			break ;
 		if (*minishell->line[i] == '|')
 		{
-			check_pipe = 1;
 			record_cmd_pipe(cmd, minishell);
-			// break ;
 			i = 0;
 		}
-		if (minishell->line[i] && 
-		((*minishell->line[i] == '>' && minishell->line[i][1] != '>') || 
-		(*minishell->line[i] == '<'  && minishell->line[i][1] != '<') ||
-		(*minishell->line[i] == '>' && minishell->line[i][1] == '>') || 
-		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
+		if (check_rdct(minishell, i))
 		{
-			check_rc = 1;
-			lst_add(cmd, new_cmd(minishell));
-			record_rdct(rdct, minishell, *cmd);
+			record_rdct(cmd, minishell);
+			i = 0;
 		}
 		i++;
-		// if (check_pipe || check_rc)
-		// 	break ;
 	}
-	if (!check_pipe && !check_rc)
+	if (minishell->line[i])
 		lst_add(cmd, new_cmd(minishell));
+}
+
+t_cmd	*new_lst(t_ms *minishell)
+{
+	t_cmd	*el;
+	int		j;
+
+	j = 0;
+	(void)minishell;
+	el = (t_cmd *)malloc(sizeof(t_cmd));
+	if (!el)
+		return (NULL);
+	el->util_cmd = NULL;
+	el->file = NULL;
+	el->next = NULL;
+	el->back = NULL;
+	el->operator = -999;
+	el->argv = NULL;
+	return (el);
 }
 
 t_cmd	*new_cmd(t_ms *minishell)
@@ -224,4 +222,16 @@ t_cmd	*new_cmd(t_ms *minishell)
 	el->operator = -999;
 	el->argv = record_cmd2(minishell);
 	return (el);
+}
+
+int	check_rdct(t_ms *minishell, int i)
+{
+	if (minishell->line[i] && 
+		((*minishell->line[i] == '>' && minishell->line[i][1] != '>') || 
+		(*minishell->line[i] == '<'  && minishell->line[i][1] != '<') ||
+		(*minishell->line[i] == '>' && minishell->line[i][1] == '>') || 
+		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
+		return (1);
+	else
+		return (0);
 }
