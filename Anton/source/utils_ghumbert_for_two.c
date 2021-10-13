@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:57:22 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/12 19:52:09 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/13 13:53:32 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 				lst_add(cmd, new_cmd(minishell));
 				break ;
 			}
+			if (check_rdct(minishell, i))
+				return ;
 			i++;
 		}
 	}
@@ -79,6 +81,8 @@ void	record_rdct(t_cmd **cmd, t_ms *minishell)
 				i = 0;
 				break ;
 			}
+			// if (*minishell->line[i] == '|')
+			// 	return ;
 			i++;
 		}
 	}
@@ -154,6 +158,7 @@ void	record_rdct_together(t_ms *minishell, t_rdct **rdct)
 	}
 }
 
+
 void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 {
 	int	i;
@@ -175,15 +180,18 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 		{
 			record_cmd_pipe(cmd, minishell);
 			i = 0;
+			check_pipe++;
 		}
 		if (check_rdct(minishell, i))
 		{
 			record_rdct(cmd, minishell);
 			i = 0;
+			check_pipe++;
+			continue ;
 		}
 		i++;
 	}
-	if (minishell->line[i])
+	if (!check_pipe && !check_pipe)
 		lst_add(cmd, new_cmd(minishell));
 }
 

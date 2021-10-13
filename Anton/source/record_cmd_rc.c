@@ -53,16 +53,16 @@ int	check_record_rdct(t_ms *minishell)
 
 	dest = 0;
 	i = 0;
-	printf("%c\n", minishell->line[i][0]);
-	printf("%c\n", minishell->line[i][1]);
-	printf("%c\n", minishell->line[i][2]);
 	while (minishell->line[i])
 	{
+		printf("%s\n", minishell->line[i]);
+		if (*minishell->line[i] == '|')
+			return (0);
 		if (*minishell->line[i] == '>' && minishell->line[i][1] != '>')
 			dest = 112;
 		else if (*minishell->line[i] == '>' && minishell->line[i][1] == '>')
 			dest = 113;
-		else if (*minishell->line[i] == '<'&& minishell->line[i][1] != '<')
+		else if (*minishell->line[i] == '<' && minishell->line[i][1] != '<')
 			dest = 114;
 		else if (*minishell->line[i] == '<' && minishell->line[i][1] == '<')
 			dest = 115;

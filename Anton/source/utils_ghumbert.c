@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:51:13 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/12 20:11:01 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/13 13:41:14 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,17 +137,52 @@ int	check_pipe_rct(t_ms *minishell, int i, int a)
 char	**record_cmd2(t_ms *minishell)
 {
 	int	i;
+	int	j;
 	char **line;
 	char **dest;
+	int	check;
 
 	i = 0;
+	j = 0;
+	check = 0;
 	line = malloc(sizeof(char *) * 1);
+	if (*minishell->line[i] == '|')
+		minishell->line = jopa(minishell, i);
+	if (check_rdct(minishell, i))
+	{
+		line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[i]));
+		line[0] = ft_strdup(minishell->line[i]);
+		while (*minishell->line[i] != '|')
+			i++;
+		if (!check_rdct(minishell, i))
+			i--;
+		j = i;
+		minishell->line[0] = ft_strdup(minishell->line[i]);
+		minishell->line[i] = ft_strdup(line[0]);
+		printf("%s\n", minishell->line[0]);
+		printf("%s\n", minishell->line[i]);
+		line[0] = NULL;
+		free(line);
+		i--;
+		line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[i]));
+		line[0] = ft_strdup(minishell->line[i]);
+		minishell->line[i] = ft_strdup(minishell->line[j]);
+		minishell->line[j] = ft_strdup(line[0]);
+		line[0] = NULL;
+		free(line);
+		printf("%s\n", minishell->line[0]);
+		printf("%s\n", minishell->line[1]);
+		printf("%s\n", minishell->line[2]);
+	}
+	i = 0;
 	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[i]));
 	line[0] = ft_strdup(minishell->line[i]);
+	i = 0;
 	while (check_pipe_rct(minishell, i, 0))
 		i++;
 	dest = (char **)malloc(sizeof(char *) * i);
-	i = 0;
+	if (!check)
+		i = 0;
 	minishell->line[i] = check_path(minishell);
 	if (minishell->line[0] == NULL)
 	{
@@ -162,9 +197,11 @@ char	**record_cmd2(t_ms *minishell)
 		i++;
 	}
 	dest[i] = NULL;
-	if (check_pipe_rct(minishell, i, 1))
-		minishell->line = jopa(minishell, i);
-	free(line);
+	if (!check)
+	{
+		if (check_pipe_rct(minishell, i, 1))
+			minishell->line = jopa(minishell, i);
+	}
 	return (dest);
 }
 

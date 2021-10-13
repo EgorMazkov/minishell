@@ -340,6 +340,10 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct)
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env, rdct);
+	printf("jopa\n");
+	int i = 0;
+	while (i != 100000000)
+		i++;
 	if ((*cmd)->next || (*cmd)->back)
 		pipes(*cmd, 123, minishell->env, env);
 	else if (!built_in_run(*cmd, env))
