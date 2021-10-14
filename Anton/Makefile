@@ -22,7 +22,8 @@ LIB = ./libft/libft.a
 all:		$(NAME)
 
 %.o:		%.c
-			$(CC) $(CFLAGS) $(INCLUDE) -c -g $< -o $@ 
+			$(CC)  $(INCLUDE) -c -g $< -o $@
+# $(CFLAGS) убран
 $(NAME):	$(OBJS)
 			$(MAKE) -C $(dir $(LIB))
 			$(CC) $(INCLUDE) ${READLINE} $(LIB) -o $(NAME) $(OBJS)

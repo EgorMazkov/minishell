@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/12 17:50:12 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/14 19:08:33 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 #include <readline/readline.h>
 # define MAX 1
 # define MIN 0
+
+# include "../readline/include/readline/readline.h"
+
 # define RDCT_R 112
 # define RDCT_RR 113
 # define RDCT_L 114
@@ -36,19 +39,18 @@ typedef struct s_ms
     char **line;
     char **env;
     char **way;
-	struct s_rdct *rdct;
 } t_ms;
 
 typedef struct s_cmd
 {
 	char *util_cmd; //* Утилита
 	char **argv;	//* Здесь команда с аргументами или файл
-	char *file;		//* Файл если был какой-нибудь редирект
+	char **file;		//* Файл если был какой-нибудь редирект
 	short operator; //* Здесь какой-либо оператор : < > << >> |
+	int fd_her;
 	struct s_cmd *next;
-	struct s_rdct *rdct;
 	struct s_cmd *back;
-} t_cmd;
+} t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать
 
 typedef struct s_env
 {
@@ -60,15 +62,27 @@ typedef struct s_env
 	struct s_env *back_alpha;
 } t_env;
 
+
+typedef struct s_params
+{
+	int fd_read;
+	int fd_write;
+	int exit_code;
+} t_params;
+
+
+extern t_params *g_params;
+
 typedef struct s_rdct
 {
 	int heredoc[2];
-	int rdct;
+	short rdct;
 	struct s_rdct *next;
 	struct s_rdct *back;
 	char *file;
 } t_rdct;
 
+void	ctrl_wd(int signum);
 
 int		ft_strcmp(const char *s1, const char *s2);
 
@@ -77,6 +91,7 @@ void 	rl_replace_line(const char *text, int clear_undo);
 void 	rl_clear_history(void);
 
 char 	**ft_argvdup(char **env);
+char **env_from_lists (t_env *env);
 int		overwrite_env(t_env **env, char *value, char *new_value);
 char 	*name_of_variable(char *s);
 char 	*value_of_variable(char *s);
@@ -91,16 +106,26 @@ t_env *new_env_value(char *varias);
 
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
 
+
+
+void	cmd_c_fork(int signum);
+void	cmd_c(int signum);
+int	rdct_right(t_cmd *cmd);
+int	rdct_right_append(t_cmd *cmd);
+int	rdct_left_read(t_cmd *cmd);
+int	rdct_left_dock(t_cmd *cmd);
+
+
 void	free_all(t_env **env);
 
 /*builtin*/
 void	ft_env(t_env *ev);
 void	ft_echo(char **arg);
-void	ft_cd(char *arg, t_env **env);
-void    ft_pwd(t_env *env);
+int		ft_cd(char *arg, t_env **env);
+int		ft_pwd(t_env *env);
 void	ft_unset (t_env **env, char **value);
-void	ft_export(t_env **ev, char **arg);
-
+int		ft_export(t_env **ev, char **arg);
+int	ft_exit (char **code);
 
 
 
@@ -109,6 +134,7 @@ char **jopa(t_ms *minishell, int i);
 char **record_cmd2(t_ms *minishell);
 t_cmd *new_cmd(t_ms *minishell);
 void lst_add (t_cmd **lst, t_cmd *el);
+void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env);
 char *check_path(t_ms *minishell);
 int		check_bin(t_ms *minishell);
 void	null_struct(t_ms *minishell, char **ev);
@@ -121,19 +147,8 @@ char	*slash_path(char *way, char *line);
 int check_quote(t_ms *minishell);
 
 
-//utils
-t_cmd	*new_lst(t_ms *minishell);
+
 int	check_rdct(t_ms *minishell, int i);
+char **record_cmd_file_rdct(t_ms *minishell);
 
-
-
-// < > << >> 
-void	record_cmd_rc(t_cmd **cmd, t_ms *minishell);
-char	**record_cmd_rc_two(t_ms *minishell);
-int	check_record_rdct(t_ms *minishell);
-void	record_v_rdct(t_ms *minishell, int a);
-void *new_rcdt(t_ms *minishell);
-void lstadd_rdct(t_rdct **lst, t_rdct *el);
-char	*check_record_file(t_ms *minishell, int rc);
-void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env, t_rdct **rdct);
 #endif

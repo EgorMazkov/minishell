@@ -60,7 +60,10 @@ char	*right_way(t_ms *minishell)
 	if (fd == -1)
 		return (NULL);
 	else
+	{
+		close(fd);
 		return (res);
+	}
 }
 
 void	null_struct(t_ms *minishell, char **ev)
