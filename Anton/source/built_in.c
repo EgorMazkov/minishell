@@ -47,15 +47,34 @@ char *get_old_path_to_env(t_env *ev)
 	return (NULL);
 }
 
+char *get_variable_env(t_env *ev, char *str)
+{
+	while (ev->back)
+		ev = ev->back;
+	while (ev)
+	{
+		if (!ft_strcmp(str, ev->variable))
+			return (ev->value);
+		ev = ev->next;
+	}
+	return (NULL);
+}
+
+
 int	ft_cd(char *arg, t_env **env)
 {
 	char *oldpath;
-
+	/* если pwd || oldpwd удалены, то их надо добавить снова на следующих выходах и входах в директории*/
 	if (!arg || !arg[0])
 	{
+		if (!get_variable_env(*env, "HOME"))
+		{
+			printf("cd: HOME not set\n");
+			return (-1);
+		}
 		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
-		if (chdir(getenv("HOME")) == -1)
+		if (chdir(get_variable_env(*env, "HOME")) == -1)
 		{
 			printf("newerni put\n");
 			overwrite_env(env, "PWD", getcwd(NULL, 0));
@@ -73,13 +92,13 @@ int	ft_cd(char *arg, t_env **env)
 	// }
 	else if (!ft_strncmp(arg, "-", 2))
 	{
-		if (!get_old_path_to_env(*env))
+		if (!get_variable_env(*env, "OLDPWD"))
 		{
 			printf("cd: OLDPWD not set\n");
 			return (-1);
 		}
 		oldpath = getcwd(NULL, 0);
-		if (chdir(get_old_path_to_env(*env)) == -1)
+		if (chdir(get_variable_env(*env, "OLDPWD")) == -1)
 		{
 			overwrite_env(env, "OLDPWD", oldpath);
 			overwrite_env(env, "PWD", getcwd(NULL, 0));

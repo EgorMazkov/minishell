@@ -91,9 +91,12 @@ t_cmd	*new_cmd(t_ms *minishell)
 	if (!el)
 		return (NULL);
 	el->util_cmd = NULL;
+	el->fd_read = -1;
+	el->fd_write = -1;
 	el->file = NULL;
 	el->next = NULL;
 	el->back = NULL;
+	el->redicts = NULL;
 	el->operator = -999;
 	el->argv = record_cmd2(minishell);
 	return (el);

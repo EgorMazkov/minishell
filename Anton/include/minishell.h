@@ -43,11 +43,14 @@ typedef struct s_ms
 
 typedef struct s_cmd
 {
+	int fd_read;
+	int fd_write;
 	char *util_cmd; //* Утилита
 	char **argv;	//* Здесь команда с аргументами или файл
 	char *file;		//* Файл если был какой-нибудь редирект
 	short operator; //* Здесь какой-либо оператор : < > << >> |
 	int fd_her;
+	char **redicts;
 	struct s_cmd *next;
 	struct s_cmd *back;
 } t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать

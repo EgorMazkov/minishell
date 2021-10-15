@@ -498,6 +498,9 @@ void test(t_cmd **cmd)
 	{
 		while (temp->argv[++i])
 			printf("%s\n", temp->argv[i]);
+		i = -1;
+		while (temp->redicts && temp->redicts[++i])
+			printf("%s\n", temp->redicts[i]);
 		printf("----------------((Anton))------------------\n");
 		temp = temp->next;
 		i = -1;
@@ -505,8 +508,169 @@ void test(t_cmd **cmd)
 }
 
 
+int redirect_count (char **argv)
+{
+	int count;
+	int i;
+
+	count = 0;
+	i = -1;
+	while (argv[++i])
+		if (!ft_strcmp(argv[i], ">>") || \
+		!ft_strcmp(argv[i], ">") || \
+		!ft_strcmp(argv[i], "<") || \
+		!ft_strcmp(argv[i], "<<"))
+			count++;
+	return (count * 2);
+}
 
 
+#include <string.h>
+char **rewrite_cmd(char **argv)
+{
+	int i;
+	int str;
+	char **temp;
+
+	i = 0;
+	str = 0;
+	temp = (char **)malloc((len_tab(argv) - redirect_count(argv) + 1) * sizeof(char *));
+	while (argv[i])
+	{
+		if (!ft_strcmp(argv[str], ">>") || \
+		!ft_strcmp(argv[str], ">") || \
+		!ft_strcmp(argv[str], "<") || \
+		!ft_strcmp(argv[str], "<<"))
+		{
+			i += 2;
+			continue;
+		}
+		temp[str] = strdup(argv[i]);
+		str++;
+		i++;
+	}
+	temp[str] = NULL;
+	return (temp);
+}
+
+
+void	free_mass(char **argv)
+{
+	int i;
+
+	i = -1;
+	while (argv[++i])
+		free(argv[i]);
+}
+
+
+char**	record_redicts(char **argv)
+{
+	int str;
+	int i;
+	char **temp;
+
+	str = 0;
+	i = 0;
+	temp = (char **)malloc((redirect_count(argv) + 1) * sizeof(char *));
+	while (argv[str])
+	{
+		if (!ft_strcmp(argv[str], ">>") || \
+		!ft_strcmp(argv[str], ">") || \
+		!ft_strcmp(argv[str], "<") || \
+		!ft_strcmp(argv[str], "<<"))
+		{
+			temp[i] = strdup(argv[str]);
+			temp[i + 1] = strdup(argv[str + 1]);
+			i += 2;
+			str += 2;
+			continue;
+		}
+		str++;
+	}
+	temp[i] = NULL;
+	return (temp);
+}
+
+
+int get_descriptor(char **redir, t_cmd *cmd)
+{
+	int str;
+
+	str = -1;
+	while (redir[++str])
+	{
+		if (!ft_strcmp(redir[str], "<"))
+		{
+			if (cmd->fd_read != -1)
+				close(cmd->fd_read);
+			cmd->fd_read = open(redir[str + 1], O_RDONLY);
+			if (cmd->fd_read == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+		else if (!ft_strcmp(redir[str], ">"))
+		{
+			if (cmd->fd_write != -1)
+				close(cmd->fd_write);
+			cmd->fd_write = open(redir[str + 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+			if (cmd->fd_write == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+		else if (!ft_strcmp(redir[str], ">>"))
+		{
+			if (cmd->fd_write != -1)
+				close(cmd->fd_write);
+			cmd->fd_write = open(redir[str + 1], O_WRONLY | O_CREAT | O_APPEND, 0666);
+			if (cmd->fd_write == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+	}
+	return (0);
+}
+
+
+int choose_reds(t_cmd *cmd)
+{
+	t_cmd *lst;
+	while (cmd->back)
+		cmd = cmd->back;
+	lst = cmd;
+	while (lst)
+	{
+		if (get_descriptor(lst->redicts, lst))
+			return (-3);
+		lst = lst->next;
+	}
+	return (0);
+}
+
+
+
+void	cmd_run(t_cmd *cmd)
+{
+	t_cmd *temp;
+	char **ar;
+
+	while (cmd->back)
+		cmd = cmd->back;
+	temp = cmd;
+	while (temp)
+	{
+		ar = temp->argv;
+		temp->redicts = record_redicts(ar);
+		temp->argv = rewrite_cmd(ar);
+		temp = temp->next;
+	}
+}
 
 
 
@@ -518,7 +682,14 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
-	// (*cmd)->file = ft_strdup(">> eqw");
+	cmd_run(*cmd);
+	if (choose_reds(*cmd) == -3)/* Сделать отдельное условие для << */
+	{
+		g_params->exit_code = 1;
+		return ;
+	}
+	test(cmd);
+	return ;
 	// rdct_left_dock(*cmd);
 	if (!(*cmd)->next && !(*cmd)->back)
 		built_ex = built_in_run(*cmd, env);
@@ -537,26 +708,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			// close(g_params->fd_read);
 			if (0)
 			{
-				if (!ft_strcmp((*cmd)->file, "> eqw"))
-				{
-					printf("a1\n");
-					rdct_right(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, ">> eqw"))
-				{
-					printf("a12\n");
-					rdct_right_append(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, "< eqw"))
-				{
-					printf("a13\n");
-					rdct_left_read(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, "<< eqw"))
-				{
-					// printf("a14\n");
-					rdct_left_dock(*cmd);
-				}
+				exit(0);
 			}
 			if (g_params->exit_code == 130)
 			{
