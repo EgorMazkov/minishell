@@ -87,16 +87,18 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 
 int why_rdct(t_cmd *cmd)
 {
-	if (!cmd->file)
-		return (0);
-	if (!ft_strcmp(cmd->file, "> eqw"))
-		return (rdct_right(cmd));
-	else if (!ft_strcmp(cmd->file, "< eqw"))
-		return (rdct_left_read(cmd));
-	else if (!ft_strcmp(cmd->file, ">> eqw"))
-		return (rdct_right_append(cmd));
-	else if (!ft_strcmp(cmd->file, "<< eqw"))
-		return (rdct_left_dock(cmd));
+	if (cmd->fd_read != -1)
+	{
+		dup2(cmd->fd_read, 0);
+		close(cmd->fd_read);
+		return (RDCT_L);
+	}
+	if (cmd->fd_write != -1)
+	{
+		dup2(cmd->fd_write, 1);
+		close(cmd->fd_write);
+		return (RDCT_R);
+	}
 	return (0);
 }
 
@@ -212,7 +214,6 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	(void)input, (void)env;
 	flag = 0;
 	len = lenlist(cmd);
-	printf("%d\n", len);
 	int exit_builtin;
 
 	while (cmd->back)
@@ -303,11 +304,13 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				exit(0);
 			}
 			else
+			{
 				if (execve(cmd->argv[0], cmd->argv, env_from_lists(*ev)) == -1)
 				{
 					perror(*cmd->argv);
 					exit(127);
 				}
+			}
 			// execve(grep[0], grep, env);
 		}
 		else
@@ -400,7 +403,6 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 
 		i++;
 	}
-	printf("%d\n", count);
 	// printf("\033[1;33mEXITCODE:    %d\n\033[0;29m", g_params->exit_code);
 	// printf("%d\n", out);
 	// printf("{ipe a:    %d, %d\n", a[0], a[1]);
@@ -537,10 +539,10 @@ char **rewrite_cmd(char **argv)
 	temp = (char **)malloc((len_tab(argv) - redirect_count(argv) + 1) * sizeof(char *));
 	while (argv[i])
 	{
-		if (!ft_strcmp(argv[str], ">>") || \
-		!ft_strcmp(argv[str], ">") || \
-		!ft_strcmp(argv[str], "<") || \
-		!ft_strcmp(argv[str], "<<"))
+		if (!ft_strcmp(argv[i], ">>") || \
+		!ft_strcmp(argv[i], ">") || \
+		!ft_strcmp(argv[i], "<") || \
+		!ft_strcmp(argv[i], "<<"))
 		{
 			i += 2;
 			continue;
