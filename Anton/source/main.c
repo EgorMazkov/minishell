@@ -686,6 +686,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
+	preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
 	if (choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{

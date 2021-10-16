@@ -148,7 +148,10 @@ char    *check_path_for_slash(t_ms *minishell, char **line);
 char	*pwd_check(t_ms *minishell);
 char	*slash_path(char *way, char *line);
 int check_quote(t_ms *minishell);
-
+void	preparser_dollar(t_cmd **cmd, t_ms *minishell);
+void	record_dollar(t_cmd **cmd, int i, t_ms *minishell);
+char	*dollar_tolower(char **dest);
+void	get_path_dollar(t_cmd **cmd, int a, t_ms *minishell);
 
 
 #endif
