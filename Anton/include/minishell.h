@@ -31,6 +31,7 @@
 # define RDCT_RR 113
 # define RDCT_L 114
 # define RDCT_LL 115
+# define RDCT_ALL 100
 
 
 typedef struct s_ms
@@ -116,8 +117,8 @@ void	cmd_c(int signum);
 int	rdct_right(t_cmd *cmd);
 int	rdct_right_append(t_cmd *cmd);
 int	rdct_left_read(t_cmd *cmd);
-int	rdct_left_dock(t_cmd *cmd);
-
+int	rdct_left_dock(t_cmd *cmd, char *stop);
+int why_rdct(t_cmd *cmd);
 
 void	free_all(t_env **env);
 

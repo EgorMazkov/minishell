@@ -49,7 +49,7 @@ void	ctrl_wd(int signum)
 	// rl_redisplay();
 }
 
-int	rdct_left_dock(t_cmd *cmd)
+int	rdct_left_dock(t_cmd *cmd, char *stop)
 {
 	char *input;
 	int fd[2];
@@ -68,7 +68,7 @@ int	rdct_left_dock(t_cmd *cmd)
 		{
 			i = -1;
 			input = readline("\033[1;34mheredocccc $> \033[0;29m");
-			if (!input || !ft_strcmp(input, ft_split(cmd->file, ' ')[1]))
+			if (!input || !ft_strcmp(input, stop))
 				break ;
 			while (input[++i])
 				write(fd[1], &input[i], 1);
@@ -101,6 +101,8 @@ int	rdct_left_dock(t_cmd *cmd)
 		{
 			close(fd[1]);
 			g_params->fd_read = fd[0];
+			if (cmd->fd_her != -1)
+				close(cmd->fd_her);
 			cmd->fd_her = fd[0];
 		}
 	}

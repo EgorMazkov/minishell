@@ -91,6 +91,7 @@ t_cmd	*new_cmd(t_ms *minishell)
 	if (!el)
 		return (NULL);
 	el->util_cmd = NULL;
+	el->fd_her = -1;
 	el->fd_read = -1;
 	el->fd_write = -1;
 	el->file = NULL;

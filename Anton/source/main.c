@@ -63,6 +63,10 @@ int is_builtin (char *command)
 
 int built_in_run (t_cmd *cmd, t_env **ev)
 {
+	if (!cmd || !*cmd->argv)
+		return (-999);
+	if (!cmd->back && !cmd->next)
+		why_rdct(cmd);
 	if (is_builtin(cmd->argv[0]))
 	{
 		if (!ft_strcmp("echo", cmd->argv[0]))
@@ -87,18 +91,29 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 
 int why_rdct(t_cmd *cmd)
 {
+	int read;
+	int write;
+
+	read = 0;
+	write = 0;
 	if (cmd->fd_read != -1)
 	{
 		dup2(cmd->fd_read, 0);
 		close(cmd->fd_read);
-		return (RDCT_L);
+		read++;
 	}
 	if (cmd->fd_write != -1)
 	{
 		dup2(cmd->fd_write, 1);
 		close(cmd->fd_write);
-		return (RDCT_R);
+		write++;
 	}
+	if (read && write)
+		return(RDCT_ALL);
+	if (read && !write)
+		return(RDCT_L);
+	if (write && !read)
+		return(RDCT_R);
 	return (0);
 }
 
@@ -253,13 +268,13 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 			{
 				if (!flag)
 				{
-					if (was_red != RDCT_L && was_red != RDCT_LL)
+					if (was_red != RDCT_L && was_red != RDCT_ALL)
 						dup2(b[0], 0);
 				}
 				else
 				{
 					// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
-					if (was_red != RDCT_L && was_red != RDCT_LL)
+					if (was_red != RDCT_L && was_red != RDCT_ALL)
 						dup2(a[0], 0);
 				}
 				// execve(wc[0], wc, env);
@@ -268,26 +283,26 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 			{
 				// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
 				close(a[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(a[1], 1);
 				close(a[1]);
 			}
 			else if (!flag)
 			{
-				if (was_red != RDCT_L && was_red != RDCT_LL)
+				if (was_red != RDCT_L && was_red != RDCT_ALL)
 					dup2(b[0], 0);
 				close(b[0]);
 				close(a[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(a[1], 1);
 			}
 			else if (flag)
 			{
-				if (was_red != RDCT_L && was_red != RDCT_LL)
+				if (was_red != RDCT_L && was_red != RDCT_ALL)
 					dup2(a[0], 0);
 				close(a[0]);//rvferrbrbr
 				close(b[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(b[1], 1);
 			}
 			exit_builtin = built_in_run(cmd, ev);
@@ -341,6 +356,12 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				flag = 1;
 			else if (flag && cmd->next)
 				flag = 0;
+			if (cmd->fd_her != -1)
+				close(cmd->fd_her);
+			if (cmd->fd_read != -1)
+				close(cmd->fd_read);
+			if (cmd->fd_her != -1)
+				close(cmd->fd_write);
 			// printf("PIOOEPE A:    %d, %d\n", a[0], a[1]);
 			// printf("PIOOEPE B:    %d, %d\n", b[0], b[1]);
 			cmd = cmd->next;
@@ -635,6 +656,17 @@ int get_descriptor(char **redir, t_cmd *cmd)
 				return (-3);
 			}
 		}
+		else if (!ft_strcmp(redir[str], "<<"))
+		{
+			if (cmd->fd_read != -1)
+				close(cmd->fd_write);
+			cmd->fd_read = cmd->fd_her;
+			if (cmd->fd_read == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
 	}
 	return (0);
 }
@@ -677,17 +709,55 @@ void	cmd_run(t_cmd **cmd)
 }
 
 
+int run_heredoc (char **redict, t_cmd **cmd)
+{
+	int i;
+
+	i = -1;
+	while (redict[++i])
+	{
+		if (!ft_strcmp("<<", redict[i]))
+		{
+			rdct_left_dock(*cmd, redict[i + 1]);
+			if (g_params->exit_code == 130)
+				return (130);
+		}
+	}
+	return (0);
+}
+
+
+int	check_heredoc (t_cmd **cmd)
+{
+	t_cmd *temp;
+
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (*cmd)
+	{
+		if (run_heredoc((*cmd)->redicts, cmd) == 130)
+			return (130);
+		*cmd = (*cmd)->next;
+	}
+	*cmd = temp;
+	return (0);
+}
 
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
 	int built_ex;
+	int fd0_copy = dup(0);
+	int fd1_copy = dup(1);
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
 	preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
+	if (check_heredoc(cmd) == 130)
+		return ;
 	if (choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
@@ -734,6 +804,10 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			// close(g_params->fd_read);
 		}
 	}
+	dup2(fd0_copy, 0);
+	close(fd0_copy);
+	dup2(fd1_copy, 1);
+	close(fd1_copy);
 }
 
 
