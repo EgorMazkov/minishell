@@ -206,6 +206,24 @@ void	ft_env(t_env *ev)
 }
 
 
+
+int args_valid(char *ar)
+{
+	int str;
+
+	str = 0;
+	while (ar[str] && ar[str] != '=')
+	{
+		if (!ft_isalpha(ar[str]))
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
+
+
+
 int	export_compare_not_value(t_env **ev, char *s)
 {
 	int i;
@@ -240,10 +258,12 @@ int	ft_export(t_env **ev, char **arg)
 {
 	t_env *temp;
 	int i;
+	int not_valid;
 	char *vals;
 	char *vars;
 
 	temp = *ev;
+	not_valid = 0;
 	i = -1;
 	if (!arg || !*arg)
 	{
@@ -278,6 +298,11 @@ int	ft_export(t_env **ev, char **arg)
 	{
 		while (arg[++i])
 		{
+			if (!args_valid(arg[i]))
+			{
+				not_valid = 1;
+				printf("%s: not a valid identifier\n", arg[i]);
+			}
 			if (!export_compare_not_value(ev, arg[i]))
 			{
 				vals = value_of_variable(arg[i]);
@@ -298,5 +323,7 @@ int	ft_export(t_env **ev, char **arg)
 			}
 		}
 	}
-	return (0);
+	if (not_valid)
+		return (-1);
+	return (1);
 }

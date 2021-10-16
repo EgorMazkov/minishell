@@ -8,6 +8,7 @@ void	cmd_c_fork(int signum)
 {
 	(void)signum;
 	// g_param->ret = 1;
+	g_params->exit_code = 130;
 	write(1, "\n", 1);
 	// rl_on_new_line();
 	// rl_replace_line("", 0);
@@ -18,6 +19,7 @@ void	cmd_c(int signum)
 {
 	(void)signum;
 	// g_param->ret = 1;
+	g_params->exit_code = 1;
 	rl_on_new_line();
 	rl_redisplay();
 	write(1, "  \n", 3);
@@ -731,6 +733,7 @@ int	check_heredoc (t_cmd **cmd)
 {
 	t_cmd *temp;
 
+	g_params->exit_code = 0;
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
 	temp = *cmd;
@@ -752,13 +755,11 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	int fd1_copy = dup(1);
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
-	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
+	record_cmd(cmd, minishell, env);
 	preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
-	if (check_heredoc(cmd) == 130)
-		return ;
-	if (choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
+	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
 		return ;
@@ -773,7 +774,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	else if (built_ex == -1)
 		g_params->exit_code = 1;
 	else if (built_ex == 1)
-		g_params->exit_code = 0;
+		g_params->exit_code = 0;	
 	else if (!built_ex)/*!отрабатывает лишняя команда*/
 	{
 		pid = fork();
@@ -784,10 +785,6 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			if (0)
 			{
 				exit(0);
-			}
-			if (g_params->exit_code == 130)
-			{
-				exit(1);
 			}
 			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
 			{
@@ -824,11 +821,12 @@ int main (int argc, char **argv, char **ev)
 	cmd = NULL;
 	// pid_t pid;
 
-	if (ev)
-	{
+	// if (ev)
+	// {
 		env_record(&env, ev);
 		overwrite_env(&env, "OLDPWD", getcwd(NULL, 0));
-	}
+		overwrite_env(&env, "SHLVL", ft_itoa(ft_atoi(get_variable_env(env, "SHLVL")) + 1));
+	// }
 	g_params = malloc(sizeof(t_params *));
 	while (1)
 	{

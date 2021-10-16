@@ -106,6 +106,7 @@ char 	**ft_envdup(char **env);
 void	env_record(t_env **env, char **ev);
 void 	env_value_add (t_env **lst, t_env *el);
 t_env *new_env_value(char *varias);
+char *get_variable_env(t_env *ev, char *str);
 
 
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);

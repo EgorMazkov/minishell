@@ -51,57 +51,6 @@ void	lst_add(t_cmd **lst, t_cmd *el)
 	*lst = el;
 }
 
-char	*check_path(t_ms *minishell)
-{
-	char	*way;
-	int		check;
-
-	check = check_bin(minishell);
-	if (check)
-		return (ft_strdup(minishell->line[0]));
-	else
-	{
-		get_path(minishell);
-		way = right_way(minishell);
-		return (way);
-	}
-	return (0);
-}
-
-char	**record_cmd2(t_ms *minishell)
-{
-	int		i;
-	char	**dest;
-	char	**line;
-
-	line = malloc(sizeof(char *) * 1);
-	if (!minishell->line[0])
-  		return (NULL);
-	line[0] = malloc(sizeof(char *) * ft_strlen(minishell->line[0]));
-	line[0] = ft_strdup(minishell->line[0]);
-	i = 0;
-	while (minishell->line[i] && *minishell->line[i] != '|')
-		i++;
-	dest = (char **)malloc(sizeof(char *) * i);
-	minishell->line[0] = check_path(minishell);
-	i = 0;
-	if (minishell->line[0] == NULL)
-	{
-		minishell->line[0] = ft_strdup(line[0]);
-		dest[i] = ft_strdup(line[0]);
-		i++;
-	}
-	while (minishell->line[i] && *minishell->line[i] != '|')
-	{
-		dest[i] = ft_strdup(minishell->line[i]);
-		i++;
-	}
-	dest[i] = NULL;
-	if (minishell->line[i] && *minishell->line[i] == '|')
-		minishell->line = jopa(minishell, i);
-	return (dest);
-}
-
 int	len_tab(char **str)
 {
 	int	i;
