@@ -638,38 +638,40 @@ int get_descriptor(char **redir, t_cmd *cmd)
 }
 
 
-int choose_reds(t_cmd *cmd)
+int choose_reds(t_cmd **cmd)
 {
 	t_cmd *lst;
-	while (cmd->back)
-		cmd = cmd->back;
-	lst = cmd;
-	while (cmd)
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	lst = *cmd;
+	while (*cmd)
 	{
-		if (get_descriptor(cmd->redicts, cmd))
+		if (get_descriptor((*cmd)->redicts, *cmd))
 			return (-3);
-		cmd = cmd->next;
+		*cmd = (*cmd)->next;
 	}
+	*cmd = lst;
 	return (0);
 }
 
 
 
-void	cmd_run(t_cmd *cmd)
+void	cmd_run(t_cmd **cmd)
 {
 	t_cmd *temp;
 	char **ar;
 
-	while (cmd->back)
-		cmd = cmd->back;
-	temp = cmd;
-	while (temp)
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (*cmd)
 	{
-		ar = temp->argv;
-		temp->redicts = record_redicts(ar);
-		temp->argv = rewrite_cmd(ar);
-		temp = temp->next;
+		ar = (*cmd)->argv;
+		(*cmd)->redicts = record_redicts(ar);
+		(*cmd)->argv = rewrite_cmd(ar);
+		*cmd = (*cmd)->next;
 	}
+	*cmd = temp;
 }
 
 
@@ -682,8 +684,8 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 
 	record_cmd(cmd, minishell, env);
 	minishell->env = env_from_lists(*env);
-	cmd_run(*cmd);
-	if (choose_reds(*cmd) == -3)/* Сделать отдельное условие для << */
+	cmd_run(cmd);
+	if (choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
 		return ;
