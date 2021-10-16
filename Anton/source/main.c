@@ -644,11 +644,11 @@ int choose_reds(t_cmd *cmd)
 	while (cmd->back)
 		cmd = cmd->back;
 	lst = cmd;
-	while (lst)
+	while (cmd)
 	{
-		if (get_descriptor(lst->redicts, lst))
+		if (get_descriptor(cmd->redicts, cmd))
 			return (-3);
-		lst = lst->next;
+		cmd = cmd->next;
 	}
 	return (0);
 }
@@ -688,8 +688,8 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 		g_params->exit_code = 1;
 		return ;
 	}
-	test(cmd);
-	return ;
+	// test(cmd);
+	// return ;
 	// rdct_left_dock(*cmd);
 	if (!(*cmd)->next && !(*cmd)->back)
 		built_ex = built_in_run(*cmd, env);
