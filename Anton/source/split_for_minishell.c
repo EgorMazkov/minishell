@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 21:50:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/03 13:37:14 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/17 15:24:24 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,19 @@ static size_t	schet (char const *s, char c)
 				i++;
 			}
 		}
+		else if (s[i] == 39)
+		{
+			sep++;
+			i++;
+			while (s[i] != '\'')
+				i++;
+			while (s[i] == c)
+			{
+				if (s[i + 1] == '\0')
+					return (sep);
+				i++;
+			}
+		}
 		else if (s[i] == c)
 		{
 			while (s[i] == c)
@@ -75,7 +88,7 @@ static	size_t	len_word (const char *src, size_t start, char c)
 	// 	start++;
 	// 	i--;
 	// }
-	while (((src[start] != '\"' || src[start] == '\'') && src[start] != c) && src[start] != '\0')
+	while (src[start] != c && src[start] != '\0')
 	{
 		// printf("src : %c\n", src[start]);
 		start++;
@@ -88,7 +101,7 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 {
 	size_t	word;
 	int 	quote = 0;
-	int		check_quote = 0;
+	// int		check_quote = 0;
 
 	word = 0;
 	while (s[i])
@@ -99,21 +112,20 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 			if (quote % 2 != 0)
 			{
 				if (s[i] == '\'')
+				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
+					i += len_word(s, i + 1, '\'') + 2;
+				}
 				else
+				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
+					i += len_word(s, i + 1, '\'') + 2;
+				}
 				if (mass[word] == NULL)
 					jango(mass, word);
 				word++;
-				while ((s[i] != '\"' || s[i] != '\'' || \
-				s[i] != c) && s[i] != '\0' && check_quote != 2)
-				{
-					if (s[i] == '\"')
-						check_quote++;
-					i++;
-				}
-				if (check_quote == 1)
-					return (NULL);
+				// if (check_quote == 1)
+				// 	return (NULL);
 				quote++;
 			}
 		}

@@ -8,6 +8,7 @@ void	cmd_c_fork(int signum)
 {
 	(void)signum;
 	// g_param->ret = 1;
+	g_params->exit_code = 130;
 	write(1, "\n", 1);
 	// rl_on_new_line();
 	// rl_replace_line("", 0);
@@ -18,6 +19,7 @@ void	cmd_c(int signum)
 {
 	(void)signum;
 	// g_param->ret = 1;
+	g_params->exit_code = 1;
 	rl_on_new_line();
 	rl_redisplay();
 	write(1, "  \n", 3);
@@ -63,6 +65,10 @@ int is_builtin (char *command)
 
 int built_in_run (t_cmd *cmd, t_env **ev)
 {
+	if (!cmd || !*cmd->argv)
+		return (-999);
+	if (!cmd->back && !cmd->next)
+		why_rdct(cmd);
 	if (is_builtin(cmd->argv[0]))
 	{
 		if (!ft_strcmp("echo", cmd->argv[0]))
@@ -87,16 +93,29 @@ int built_in_run (t_cmd *cmd, t_env **ev)
 
 int why_rdct(t_cmd *cmd)
 {
-	if (!cmd->file)
-		return (0);
-	if (!ft_strcmp(cmd->file, "> eqw"))
-		return (rdct_right(cmd));
-	else if (!ft_strcmp(cmd->file, "< eqw"))
-		return (rdct_left_read(cmd));
-	else if (!ft_strcmp(cmd->file, ">> eqw"))
-		return (rdct_right_append(cmd));
-	else if (!ft_strcmp(cmd->file, "<< eqw"))
-		return (rdct_left_dock(cmd));
+	int read;
+	int write;
+
+	read = 0;
+	write = 0;
+	if (cmd->fd_read != -1)
+	{
+		dup2(cmd->fd_read, 0);
+		close(cmd->fd_read);
+		read++;
+	}
+	if (cmd->fd_write != -1)
+	{
+		dup2(cmd->fd_write, 1);
+		close(cmd->fd_write);
+		write++;
+	}
+	if (read && write)
+		return(RDCT_ALL);
+	if (read && !write)
+		return(RDCT_L);
+	if (write && !read)
+		return(RDCT_R);
 	return (0);
 }
 
@@ -212,7 +231,6 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 	(void)input, (void)env;
 	flag = 0;
 	len = lenlist(cmd);
-	printf("%d\n", len);
 	int exit_builtin;
 
 	while (cmd->back)
@@ -252,13 +270,13 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 			{
 				if (!flag)
 				{
-					if (was_red != RDCT_L && was_red != RDCT_LL)
+					if (was_red != RDCT_L && was_red != RDCT_ALL)
 						dup2(b[0], 0);
 				}
 				else
 				{
 					// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
-					if (was_red != RDCT_L && was_red != RDCT_LL)
+					if (was_red != RDCT_L && was_red != RDCT_ALL)
 						dup2(a[0], 0);
 				}
 				// execve(wc[0], wc, env);
@@ -267,26 +285,26 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 			{
 				// printf("Zahodi\t --------------------%d\n", why_rdct(cmd));
 				close(a[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(a[1], 1);
 				close(a[1]);
 			}
 			else if (!flag)
 			{
-				if (was_red != RDCT_L && was_red != RDCT_LL)
+				if (was_red != RDCT_L && was_red != RDCT_ALL)
 					dup2(b[0], 0);
 				close(b[0]);
 				close(a[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(a[1], 1);
 			}
 			else if (flag)
 			{
-				if (was_red != RDCT_L && was_red != RDCT_LL)
+				if (was_red != RDCT_L && was_red != RDCT_ALL)
 					dup2(a[0], 0);
 				close(a[0]);//rvferrbrbr
 				close(b[0]);
-				if (was_red != RDCT_R && was_red != RDCT_RR)
+				if (was_red != RDCT_R && was_red != RDCT_ALL)
 					dup2(b[1], 1);
 			}
 			exit_builtin = built_in_run(cmd, ev);
@@ -303,11 +321,13 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				exit(0);
 			}
 			else
+			{
 				if (execve(cmd->argv[0], cmd->argv, env_from_lists(*ev)) == -1)
 				{
 					perror(*cmd->argv);
 					exit(127);
 				}
+			}
 			// execve(grep[0], grep, env);
 		}
 		else
@@ -338,6 +358,12 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 				flag = 1;
 			else if (flag && cmd->next)
 				flag = 0;
+			if (cmd->fd_her != -1)
+				close(cmd->fd_her);
+			if (cmd->fd_read != -1)
+				close(cmd->fd_read);
+			if (cmd->fd_her != -1)
+				close(cmd->fd_write);
 			// printf("PIOOEPE A:    %d, %d\n", a[0], a[1]);
 			// printf("PIOOEPE B:    %d, %d\n", b[0], b[1]);
 			cmd = cmd->next;
@@ -400,7 +426,6 @@ void	pipes(t_cmd *cmd, int input, char **env, t_env **ev)
 
 		i++;
 	}
-	printf("%d\n", count);
 	// printf("\033[1;33mEXITCODE:    %d\n\033[0;29m", g_params->exit_code);
 	// printf("%d\n", out);
 	// printf("{ipe a:    %d, %d\n", a[0], a[1]);
@@ -497,9 +522,10 @@ void test(t_cmd **cmd)
 	while (temp)
 	{
 		while (temp->argv[++i])
-			printf("argv: %s\n", temp->argv[i]);
-		while (temp->file[++i])
-			printf("file: %s\n", temp->file[i]);
+			printf("%s\n", temp->argv[i]);
+		i = -1;
+		while (temp->redicts && temp->redicts[++i])
+			printf("%s\n", temp->redicts[i]);
 		printf("----------------((Anton))------------------\n");
 		temp = temp->next;
 		i = -1;
@@ -507,24 +533,244 @@ void test(t_cmd **cmd)
 }
 
 
+int redirect_count (char **argv)
+{
+	int count;
+	int i;
+
+	count = 0;
+	i = -1;
+	while (argv[++i])
+	{
+		printf("asdasdasdasdasdsadsad\n");
+		if (!ft_strcmp(argv[i], ">>") || \
+		!ft_strcmp(argv[i], ">") || \
+		!ft_strcmp(argv[i], "<") || \
+		!ft_strcmp(argv[i], "<<"))
+			count++;
+	}
+	return (count * 2);
+}
+
+
+#include <string.h>
+char **rewrite_cmd(char **argv)
+{
+	int i;
+	int str;
+	char **temp;
+
+	i = 0;
+	str = 0;
+	temp = (char **)malloc((len_tab(argv) - redirect_count(argv) + 1) * sizeof(char *));
+	while (argv[i])
+	{
+		if (!ft_strcmp(argv[i], ">>") || \
+		!ft_strcmp(argv[i], ">") || \
+		!ft_strcmp(argv[i], "<") || \
+		!ft_strcmp(argv[i], "<<"))
+		{
+			i += 2;
+			continue;
+		}
+		temp[str] = strdup(argv[i]);
+		str++;
+		i++;
+	}
+	temp[str] = NULL;
+	return (temp);
+}
+
+
+void	free_mass(char **argv)
+{
+	int i;
+
+	i = -1;
+	while (argv[++i])
+		free(argv[i]);
+}
+
+
+char**	record_redicts(char **argv)
+{
+	int str;
+	int i;
+	char **temp;
+
+	str = 0;
+	i = 0;
+	printf("asdasda\n");
+	temp = (char **)malloc((redirect_count(argv) + 1) * sizeof(char *));
+	while (argv[str])
+	{
+		if (!ft_strcmp(argv[str], ">>") || \
+		!ft_strcmp(argv[str], ">") || \
+		!ft_strcmp(argv[str], "<") || \
+		!ft_strcmp(argv[str], "<<"))
+		{
+			temp[i] = strdup(argv[str]);
+			temp[i + 1] = strdup(argv[str + 1]);
+			i += 2;
+			str += 2;
+			continue;
+		}
+		str++;
+	}
+	temp[i] = NULL;
+	return (temp);
+}
+
+
+int get_descriptor(char **redir, t_cmd *cmd)
+{
+	int str;
+
+	str = -1;
+	while (redir[++str])
+	{
+		if (!ft_strcmp(redir[str], "<"))
+		{
+			if (cmd->fd_read != -1)
+				close(cmd->fd_read);
+			cmd->fd_read = open(redir[str + 1], O_RDONLY);
+			if (cmd->fd_read == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+		else if (!ft_strcmp(redir[str], ">"))
+		{
+			if (cmd->fd_write != -1)
+				close(cmd->fd_write);
+			cmd->fd_write = open(redir[str + 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+			if (cmd->fd_write == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+		else if (!ft_strcmp(redir[str], ">>"))
+		{
+			if (cmd->fd_write != -1)
+				close(cmd->fd_write);
+			cmd->fd_write = open(redir[str + 1], O_WRONLY | O_CREAT | O_APPEND, 0666);
+			if (cmd->fd_write == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+		else if (!ft_strcmp(redir[str], "<<"))
+		{
+			if (cmd->fd_read != -1)
+				close(cmd->fd_write);
+			cmd->fd_read = cmd->fd_her;
+			if (cmd->fd_read == -1)
+			{
+				perror(redir[str + 1]);
+				return (-3);
+			}
+		}
+	}
+	return (0);
+}
+
+
+int choose_reds(t_cmd **cmd)
+{
+	t_cmd *lst;
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	lst = *cmd;
+	while (*cmd)
+	{
+		if (get_descriptor((*cmd)->redicts, *cmd))
+			return (-3);
+		*cmd = (*cmd)->next;
+	}
+	*cmd = lst;
+	return (0);
+}
 
 
 
+void	cmd_run(t_cmd **cmd)
+{
+	t_cmd *temp;
+	char **ar;
 
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (*cmd)
+	{
+		ar = (*cmd)->argv;
+		(*cmd)->redicts = record_redicts(ar);
+		(*cmd)->argv = rewrite_cmd(ar);
+		*cmd = (*cmd)->next;
+	}
+	*cmd = temp;
+}
+
+
+int run_heredoc (char **redict, t_cmd **cmd)
+{
+	int i;
+
+	i = -1;
+	while (redict[++i])
+	{
+		if (!ft_strcmp("<<", redict[i]))
+		{
+			rdct_left_dock(*cmd, redict[i + 1]);
+			if (g_params->exit_code == 130)
+				return (130);
+		}
+	}
+	return (0);
+}
+
+
+int	check_heredoc (t_cmd **cmd)
+{
+	t_cmd *temp;
+
+	g_params->exit_code = 0;
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	temp = *cmd;
+	while (*cmd)
+	{
+		if (run_heredoc((*cmd)->redicts, cmd) == 130)
+			return (130);
+		*cmd = (*cmd)->next;
+	}
+	*cmd = temp;
+	return (0);
+}
 
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
 	int built_ex;
+	int fd0_copy = dup(0);
+	int fd1_copy = dup(1);
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
-	int i = 0;
-	int j = 0;
-	record_cmd(cmd, minishell, env);
-	test(cmd);
-	return ;
 	minishell->env = env_from_lists(*env);
-	// (*cmd)->file = ft_strdup(">> eqw");
+	record_cmd(cmd, minishell, env);
+	// test(cmd);
+	// return ;
+	cmd_run(cmd);
+	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
+	{
+		g_params->exit_code = 1;
+		return ;
+	}
+	three_hundred_bucks(cmd, env);
+	// test(cmd);
 	// rdct_left_dock(*cmd);
 	if (!(*cmd)->next && !(*cmd)->back)
 		built_ex = built_in_run(*cmd, env);
@@ -543,30 +789,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			// close(g_params->fd_read);
 			if (0)
 			{
-				if (!ft_strcmp((*cmd)->file, "> eqw"))
-				{
-					printf("a1\n");
-					rdct_right(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, ">> eqw"))
-				{
-					printf("a12\n");
-					rdct_right_append(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, "< eqw"))
-				{
-					printf("a13\n");
-					rdct_left_read(*cmd);
-				}
-				if (!ft_strcmp((*cmd)->file, "<< eqw"))
-				{
-					// printf("a14\n");
-					rdct_left_dock(*cmd);
-				}
-			}
-			if (g_params->exit_code == 130)
-			{
-				exit(1);
+				exit(0);
 			}
 			if (execve((*cmd)->argv[0], (*cmd)->argv, minishell->env) == -1)
 			{
@@ -583,6 +806,10 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 			// close(g_params->fd_read);
 		}
 	}
+	dup2(fd0_copy, 0);
+	close(fd0_copy);
+	dup2(fd1_copy, 1);
+	close(fd1_copy);
 }
 
 
@@ -603,6 +830,7 @@ int main (int argc, char **argv, char **ev)
 	{
 		env_record(&env, ev);
 		overwrite_env(&env, "OLDPWD", getcwd(NULL, 0));
+		// overwrite_env(&env, "SHLVL", ft_itoa(ft_atoi(get_variable_env(env, "SHLVL")) + 1));
 	}
 	g_params = malloc(sizeof(t_params *));
 	while (1)

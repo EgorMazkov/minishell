@@ -47,15 +47,34 @@ char *get_old_path_to_env(t_env *ev)
 	return (NULL);
 }
 
+char *get_variable_env(t_env *ev, char *str)
+{
+	while (ev->back)
+		ev = ev->back;
+	while (ev)
+	{
+		if (!ft_strcmp(str, ev->variable))
+			return (ev->value);
+		ev = ev->next;
+	}
+	return (NULL);
+}
+
+
 int	ft_cd(char *arg, t_env **env)
 {
 	char *oldpath;
-
+	/* если pwd || oldpwd удалены, то их надо добавить снова на следующих выходах и входах в директории*/
 	if (!arg || !arg[0])
 	{
+		if (!get_variable_env(*env, "HOME"))
+		{
+			printf("cd: HOME not set\n");
+			return (-1);
+		}
 		// old->oldpwd = getcwd(NULL, 0);
 		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
-		if (chdir(getenv("HOME")) == -1)
+		if (chdir(get_variable_env(*env, "HOME")) == -1)
 		{
 			printf("newerni put\n");
 			overwrite_env(env, "PWD", getcwd(NULL, 0));
@@ -73,13 +92,13 @@ int	ft_cd(char *arg, t_env **env)
 	// }
 	else if (!ft_strncmp(arg, "-", 2))
 	{
-		if (!get_old_path_to_env(*env))
+		if (!get_variable_env(*env, "OLDPWD"))
 		{
 			printf("cd: OLDPWD not set\n");
 			return (-1);
 		}
 		oldpath = getcwd(NULL, 0);
-		if (chdir(get_old_path_to_env(*env)) == -1)
+		if (chdir(get_variable_env(*env, "OLDPWD")) == -1)
 		{
 			overwrite_env(env, "OLDPWD", oldpath);
 			overwrite_env(env, "PWD", getcwd(NULL, 0));
@@ -127,38 +146,50 @@ int	ft_cd(char *arg, t_env **env)
 	return (1);
 }
 
-int	is_slash_n(char *str)
+int	is_slash_n(char **str)
 {
 	int	i;
+	int ar;
 
-	i = 0;
-	if (str[i] != '-' || (str[i] == '-' && ft_strlen(str) == 1))
-		return (0);
-	if (str[i] == '-')
-		while (str[++i])
-			if (str[i] != 'n')
-				return (0);
-	return (1);
+	ar = 0;
+
+	while (str[ar])
+	{
+		i = 0;
+		if (str[ar][i] != '-' || (str[ar][i] == '-' && ft_strlen(str[ar]) == 1))
+			return (ar);
+		if (str[ar][i] == '-')
+		{
+			while (str[ar][++i])
+				if (str[ar][i] != 'n')
+					return (ar);
+		}
+		else
+			return (ar);
+		ar++;
+	}
+	return (ar);
 }
 
 void	ft_echo(char **arg)
 {
 	int str;
 	int line;
+	int flag_n;
 
-	str = -1;
-	while (arg[++str])
+	str = is_slash_n(arg);
+	if (str)
+		flag_n = 1;
+	while (arg[str])
 	{
-		if (!is_slash_n(arg[str]))
-		{
-			line = -1;
-			while (arg[str][++line])
-				write(1, &arg[str][line], 1);
-			if (arg[str + 1])
-				write(1, " ", 1);
-		}
+		line = -1;
+		while (arg[str][++line])
+			write(1, &arg[str][line], 1);
+		if (arg[str + 1])
+			write(1, " ", 1);
+		str++;
 	}
-	if (!is_slash_n(arg[0]))
+	if (!flag_n)
 		write(1, "\n", 1);
 }
 
@@ -173,6 +204,24 @@ void	ft_env(t_env *ev)
 		ev = ev->next;
 	}
 }
+
+
+
+int args_valid(char *ar)
+{
+	int str;
+
+	str = 0;
+	while (ar[str] && ar[str] != '=')
+	{
+		if (!ft_isalpha(ar[str]))
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
+
 
 
 int	export_compare_not_value(t_env **ev, char *s)
@@ -209,10 +258,12 @@ int	ft_export(t_env **ev, char **arg)
 {
 	t_env *temp;
 	int i;
+	int not_valid;
 	char *vals;
 	char *vars;
 
 	temp = *ev;
+	not_valid = 0;
 	i = -1;
 	if (!arg || !*arg)
 	{
@@ -247,6 +298,11 @@ int	ft_export(t_env **ev, char **arg)
 	{
 		while (arg[++i])
 		{
+			if (!args_valid(arg[i]))
+			{
+				not_valid = 1;
+				printf("%s: not a valid identifier\n", arg[i]);
+			}
 			if (!export_compare_not_value(ev, arg[i]))
 			{
 				vals = value_of_variable(arg[i]);
@@ -267,5 +323,7 @@ int	ft_export(t_env **ev, char **arg)
 			}
 		}
 	}
-	return (0);
+	if (not_valid)
+		return (-1);
+	return (1);
 }

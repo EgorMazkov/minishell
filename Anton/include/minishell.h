@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/14 19:08:33 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/17 17:43:07 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define RDCT_RR 113
 # define RDCT_L 114
 # define RDCT_LL 115
+# define RDCT_ALL 100
 
 
 typedef struct s_ms
@@ -43,11 +44,14 @@ typedef struct s_ms
 
 typedef struct s_cmd
 {
+	int fd_read;
+	int fd_write;
 	char *util_cmd; //* Утилита
 	char **argv;	//* Здесь команда с аргументами или файл
-	char **file;		//* Файл если был какой-нибудь редирект
+	char *file;		//* Файл если был какой-нибудь редирект
 	short operator; //* Здесь какой-либо оператор : < > << >> |
 	int fd_her;
+	char **redicts;
 	struct s_cmd *next;
 	struct s_cmd *back;
 } t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать
@@ -102,6 +106,7 @@ char 	**ft_envdup(char **env);
 void	env_record(t_env **env, char **ev);
 void 	env_value_add (t_env **lst, t_env *el);
 t_env *new_env_value(char *varias);
+char *get_variable_env(t_env *ev, char *str);
 
 
 void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
@@ -113,8 +118,8 @@ void	cmd_c(int signum);
 int	rdct_right(t_cmd *cmd);
 int	rdct_right_append(t_cmd *cmd);
 int	rdct_left_read(t_cmd *cmd);
-int	rdct_left_dock(t_cmd *cmd);
-
+int	rdct_left_dock(t_cmd *cmd, char *stop);
+int why_rdct(t_cmd *cmd);
 
 void	free_all(t_env **env);
 
@@ -145,10 +150,10 @@ char    *check_path_for_slash(t_ms *minishell, char **line);
 char	*pwd_check(t_ms *minishell);
 char	*slash_path(char *way, char *line);
 int check_quote(t_ms *minishell);
-
-
-
-int	check_rdct(t_ms *minishell, int i);
-char **record_cmd_file_rdct(t_ms *minishell);
+void	preparser_dollar(t_cmd **cmd, t_ms *minishell);
+void	record_dollar(t_cmd **cmd, int i, t_ms *minishell);
+char	*dollar_tolower(char **dest);
+void	get_path_dollar(t_cmd **cmd, int a, t_ms *minishell);
+void three_hundred_bucks(t_cmd **cmd, t_env **env);
 
 #endif

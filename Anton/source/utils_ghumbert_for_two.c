@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:57:22 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/14 20:18:20 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/17 18:01:43 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,10 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env)
 			record_cmd_pipe(cmd, minishell);
 			break ;
 		}
-		else
-		{
-			lst_add(cmd, new_cmd(minishell));
-			i = 0;
-			continue ;
-		}
 		i++;
 	}
+	if (check_pipe == 0)
+		lst_add(cmd, new_cmd(minishell));
 }
 
 t_cmd	*new_cmd(t_ms *minishell)
@@ -95,58 +91,14 @@ t_cmd	*new_cmd(t_ms *minishell)
 	if (!el)
 		return (NULL);
 	el->util_cmd = NULL;
+	el->fd_her = -1;
+	el->fd_read = -1;
+	el->fd_write = -1;
+	el->file = NULL;
 	el->next = NULL;
 	el->back = NULL;
+	el->redicts = NULL;
 	el->operator = -999;
 	el->argv = record_cmd2(minishell);
-	el->file = record_cmd_file_rdct(minishell);
 	return (el);
-}
-
-int	check_rdct(t_ms *minishell, int i)
-{
-	if (minishell->line[i] &&
-		((*minishell->line[i] == '>' && minishell->line[i][1] != '>') ||
-		(*minishell->line[i] == '<'  && minishell->line[i][1] != '<') ||
-		(*minishell->line[i] == '>' && minishell->line[i][1] == '>') ||
-		(*minishell->line[i] == '<' && minishell->line[i][1] == '<')))
-		return (1);
-	else
-		return (0);
-}
-
-char **record_cmd_file_rdct(t_ms *minishell)
-{
-	int	i;
-	int	j;
-	int	start_rdct;
-
-	i = 0;
-	j = 0;
-	start_rdct = 0;
-	char **dest = NULL;
-	if (!check_rdct(minishell, i))
-	{
-		while (!check_rdct(minishell, i))
-			i++;
-	}
-	start_rdct = i;
-	while (minishell->line[i] && *minishell->line[i] != '|')
-	{
-		j++;
-		i++;
-	}
-	j--;
-	dest = (char **)malloc(sizeof(char *) * j);
-	j = 0;
-	while (minishell->line[start_rdct] && *minishell->line[start_rdct] != '|')
-	{
-		dest[j] = ft_strdup(minishell->line[start_rdct]);
-		printf("%s\n", dest[j]);
-		j++;
-		start_rdct++;
-	}
-	dest[j] = NULL;
-	minishell->line = jopa(minishell, j);
-	return (dest);
 }
