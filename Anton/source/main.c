@@ -3,6 +3,11 @@
 
 t_params *g_params;
 
+void cmd_c_sl(int signum)
+{
+	(void)signum;
+	printf("Quit :3\n");
+}
 
 void	cmd_c_fork(int signum)
 {
@@ -14,6 +19,9 @@ void	cmd_c_fork(int signum)
 	// rl_replace_line("", 0);
 	// rl_redisplay();
 }
+
+
+
 
 void	cmd_c(int signum)
 {
@@ -45,6 +53,8 @@ int lenlist (t_cmd *list)
 
 int is_builtin (char *command)
 {
+	if (!command)
+		return (0);
 	if (!ft_strcmp("echo", command))
 		return (1);
 	else if (!ft_strcmp("unset", command))
@@ -65,7 +75,7 @@ int is_builtin (char *command)
 
 int built_in_run (t_cmd *cmd, t_env **ev)
 {
-	if (!cmd || !*cmd->argv)
+	if (!cmd || !cmd->argv || !*cmd->argv)
 		return (-999);
 	if (!cmd->back && !cmd->next)
 		why_rdct(cmd);
@@ -606,6 +616,12 @@ char**	record_redicts(char **argv)
 		!ft_strcmp(argv[str], "<<"))
 		{
 			temp[i] = strdup(argv[str]);
+			// if (!argv[str + 1])//qwdtyfcwbicewpcokneclmewclkew
+			// {//qwdtyfcwbicewpcokneclmewclkew
+			// 	printf("syntax error near unexpected token `newline'\n");//qwdtyfcwbicewpcokneclmewclkew
+			// 	g_params->exit_code = 258;//qwdtyfcwbicewpcokneclmewclkew
+			// 	return (NULL);//qwdtyfcwbicewpcokneclmewclkew
+			// }//qwdtyfcwbicewpcokneclmewclkew
 			temp[i + 1] = strdup(argv[str + 1]);
 			i += 2;
 			str += 2;
@@ -623,6 +639,10 @@ int get_descriptor(char **redir, t_cmd *cmd)
 	int str;
 
 	str = -1;
+	if (!redir || !*redir)//lkmgjbncjbwcwkmecnweec
+	{
+		return (0);//lkmgjbncjbwcwkmecnweec
+	}//lkmgjbncjbwcwkmecnweec
 	while (redir[++str])
 	{
 		if (!ft_strcmp(redir[str], "<"))
@@ -677,6 +697,9 @@ int get_descriptor(char **redir, t_cmd *cmd)
 int choose_reds(t_cmd **cmd)
 {
 	t_cmd *lst;
+
+	if (g_params->exit_code == 258)
+		return (-3);
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
 	lst = *cmd;
@@ -703,7 +726,14 @@ void	cmd_run(t_cmd **cmd)
 	while (*cmd)
 	{
 		ar = (*cmd)->argv;
+		if (!ar || !*ar)
+		{
+			*cmd = (*cmd)->next;
+			continue;
+		}
 		(*cmd)->redicts = record_redicts(ar);
+		if (!(*cmd)->redicts)
+			break ;
 		(*cmd)->argv = rewrite_cmd(ar);
 		*cmd = (*cmd)->next;
 	}
@@ -716,6 +746,8 @@ int run_heredoc (char **redict, t_cmd **cmd)
 	int i;
 
 	i = -1;
+	if (!redict || !*redict)//krbkmrfvnvnekljnedednvj
+		return (0);//krbkmrfvnvnekljnedednvj
 	while (redict[++i])
 	{
 		if (!ft_strcmp("<<", redict[i]))
@@ -733,7 +765,7 @@ int	check_heredoc (t_cmd **cmd)
 {
 	t_cmd *temp;
 
-	g_params->exit_code = 0;
+	// g_params->exit_code = 0;
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
 	temp = *cmd;
@@ -747,6 +779,64 @@ int	check_heredoc (t_cmd **cmd)
 	return (0);
 }
 
+
+int bucksonly (char *s)
+{
+	int i;
+
+	i = -1;
+	while (s[++i])
+		if (s[i] != '$')
+			return (0);
+	return (1);
+}
+
+
+void three_hundred_bucks (t_cmd **cmd, t_env **env)
+{
+	int i;
+	char *temp;
+	t_cmd *first_command;
+
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	first_command = *cmd;
+	while (*cmd)
+	{
+		i = -1;
+		if (!(*cmd)->argv || !(*cmd)->argv[0])
+		{
+			*cmd = (*cmd)->next;
+			continue;
+		}
+		while ((*cmd)->argv[++i])
+		{
+			if ((*cmd)->argv[i][0] == '\'')
+				(*cmd)->argv[i] = ft_strtrim((*cmd)->argv[i], "\'");
+			if (!ft_strcmp((*cmd)->argv[i], "$?"))
+			{
+				temp = (*cmd)->argv[i];
+				(*cmd)->argv[i] = ft_itoa(g_params->exit_code);
+				free(temp);
+				continue;
+			}
+			if ((*cmd)->argv[i][0] == '$')
+			{
+				temp = (*cmd)->argv[i];
+				if (bucksonly(temp))
+					break ;
+				(*cmd)->argv[i] = ft_strdup(get_variable_env(*env, (*cmd)->argv[i] + 1));
+				// printf("%s\n", (*cmd)->argv[i]);
+				free(temp);
+			}
+		}
+		*cmd = (*cmd)->next;
+	}
+	*cmd = first_command;
+}
+
+
+
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	pid_t pid;
@@ -757,13 +847,14 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 
 	minishell->env = env_from_lists(*env);
 	record_cmd(cmd, minishell, env);
-	preparser_dollar(cmd, minishell);
+	// preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
 	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
 		return ;
 	}
+	three_hundred_bucks(cmd, env);
 	// test(cmd);
 	// return ;
 	// rdct_left_dock(*cmd);
@@ -774,8 +865,10 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	else if (built_ex == -1)
 		g_params->exit_code = 1;
 	else if (built_ex == 1)
-		g_params->exit_code = 0;	
-	else if (!built_ex)/*!отрабатывает лишняя команда*/
+		g_params->exit_code = 0;
+	else if (!*cmd || !(*cmd)->argv || !*(*cmd)->argv)
+		return ;
+	else if (*(*cmd)->argv && !is_builtin(*(*cmd)->argv))/*!отрабатывает лишняя команда*/
 	{
 		pid = fork();
 		if (!pid)
@@ -821,12 +914,27 @@ int main (int argc, char **argv, char **ev)
 	cmd = NULL;
 	// pid_t pid;
 
-	// if (ev)
-	// {
+
+	if (ev && *ev)
+	{
 		env_record(&env, ev);
 		overwrite_env(&env, "OLDPWD", getcwd(NULL, 0));
 		overwrite_env(&env, "SHLVL", ft_itoa(ft_atoi(get_variable_env(env, "SHLVL")) + 1));
-	// }
+	}
+	else
+	{
+		int i = 0;
+		printf("which env?\n");
+		while (i < 100)
+		{
+			printf("\033[0;32m.\033[0;29m");
+			i++;
+		}
+		printf("fuck you!\n");
+		exit(1);
+	}
+
+
 	g_params = malloc(sizeof(t_params *));
 	while (1)
 	{
@@ -836,6 +944,7 @@ int main (int argc, char **argv, char **ev)
 		null_struct(minishell, ev);
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
 		signal(SIGINT, cmd_c_fork);
+		signal(SIGQUIT, cmd_c_sl);
 		if (!minishell->input)
 		{
 			printf("exit\n");

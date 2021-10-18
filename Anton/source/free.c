@@ -20,7 +20,7 @@ t_env	*get_maxmin_variable (t_env *variable, _Bool min_max)
 	temp = variable;
 	min = variable;
 	difference = 0;
-	while (temp->back)
+	while (temp && temp->back)
 		temp = temp->back;
 	while (temp)
 	{

@@ -49,7 +49,7 @@ char *get_old_path_to_env(t_env *ev)
 
 char *get_variable_env(t_env *ev, char *str)
 {
-	while (ev->back)
+	while (ev && ev->back)
 		ev = ev->back;
 	while (ev)
 	{
@@ -195,7 +195,7 @@ void	ft_echo(char **arg)
 
 void	ft_env(t_env *ev)
 {
-	while (ev->back)
+	while (ev && ev->back)
 		ev = ev->back;
 	while (ev)
 	{
@@ -267,7 +267,7 @@ int	ft_export(t_env **ev, char **arg)
 	i = -1;
 	if (!arg || !*arg)
 	{
-		while (temp->back_alpha)
+		while (temp && temp->back_alpha)
 			temp = temp->back_alpha;
 		while (temp)
 		{
@@ -311,7 +311,7 @@ int	ft_export(t_env **ev, char **arg)
 				vars = name_of_variable(arg[i]);
 				if (!overwrite_env(ev, vars, vals))
 				{
-					while ((*ev)->next)
+					while (*ev && (*ev)->next)
 						*ev = (*ev)->next;
 					env_value_add(ev, new_env_value(arg[i]));
 					while ((*ev)->back)

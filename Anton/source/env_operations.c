@@ -50,6 +50,9 @@ char **env_from_lists (t_env *env)
 	char *join1;
 	int i = 0;
 
+	if (!env)
+		return (NULL);
+
 	while (env->back)
 		env = env->back;
 	str = (char **)malloc(sizeof(char *) * lenlist_env(env) + 1);
@@ -129,7 +132,7 @@ void	env_record(t_env **env, char **ev)
 	int i;
 
 	i = -1;
-	if (!*ev)
+	if (!ev || !*ev)
 	{
 		*env = NULL;
 		return ;
@@ -199,7 +202,7 @@ void	ft_unset (t_env **env, char **value)
 	str = 0;
 	while (value[str])
 		value_delete(env, value[str++]);
-	while ((*env)->back)
+	while (*env && (*env)->back)
 		*env = (*env)->back;
 	alpha_variables(*env);
 }
@@ -219,7 +222,7 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 		variable = ft_substr(variable, 0, ft_strlen(variable) - 1);
 		concat++;
 	}
-	while(temp->back)
+	while(temp && temp->back)
 		*env = temp->back;
 	while (temp)
 	{
@@ -250,7 +253,7 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 
 char *value_of_env(t_env *env, char *value)
 {
-	while(env->back)
+	while(env && env->back)
 		env = env->back;
 	while (env)
 	{
