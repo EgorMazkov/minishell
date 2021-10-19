@@ -17,6 +17,11 @@ void	get_path(t_ms *minishell)
 	int	i;
 
 	i = -1;
+	if (!minishell->env)
+	{
+		minishell->way = NULL;
+		return ;
+	}
 	while (minishell->env[++i])
 	{
 		if (ft_strncmp(minishell->env[i], "PATH=", 5) == 0)

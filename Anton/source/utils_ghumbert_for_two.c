@@ -12,30 +12,7 @@
 
 #include "../include/minishell.h"
 
-int	check_bin(t_ms *minishell)
-{
-	int	i;
 
-	i = 0;
-	if (minishell->line)
-	{
-		if (!ft_strncmp(minishell->line[i], "cd", 2))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "env", 3))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "echo", 4))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "pwd", 3))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "unset", 5))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "exit", 4))
-			return (1);
-		if (!ft_strncmp(minishell->line[i], "export", 6))
-			return (1);
-	}
-	return (0);
-}
 
 void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell)
 {

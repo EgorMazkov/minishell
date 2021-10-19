@@ -9,7 +9,7 @@ int    ft_pwd(t_env *env)
 	// {
 	// 	exit(0);
 	// }
-	while(temp->back)
+	while(temp && temp->back)
 		temp = temp->back;
 	while (temp)
 	{

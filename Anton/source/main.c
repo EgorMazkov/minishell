@@ -849,6 +849,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	record_cmd(cmd, minishell, env);
 	// preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
+	path(cmd, minishell);
 	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
@@ -927,6 +928,8 @@ int main (int argc, char **argv, char **ev)
 		printf("which env?\n");
 		while (i < 100)
 		{
+			char *say[5] = {"/usr/bin/say", "-v", "Yuri", "Где мой Ee Эн Вэ?", NULL};
+			execve(say[0], say, ev);
 			printf("\033[0;32m.\033[0;29m");
 			i++;
 		}
