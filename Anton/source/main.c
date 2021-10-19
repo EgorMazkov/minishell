@@ -721,7 +721,7 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	record_cmd(cmd, minishell, env);
 	cmd_run(cmd);
 	path(cmd, minishell);
-	free_minishell(minishell);
+	// free_minishell(minishell);
 	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
 	{
 		g_params->exit_code = 1;
@@ -801,16 +801,17 @@ int main (int argc, char **argv, char **ev)
 	}
 	else
 	{
-		int i = 0;
+		unsigned long long i = 0;
 		printf("which env?\n");
-		while (i < 100)
-		{
 			char *say[5] = {"/usr/bin/say", "-v", "Yuri", "Где мой Ee Эн Вэ?", NULL};
-			execve(say[0], say, ev);
-			printf("\033[0;32m.\033[0;29m");
+		while (i < 100000)
+		{
+			if (i % 2 == 1)
+				printf("\033[0;32m.\033[0;29m");
 			i++;
 		}
-		printf("fuck you!\n");
+		printf("\nfuck you!\n");
+			execve(say[0], say, ev);
 		exit(1);
 	}
 
@@ -852,6 +853,7 @@ int main (int argc, char **argv, char **ev)
 		// test(&cmd);
 		// pipes(cmd, 123, ev);
 		free_cmd(&cmd);
+		free_minishell(minishell);
 		free(minishell);
 
 		// printf("%d\n", ft_strncmp("__CF_USER_TEXT_ENCOD", "V", 1));

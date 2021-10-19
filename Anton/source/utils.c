@@ -33,6 +33,7 @@ char **record_cmd2(t_ms *minishell)
 {
 	int i;
 	char **dest;
+	char **line_jopa;
 
 	i = 0;
 	while (minishell->line[i] && minishell->line[i][0] != '|')
@@ -47,7 +48,11 @@ char **record_cmd2(t_ms *minishell)
 	}
 	dest[i] = NULL;
 	if (minishell->line[i] && *minishell->line[i] == '|')
+	{
+		line_jopa = minishell->line;
 		minishell->line = jopa(minishell, i);
+		free_argv(line_jopa);
+	}
 	return (dest);
 }
 
@@ -57,9 +62,9 @@ void path(t_cmd **cmd, t_ms *minishell)
 	char *dest;
 
 	line = NULL;
+		get_path(minishell);
 	while ((*cmd)->argv[0])
 	{
-		get_path(minishell);
 		if (check_bin(*cmd))
 		{
 			if (minishell->way)

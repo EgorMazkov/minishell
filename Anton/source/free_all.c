@@ -44,7 +44,7 @@ void	free_env(t_env **env)
 {
 	t_env *temp;
 
-	while ((*env)->back)
+	while (*env && (*env)->back)
 		*env = (*env)->back;
 	while (*env)
 	{

@@ -164,9 +164,7 @@ void	value_delete(t_env **env, char *value)
 			temp = del->back;
 			if (!*env && !temp)
 			{
-				del->value = NULL;//    leaks
-				del->variable = NULL;
-				free(del);
+				free_env(&del);
 				return ;
 			}
 			if (temp)
@@ -179,15 +177,12 @@ void	value_delete(t_env **env, char *value)
 				del->back_alpha->next_alpha = NULL;
 			if (del->next_alpha)
 				del->next_alpha->back_alpha = NULL;
-			free(del->value);
-			free(del->variable);
-			del->value = NULL;//    leaks
-			del->variable = NULL;//    leaks
 			del->next = NULL;//    leaks
 			del->next_alpha = NULL;//    leaks
 			del->back = NULL;//    leaks
 			del->back_alpha = NULL;//    leaks
-			free(del);
+			free_env(&del);
+			// free(del);
 			return ;
 		}	
 		*env = (*env)->next;
@@ -201,11 +196,14 @@ void	ft_unset (t_env **env, char **value)
 	int str;
 
 	str = 0;
-	while (value[str])
-		value_delete(env, value[str++]);
-	while (*env && (*env)->back)
-		*env = (*env)->back;
-	alpha_variables(*env);
+	if (value && value[0])
+	{
+		while (value[str])
+			value_delete(env, value[str++]);
+		while (*env && (*env)->back)
+			*env = (*env)->back;
+		alpha_variables(*env);
+	}
 }
 
 int	overwrite_env(t_env **env, char *variable, char *new_value)//Принимает название переменной и на какое значение изменить ее содержимое
@@ -229,7 +227,7 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 	{
 		if (!ft_strcmp(variable, temp->variable))
 		{
-			if (!new_value)
+			if (!*new_value)
 			{
 				temp->value = NULL;
 				return (1);

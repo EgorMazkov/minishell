@@ -30,7 +30,11 @@ void	get_path(t_ms *minishell)
 			break ;
 		}
 		else
+		{
+			if (minishell->way)
+				free_argv(minishell->way);
 			minishell->way = NULL;
+		}
 	}
 }
 

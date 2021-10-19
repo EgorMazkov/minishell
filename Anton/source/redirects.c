@@ -36,7 +36,7 @@ int rdct_left_dock(t_cmd *cmd, char *stop)
 			while (input[++i])
 				write(fd[1], &input[i], 1);
 			write(fd[1], "\n", 1);
-			free(input);
+			free_str(input);
 		}
 		close(fd[1]);
 		close(fd[0]);
