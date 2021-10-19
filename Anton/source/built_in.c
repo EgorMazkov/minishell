@@ -14,7 +14,10 @@ int    ft_pwd(t_env *env)
 	while (temp)
 	{
 		if (!ft_strcmp("PWD", temp->variable))
-			printf("%s\n", temp->value);
+		{
+			ft_putstr_fd(temp->value, 1);
+			ft_putstr_fd("\n", 1);
+		}
 		temp = temp->next;
 	}
 	return (1);
@@ -26,7 +29,7 @@ char *level_down(char *s)
 	int i;
 
 	i = 0;
-	while (s[i])
+	while (s && s[i])
 		i++;
 	while (s[i] != '/')
 		i--;
@@ -34,18 +37,7 @@ char *level_down(char *s)
 	return (s);
 }
 
-char *get_old_path_to_env(t_env *ev)
-{
-	while (ev->back)
-		ev = ev->back;
-	while (ev)
-	{
-		if (!ft_strcmp("OLDPWD", ev->variable))
-			return (ev->value);
-		ev = ev->next;
-	}
-	return (NULL);
-}
+
 
 char *get_variable_env(t_env *ev, char *str)
 {

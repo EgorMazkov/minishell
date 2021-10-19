@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <string.h>
 # define MAX 1
 # define MIN 0
 
@@ -46,15 +47,12 @@ typedef struct s_cmd
 {
 	int fd_read;
 	int fd_write;
-	char *util_cmd; //* Утилита
 	char **argv;	//* Здесь команда с аргументами или файл
-	char *file;		//* Файл если был какой-нибудь редирект
-	short operator; //* Здесь какой-либо оператор : < > << >> |
 	int fd_her;
 	char **redicts;
 	struct s_cmd *next;
 	struct s_cmd *back;
-} t_cmd; //* Так же будет добавлен список редиректов, который будет сокращен до одного или двух листов : откуда читать и куда писать
+} t_cmd;
 
 typedef struct s_env
 {
@@ -76,15 +74,6 @@ typedef struct s_params
 
 
 extern t_params *g_params;
-
-typedef struct s_rdct
-{
-	int heredoc[2];
-	short rdct;
-	struct s_rdct *next;
-	struct s_rdct *back;
-	char *file;
-} t_rdct;
 
 void	ctrl_wd(int signum);
 
@@ -108,8 +97,7 @@ void 	env_value_add (t_env **lst, t_env *el);
 t_env *new_env_value(char *varias);
 char *get_variable_env(t_env *ev, char *str);
 
-
-void	pipes(t_cmd *cmd, int input, char **env, t_env **ev);
+void	pipes(t_cmd *cmd, t_env **ev);
 
 
 
@@ -131,6 +119,19 @@ int		ft_pwd(t_env *env);
 void	ft_unset (t_env **env, char **value);
 int		ft_export(t_env **ev, char **arg);
 int	ft_exit (char **code);
+
+
+
+void	free_argv (char **argv);
+void	free_str(char *string_free);
+void	free_cmd(t_cmd **cmd);
+void	free_env(t_env **env);
+void	free_minishell(t_ms *minishell);
+
+
+
+
+
 
 
 

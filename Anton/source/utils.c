@@ -53,12 +53,18 @@ char **record_cmd2(t_ms *minishell)
 
 void path(t_cmd **cmd, t_ms *minishell)
 {
-	char **line;
+	char *line;
+	char *dest;
 
+	line = NULL;
 	while ((*cmd)->argv[0])
 	{
+		get_path(minishell);
 		if (check_bin(*cmd))
 		{
+			if (minishell->way)
+				free_argv(minishell->way);
+			minishell->way = NULL;
 			if ((*cmd)->next)
 			{
 				*cmd = (*cmd)->next;
@@ -66,14 +72,17 @@ void path(t_cmd **cmd, t_ms *minishell)
 			}
 			return ;
 		}
-		get_path(minishell);
 		if (minishell->way)
 		{
-			line = (char **)malloc(sizeof(char *) * 1);
-			line[0] = right_way(*cmd, minishell);
+			line = right_way(*cmd, minishell);
 		}
-		if (line[0] != NULL)
-			(*cmd)->argv[0] = ft_strdup(line[0]);
+		if (line && *line)
+		{
+			dest = (*cmd)->argv[0];
+			(*cmd)->argv[0] = ft_strdup(line);
+			free(dest);
+			free(line);
+		}
 		if ((*cmd)->next)
 		{
 			*cmd = (*cmd)->next;
@@ -81,8 +90,9 @@ void path(t_cmd **cmd, t_ms *minishell)
 		}
 		else
 		{
-			line[0] = NULL;
-			free(line);
+			// if (line)
+				// free_str(line);
+			// line = NULL;
 			// printf("argv[0]: %s\n", (*cmd)->argv[0]);
 			return;
 		}
@@ -116,12 +126,10 @@ int check_bin(t_cmd *cmd)
 
 char *right_way(t_cmd *cmd, t_ms *minishell)
 {
-	int j;
 	int fd;
 	char *res;
 	int i;
 
-	j = 0;
 	i = 0;
 	while (minishell->way && minishell->way[i])
 	{
@@ -130,13 +138,13 @@ char *right_way(t_cmd *cmd, t_ms *minishell)
 		if (minishell->line == NULL)
 			return (NULL);
 		if (i == 0)
-			res = slash_path(minishell->way[i] + 5, cmd->argv[j]);
+			res = slash_path(minishell->way[i] + 5, cmd->argv[0]);
 		else
-			res = slash_path(minishell->way[i], cmd->argv[j]);
+			res = slash_path(minishell->way[i], cmd->argv[0]);
 		fd = open(res, O_RDONLY);
-		free(res);
 		if (fd != -1)
 			break;
+		free(res);
 		i++;
 	}
 	if (fd == -1)

@@ -37,16 +37,19 @@ void	get_path(t_ms *minishell)
 char	*slash_path(char *way, char *line)
 {
 	char	*res;
+	char	*dest;
 
-	line = ft_strjoin("/", line);
-	res = ft_strjoin(way, line);
-	free(line);
+	dest = ft_strjoin("/", line);
+	res = ft_strjoin(way, dest);
+	free(dest);
 	return (res);
 }
 
 void	null_struct(t_ms *minishell, char **ev)
 {
+	(void)ev;
 	minishell->input = NULL;
 	minishell->line = NULL;
-	minishell->env = ev;
+	minishell->env = NULL;
+	minishell->way = NULL;
 }

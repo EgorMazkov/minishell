@@ -40,7 +40,8 @@ void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env)
 	int	i;
 	int	check_pipe;
 
-	(void)env;
+	if (!env)
+		return ;
 
 	i = 0;
 	check_pipe = 0;
@@ -67,15 +68,12 @@ t_cmd	*new_cmd(t_ms *minishell)
 	el = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!el)
 		return (NULL);
-	el->util_cmd = NULL;
 	el->fd_her = -1;
 	el->fd_read = -1;
 	el->fd_write = -1;
-	el->file = NULL;
 	el->next = NULL;
 	el->back = NULL;
 	el->redicts = NULL;
-	el->operator = -999;
 	el->argv = record_cmd2(minishell);
 	return (el);
 }

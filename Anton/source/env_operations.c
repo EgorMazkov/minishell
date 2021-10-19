@@ -123,6 +123,7 @@ t_env *new_env_value(char *varias)
 	str->back = NULL;
 	str->back_alpha = NULL;
 	str->variable = name_of_variable(temp);
+	free(temp);
 	str->value = value_of_variable(varias);
 	return (str);
 }
