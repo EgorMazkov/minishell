@@ -6,13 +6,13 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 21:50:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/03 13:37:14 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/17 15:24:24 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-static char	*jango (char **j, size_t i)
+static char *jango(char **j, size_t i)
 {
 	while (i >= 0 && j[i])
 	{
@@ -23,10 +23,10 @@ static char	*jango (char **j, size_t i)
 	return (NULL);
 }
 
-static size_t	schet (char const *s, char c)
+static size_t schet(char const *s, char c)
 {
-	size_t	i;
-	size_t	sep;
+	size_t i;
+	size_t sep;
 
 	i = 0;
 	sep = 0;
@@ -41,6 +41,19 @@ static size_t	schet (char const *s, char c)
 			i++;
 			while (s[i++] != '\"')
 				;
+			while (s[i] == c)
+			{
+				if (s[i + 1] == '\0')
+					return (sep);
+				i++;
+			}
+		}
+		else if (s[i] == 39)
+		{
+			sep++;
+			i++;
+			while (s[i] != '\'')
+				i++;
 			while (s[i] == c)
 			{
 				if (s[i + 1] == '\0')
@@ -65,9 +78,9 @@ static size_t	schet (char const *s, char c)
 	return (sep);
 }
 
-static	size_t	len_word (const char *src, size_t start, char c)
+static size_t len_word(const char *src, size_t start, char c)
 {
-	size_t	i;
+	size_t i;
 
 	i = 0;
 	// if (src[start] == '\"')
@@ -75,7 +88,7 @@ static	size_t	len_word (const char *src, size_t start, char c)
 	// 	start++;
 	// 	i--;
 	// }
-	while (((src[start] != '\"' || src[start] == '\'') && src[start] != c) && src[start] != '\0')
+	while (src[start] != c && src[start] != '\0')
 	{
 		// printf("src : %c\n", src[start]);
 		start++;
@@ -84,11 +97,11 @@ static	size_t	len_word (const char *src, size_t start, char c)
 	return (i);
 }
 
-static char	**cikl (char const *s, char c, size_t i, char **mass)
+static char **cikl(char const *s, char c, size_t i, char **mass)
 {
-	size_t	word;
-	int 	quote = 0;
-	int		check_quote = 0;
+	size_t word;
+	int quote = 0;
+	// int		check_quote = 0;
 
 	word = 0;
 	while (s[i])
@@ -99,21 +112,20 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 			if (quote % 2 != 0)
 			{
 				if (s[i] == '\'')
+				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
+					i += len_word(s, i + 1, '\'') + 2;
+				}
 				else
+				{
 					mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
+					i += len_word(s, i + 1, '\"') + 2;
+				}
 				if (mass[word] == NULL)
 					jango(mass, word);
 				word++;
-				while ((s[i] != '\"' || s[i] != '\'' || \
-				s[i] != c) && s[i] != '\0' && check_quote != 2)
-				{
-					if (s[i] == '\"')
-						check_quote++;
-					i++;
-				}
-				if (check_quote == 1)
-					return (NULL);
+				// if (check_quote == 1)
+				// 	return (NULL);
 				quote++;
 			}
 		}
@@ -127,7 +139,7 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 		while (s[i] != c && s[i] != '\0')
 		{
 			if (s[i + 1] == '\"' || s[i + 1] == '\'')
-				break ;
+				break;
 			i++;
 		}
 		if (s[i] == '\0')
@@ -141,12 +153,12 @@ static char	**cikl (char const *s, char c, size_t i, char **mass)
 	return (mass);
 }
 
-char	**ft_split_for_minishell(char const *s, char c)
+char **ft_split_for_minishell(char const *s, char c)
 {
-	size_t	i;
+	size_t i;
 	// int		check_quote = 0;
 	// int		check_double_quote = 0;
-	char	**mass;
+	char **mass;
 
 	i = 0;
 	// while (s[i])

@@ -813,6 +813,8 @@ void three_hundred_bucks (t_cmd **cmd, t_env **env)
 		{
 			if ((*cmd)->argv[i][0] == '\'')
 				(*cmd)->argv[i] = ft_strtrim((*cmd)->argv[i], "\'");
+			else if ((*cmd)->argv[i][0] == '\"')
+				(*cmd)->argv[i] = ft_strtrim((*cmd)->argv[i], "\"");
 			if (!ft_strcmp((*cmd)->argv[i], "$?"))
 			{
 				temp = (*cmd)->argv[i];
@@ -846,8 +848,14 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	// int rct = open("rct",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
 
 	minishell->env = env_from_lists(*env);
+	// int i = 0;
+	// while (minishell->line[i])
+	// {
+	// 	printf("%s\n", minishell->line[i]);
+	// 	i++;
+	// }
+	// return ;
 	record_cmd(cmd, minishell, env);
-	// preparser_dollar(cmd, minishell);
 	cmd_run(cmd);
 	path(cmd, minishell);
 	if (check_heredoc(cmd) == 130 || choose_reds(cmd) == -3)/* Сделать отдельное условие для << */
