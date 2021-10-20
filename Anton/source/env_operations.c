@@ -1,47 +1,7 @@
 
 #include "../include/minishell.h"
 
-// int len_argvs(char **ar)
-// {
-// 	int str;
 
-// 	str = 0;
-// 	while (ar[str])
-// 		str++;
-// 	return (str);
-// }
-
-// void	ft_argv_add (t_built *lst, char *el)
-// {
-// 	int str;
-// 	char **env_copy;
-
-// 	str = -1;
-// 	env_copy = lst->env;
-// 	lst->env = (char **)malloc((len_argvs(env_copy) + 1) * sizeof(char *));
-// 	if (!lst->env)
-// 		return ;
-// 	lst->env[len_env(env_copy) + 1] = NULL;
-// 	while (env_copy[++str])
-// 		lst->env[str] = ft_strdup(env_copy[str]);
-// 	lst->env[str] = ft_strdup(el);
-// }
-
-
-int lenlist_env (t_env *list)
-{
-	int i;
-
-	i = 0;
-	while (list->back)
-		list = list->back;
-	while (list)
-	{
-		list = list->next;
-		i++;
-	}
-	return (i);
-}
 
 char **env_from_lists (t_env *env)
 {
@@ -73,60 +33,7 @@ char **env_from_lists (t_env *env)
 
 }
 
-void env_value_add (t_env **lst, t_env *el)
-{
-	if (!el)
-		return ;
-	if (!*lst)
-	{
-		*lst = el;
-		return ;
-	}
-	el->back = *lst;
-	(*lst)->next = el;
-	*lst = el;
-}
 
-
-char *value_of_variable(char *s)
-{
-	int len;
-	int ps_val;
-
-	len = 0;
-	ps_val = 0;
-	while (s[len] && s[len] != '=')
-		len++;
-	return (ft_strdup(s + len + 1));
-}
-
-
-char *name_of_variable(char *s)
-{
-	int len;
-
-	len = 0;
-	while (s[len] && s[len] != '=')
-		len++;
-	s[len] = '\0';
-	return (ft_strdup(s));
-}
-
-t_env *new_env_value(char *varias)
-{
-	t_env *str;
-	char *temp = ft_strdup(varias);
-
-	str = (t_env *)malloc(sizeof(t_env));
-	str->next = NULL;
-	str->next_alpha = NULL;
-	str->back = NULL;
-	str->back_alpha = NULL;
-	str->variable = name_of_variable(temp);
-	free(temp);
-	str->value = value_of_variable(varias);
-	return (str);
-}
 
 void	env_record(t_env **env, char **ev)
 {
@@ -147,64 +54,9 @@ void	env_record(t_env **env, char **ev)
 		*env = (*env)->back;
 }
 
-void	value_delete(t_env **env, char *value)
-{
-	t_env *temp;
-	t_env *del;
 
-	while((*env)->back)
-		*env = (*env)->back;
-	temp = *env;
-	while (*env)
-	{
-		if (!ft_strcmp((*env)->variable, value))
-		{
-			del = *env;
-			*env = (*env)->next;
-			temp = del->back;
-			if (!*env && !temp)
-			{
-				free_env(&del);
-				return ;
-			}
-			if (temp)
-				temp->next = *env;
-			if (*env)
-				(*env)->back = temp;
-			else
-				*env = temp;
-			if (del->back_alpha)
-				del->back_alpha->next_alpha = NULL;
-			if (del->next_alpha)
-				del->next_alpha->back_alpha = NULL;
-			del->next = NULL;//    leaks
-			del->next_alpha = NULL;//    leaks
-			del->back = NULL;//    leaks
-			del->back_alpha = NULL;//    leaks
-			free_env(&del);
-			// free(del);
-			return ;
-		}	
-		*env = (*env)->next;
-	}
-	if (!*env)
-		*env = temp;
-}
 
-void	ft_unset (t_env **env, char **value)
-{
-	int str;
 
-	str = 0;
-	if (value && value[0])
-	{
-		while (value[str])
-			value_delete(env, value[str++]);
-		while (*env && (*env)->back)
-			*env = (*env)->back;
-		alpha_variables(*env);
-	}
-}
 
 int	overwrite_env(t_env **env, char *variable, char *new_value)//Принимает название переменной и на какое значение изменить ее содержимое
 {
@@ -221,29 +73,14 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 		variable = ft_substr(variable, 0, ft_strlen(variable) - 1);
 		concat++;
 	}
-	while(temp && temp->back)
-		*env = temp->back;
+	temp = getback(temp);
 	while (temp)
 	{
 		if (!ft_strcmp(variable, temp->variable))
 		{
-			if (!*new_value)
-			{
-				temp->value = NULL;
-				return (1);
-			}
-			if (concat)
-			{
-				twin_varbs = temp->value;
-				temp->value = ft_strjoin(temp->value, new_value);
-				free(twin_varbs);
-			}
-			else
-			{
-				free(temp->value);
-				temp->value = ft_strdup(new_value);
-			}
-			return (1);
+			if (!new_value)
+				return (if_not_new_value(temp));
+			return (concat_or_overwrite(temp, concat, new_value));
 		}
 		temp = temp->next;
 	}

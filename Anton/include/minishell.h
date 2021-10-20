@@ -65,15 +65,22 @@ typedef struct s_env
 } t_env;
 
 
-typedef struct s_params
+
+typedef struct s_pipe
 {
-	int fd_read;
-	int fd_write;
-	int exit_code;
-} t_params;
+	int a[2];
+	int b[2];
+	int flag;
+	int exit_builtin;
+	int was_red;
+	int len;
+	int out;
+	pid_t pid;
+} t_pipe;
 
 
-extern t_params *g_params;
+
+int g_exit;
 
 void	ctrl_wd(int signum);
 
@@ -85,6 +92,7 @@ void 	rl_clear_history(void);
 
 char 	**ft_argvdup(char **env);
 char **env_from_lists (t_env *env);
+int	env_to_lists(t_env **env, char **ev);
 int		overwrite_env(t_env **env, char *value, char *new_value);
 char 	*name_of_variable(char *s);
 char 	*value_of_variable(char *s);
@@ -98,9 +106,12 @@ t_env *new_env_value(char *varias);
 char *get_variable_env(t_env *ev, char *str);
 
 void	pipes(t_cmd *cmd, t_env **ev);
+void pipe_child_process(t_cmd *cmd, t_env **ev, t_pipe *pip);
+t_cmd *pipe_parent_process(t_cmd *cmd, t_pipe *pip);
+int built_in_run (t_cmd *cmd, t_env **ev);
+int is_builtin (char *command);
 
-
-
+int lenlist (t_cmd *list);
 void	cmd_c_fork(int signum);
 void	cmd_c(int signum);
 int	rdct_right(t_cmd *cmd);
@@ -108,6 +119,8 @@ int	rdct_right_append(t_cmd *cmd);
 int	rdct_left_read(t_cmd *cmd);
 int	rdct_left_dock(t_cmd *cmd, char *stop);
 int why_rdct(t_cmd *cmd);
+int choose_reds(t_cmd **cmd);
+int get_descriptor(char **redir, t_cmd *cmd);
 
 void	free_all(t_env **env);
 
@@ -121,7 +134,6 @@ int		ft_export(t_env **ev, char **arg);
 int	ft_exit (char **code);
 
 
-
 void	free_argv (char **argv);
 void	free_str(char *string_free);
 void	free_cmd(t_cmd **cmd);
@@ -129,11 +141,24 @@ void	free_env(t_env **env);
 void	free_minishell(t_ms *minishell);
 
 
+char**	record_redicts(char **argv);
+char **rewrite_cmd(char **argv);
+
+int rdct_r(char **redir, int str, t_cmd *cmd);
+int rdct_rr(char **redir, int str, t_cmd *cmd);
+int rdct_l(char **redir, int str, t_cmd *cmd);
+int rdct_ll(char **redir, int str, t_cmd *cmd);
 
 
+int if_not_new_value(t_env *temp);
+int concat_or_overwrite(t_env *temp, int concat, char *new_value);
+void	value_delete(t_env **env, char *value);
+int lenlist_env (t_env *list);
+int	export_compare_not_value(t_env **ev, char *s);
+int args_valid(char *ar);
+char *level_down(char *s);
 
-
-
+t_env	*getback(t_env *temp);
 
 int len_tab(char **str);
 char **jopa(t_ms *minishell, int i);

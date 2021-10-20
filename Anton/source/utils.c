@@ -56,7 +56,7 @@ char **record_cmd2(t_ms *minishell)
 	return (dest);
 }
 
-void path(t_cmd **cmd, t_ms *minishell)
+void path(t_cmd **cmd, t_ms *minishell)//! переделать
 {
 	char *line;
 	char *dest;

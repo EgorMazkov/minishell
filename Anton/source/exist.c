@@ -45,7 +45,6 @@ int	ft_exit (char **code)
 	if (!code || !*code)
 		exit(0);	
 	if (len_argvs(code) == 1)
-	{
 		if (!is_numbers_to_string(*code))
 		{
 			printf("exit\nexit: %s: numeric argument required", *code);
@@ -53,7 +52,6 @@ int	ft_exit (char **code)
 		}
 		else
 			exit(ft_atoi(*code));
-	}
 	else
 	{
 		if (is_numbers_to_string(*code))

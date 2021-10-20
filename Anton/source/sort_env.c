@@ -60,10 +60,6 @@ void	alpha_variables (t_env *env)
 
 	min = get_maxmin_variable(env, MIN);
 	max = get_maxmin_variable(env, MAX);
-	// if (!min || !max)
-	// 	return ;
-	// while (env->back)
-	// 	env = env->back;
 	while (min != max)
 	{
 		min->next_alpha = get_up_neighbour(min);
@@ -73,19 +69,3 @@ void	alpha_variables (t_env *env)
 	}
 }
 
-
-void	free_all(t_env **env)
-{
-	t_env *temp;
-
-	while ((*env)->back)
-		*env = (*env)->back;
-	while (*env)
-	{
-		temp = *env;
-		*env = (*env)->next;
-		free(temp->variable);
-		free(temp->value);
-		free(temp);
-	}
-}
