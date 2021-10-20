@@ -9,12 +9,15 @@ int    ft_pwd(t_env *env)
 	// {
 	// 	exit(0);
 	// }
-	while(temp->back)
+	while(temp && temp->back)
 		temp = temp->back;
 	while (temp)
 	{
 		if (!ft_strcmp("PWD", temp->variable))
-			printf("%s\n", temp->value);
+		{
+			ft_putstr_fd(temp->value, 1);
+			ft_putstr_fd("\n", 1);
+		}
 		temp = temp->next;
 	}
 	return (1);
@@ -26,7 +29,7 @@ char *level_down(char *s)
 	int i;
 
 	i = 0;
-	while (s[i])
+	while (s && s[i])
 		i++;
 	while (s[i] != '/')
 		i--;
@@ -34,22 +37,11 @@ char *level_down(char *s)
 	return (s);
 }
 
-char *get_old_path_to_env(t_env *ev)
-{
-	while (ev->back)
-		ev = ev->back;
-	while (ev)
-	{
-		if (!ft_strcmp("OLDPWD", ev->variable))
-			return (ev->value);
-		ev = ev->next;
-	}
-	return (NULL);
-}
+
 
 char *get_variable_env(t_env *ev, char *str)
 {
-	while (ev->back)
+	while (ev && ev->back)
 		ev = ev->back;
 	while (ev)
 	{
@@ -64,6 +56,7 @@ char *get_variable_env(t_env *ev, char *str)
 int	ft_cd(char *arg, t_env **env)
 {
 	char *oldpath;
+	char *temp;
 	/* если pwd || oldpwd удалены, то их надо добавить снова на следующих выходах и входах в директории*/
 	if (!arg || !arg[0])
 	{
@@ -73,14 +66,20 @@ int	ft_cd(char *arg, t_env **env)
 			return (-1);
 		}
 		// old->oldpwd = getcwd(NULL, 0);
-		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD", temp);
+		free_str(temp);
 		if (chdir(get_variable_env(*env, "HOME")) == -1)
 		{
+			temp = getcwd(NULL, 0);
 			printf("newerni put\n");
-			overwrite_env(env, "PWD", getcwd(NULL, 0));
+			overwrite_env(env, "PWD", temp);
+			free_str(temp);
 			return (-1);
 		}
-		overwrite_env(env, "PWD", getcwd(NULL, 0));
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "PWD", temp);
+		free_str(temp);
 	}
 	// else if (!ft_strncmp(arg, "..", 3))
 	// {
@@ -101,19 +100,27 @@ int	ft_cd(char *arg, t_env **env)
 		if (chdir(get_variable_env(*env, "OLDPWD")) == -1)
 		{
 			overwrite_env(env, "OLDPWD", oldpath);
-			overwrite_env(env, "PWD", getcwd(NULL, 0));
+			free_str(oldpath);
+			temp = getcwd(NULL, 0);
+			overwrite_env(env, "PWD", temp);
 			printf("newerni put\n");
-			printf("%s\n", getcwd(NULL, 0));
+			printf("%s\n", temp);
+			free_str(temp);
 			return (-1);
 		}
 		overwrite_env(env, "OLDPWD", oldpath);
-		overwrite_env(env, "PWD", getcwd(NULL, 0));
-		printf("%s\n", getcwd(NULL, 0));
+		free_str(oldpath);
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "PWD", temp);
+		printf("%s\n", temp);
+		free_str(temp);
 	}
 	else if (!ft_strncmp(arg, "~", 1))
 	{
 		// old->oldpwd = getcwd(NULL, 0);
-		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD", temp);
+		free_str(temp);
 		if (arg[1] == '\0')
 		{
 			if (chdir(getenv("HOME")) == -1)
@@ -123,25 +130,37 @@ int	ft_cd(char *arg, t_env **env)
 			}
 		}
 		else
-			if (chdir(ft_strjoin(getenv("HOME"), ++arg)) == -1)
+		{
+			temp = ft_strjoin(getenv("HOME"), ++arg);
+			if (chdir(temp) == -1)
 			{
+				free_str(temp);
 				overwrite_env(env, "PWD", getcwd(NULL, 0));
 				printf("newerni put\n");
 				return (-1);
 			}
-		overwrite_env(env, "PWD", getcwd(NULL, 0));
+			free_str(temp);
+		}
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "PWD", temp);
+		free_str(temp);
 	}
 	else
 	{
 		// old->oldpwd = getcwd(NULL, 0);
-		overwrite_env(env, "OLDPWD", getcwd(NULL, 0));
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "OLDPWD", temp);
+		free_str(temp);
 		if (chdir(arg) == -1)
 		{
-			overwrite_env(env, "PWD", getcwd(NULL, 0));
+			temp = getcwd(NULL, 0);
+			overwrite_env(env, "PWD", temp);
 			printf("no such file in directory: %s\n", arg);
 			return (-1);
 		}
-		overwrite_env(env, "PWD", getcwd(NULL, 0));
+		temp = getcwd(NULL, 0);
+		overwrite_env(env, "PWD", temp);
+		free_str(temp);
 	}
 	return (1);
 }
@@ -195,7 +214,7 @@ void	ft_echo(char **arg)
 
 void	ft_env(t_env *ev)
 {
-	while (ev->back)
+	while (ev && ev->back)
 		ev = ev->back;
 	while (ev)
 	{
@@ -267,7 +286,7 @@ int	ft_export(t_env **ev, char **arg)
 	i = -1;
 	if (!arg || !*arg)
 	{
-		while (temp->back_alpha)
+		while (temp && temp->back_alpha)
 			temp = temp->back_alpha;
 		while (temp)
 		{
@@ -311,7 +330,7 @@ int	ft_export(t_env **ev, char **arg)
 				vars = name_of_variable(arg[i]);
 				if (!overwrite_env(ev, vars, vals))
 				{
-					while ((*ev)->next)
+					while (*ev && (*ev)->next)
 						*ev = (*ev)->next;
 					env_value_add(ev, new_env_value(arg[i]));
 					while ((*ev)->back)

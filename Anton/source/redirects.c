@@ -1,46 +1,6 @@
 #include "../include/minishell.h"
 
-int	rdct_right(t_cmd *cmd)
-{
-	int record = open(ft_split(cmd->file, ' ')[1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	if (record == -1)
-	{
-		perror(ft_split(cmd->file, ' ')[1]);
-		exit(0);
-	}
-	dup2(record, 1);
-	close(record);
-	return (RDCT_R);
-}
-
-int	rdct_right_append(t_cmd *cmd)
-{
-	int record = open(ft_split(cmd->file, ' ')[1], O_WRONLY | O_CREAT | O_APPEND, 0666);
-	if (record == -1)
-	{
-		perror(ft_split(cmd->file, ' ')[1]);
-		exit(0);
-	}
-	dup2(record, 1);
-	close(record);
-	return (RDCT_RR);
-}
-
-
-int	rdct_left_read(t_cmd *cmd)
-{
-	int record = open(ft_split(cmd->file, ' ')[1], O_RDONLY);
-	if (record == -1)
-	{
-		perror(ft_split(cmd->file, ' ')[1]);
-		exit(0);
-	}
-	dup2(record, 0);
-	close(record);
-	return (RDCT_L);
-}
-
-void	ctrl_wd(int signum)
+void ctrl_wd(int signum)
 {
 	(void)signum;
 	g_params->exit_code = 130;
@@ -49,7 +9,7 @@ void	ctrl_wd(int signum)
 	// rl_redisplay();
 }
 
-int	rdct_left_dock(t_cmd *cmd, char *stop)
+int rdct_left_dock(t_cmd *cmd, char *stop)
 {
 	char *input;
 	int fd[2];
@@ -59,9 +19,9 @@ int	rdct_left_dock(t_cmd *cmd, char *stop)
 	/* Делать форки до всего исполнения */
 	void *sgnl = NULL;
 	pids = fork();
-		signal(SIGINT, ctrl_wd), signal(SIGQUIT, SIG_IGN);
-		(sgnl = rl_getc_function);
-		rl_getc_function = getc;
+	signal(SIGINT, ctrl_wd), signal(SIGQUIT, SIG_IGN);
+	(sgnl = rl_getc_function);
+	rl_getc_function = getc;
 	if (!pids)
 	{
 		while (1)
@@ -69,13 +29,17 @@ int	rdct_left_dock(t_cmd *cmd, char *stop)
 			i = -1;
 			input = readline("\033[1;34mheredocccc $> \033[0;29m");
 			if (!input || !ft_strcmp(input, stop))
-				break ;
+			{
+				free_str(input);
+				break;
+			}
 			while (input[++i])
 				write(fd[1], &input[i], 1);
 			write(fd[1], "\n", 1);
+			free_str(input);
 		}
-		close(fd[0]);
 		close(fd[1]);
+		close(fd[0]);
 		if (g_params->exit_code == 130)
 			exit(130);
 		else
@@ -100,7 +64,6 @@ int	rdct_left_dock(t_cmd *cmd, char *stop)
 		else
 		{
 			close(fd[1]);
-			g_params->fd_read = fd[0];
 			if (cmd->fd_her != -1)
 				close(cmd->fd_her);
 			cmd->fd_her = fd[0];
