@@ -1,7 +1,44 @@
 #include "../include/minishell.h"
 
 
+int get_descriptor_util(char **redir, int str, t_cmd *cmd)
+{
+	if (!ft_strcmp(redir[str], "<"))
+	{
+		if (rdct_l(redir, str, cmd) == -3)
+			return (-3);
+	}
+	else if (!ft_strcmp(redir[str], ">"))
+	{
+		if (rdct_r(redir, str, cmd) == -3)
+			return (-3);
+	}
+	else if (!ft_strcmp(redir[str], ">>"))
+	{
+		if (rdct_rr(redir, str, cmd) == -3)
+			return (-3);
+	}
+	else if (!ft_strcmp(redir[str], "<<"))
+	{
+		if (rdct_ll(redir, str, cmd) == -3)
+			return (-3);
+	}
+	return (0);
+}
 
+int get_descriptor(char **redir, t_cmd *cmd)
+{
+	int str;
+
+	str = -1;
+	if (redir && *redir)
+	{
+		while (redir[++str])
+			if (get_descriptor_util(redir, str, cmd) == -3)
+				return (-3);
+	}
+	return (0);
+}
 
 int redirect_count (char **argv)
 {

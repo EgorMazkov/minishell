@@ -1,5 +1,33 @@
 #include "../include/minishell.h"
 
+int is_builtin(char *command)
+{
+	if (!command)
+		return (0);
+	if (!ft_strcmp("echo", command))
+		return (1);
+	else if (!ft_strcmp("unset", command))
+		return (1);
+	else if (!ft_strcmp("export", command))
+		return (1);
+	else if (!ft_strcmp("cd", command))
+		return (1);
+	else if (!ft_strcmp("exit", command))
+		return (1);
+	else if (!ft_strcmp("env", command))
+		return (1);
+	else if (!ft_strcmp("pwd", command))
+		return (1);
+	return (0);
+}
+
+
+
+
+
+
+
+
 
 char *level_down(char *s)
 {

@@ -82,6 +82,15 @@ typedef struct s_pipe
 
 int g_exit;
 
+
+void exec(t_cmd **cmd, t_ms *minishell, t_env **env);
+int bucksonly(char *s);
+int check_heredoc(t_cmd **cmd);
+int run_heredoc(char **redict, t_cmd **cmd);
+void cmd_run(t_cmd **cmd);
+
+void three_hundred_bucks(t_cmd **cmd, t_env **env);
+
 void	ctrl_wd(int signum);
 
 int		ft_strcmp(const char *s1, const char *s2);
@@ -114,6 +123,7 @@ int is_builtin (char *command);
 int lenlist (t_cmd *list);
 void	cmd_c_fork(int signum);
 void	cmd_c(int signum);
+void cmd_c_sl(int signum);
 int	rdct_right(t_cmd *cmd);
 int	rdct_right_append(t_cmd *cmd);
 int	rdct_left_read(t_cmd *cmd);
@@ -128,6 +138,8 @@ void	free_all(t_env **env);
 void	ft_env(t_env *ev);
 void	ft_echo(char **arg);
 int		ft_cd(char *arg, t_env **env);
+int ft_cd_home(t_env **env, char *oldpath, char *temp);
+int ft_cd_no_parse(char *arg, t_env **env, char *temp);
 int		ft_pwd(t_env *env);
 void	ft_unset (t_env **env, char **value);
 int		ft_export(t_env **ev, char **arg);

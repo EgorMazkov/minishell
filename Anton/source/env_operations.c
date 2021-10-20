@@ -33,7 +33,20 @@ char **env_from_lists (t_env *env)
 
 }
 
+int lenlist(t_cmd *list)
+{
+	int i;
 
+	i = 0;
+	while (list->back)
+		list = list->back;
+	while (list)
+	{
+		list = list->next;
+		i++;
+	}
+	return (i);
+}
 
 void	env_record(t_env **env, char **ev)
 {

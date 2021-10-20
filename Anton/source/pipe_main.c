@@ -30,6 +30,21 @@ t_cmd	*go_back_cmd(t_cmd *cmd)
 	return (cmd);
 }
 
+
+void	crush_fork(t_pipe *pip)
+{
+	strerror(-1);
+	if (pip->a[0])
+		close(pip->a[0]);
+	if (pip->a[1])
+		close(pip->a[1]);
+	if (pip->b[0])
+		close(pip->b[0]);
+	if (pip->b[1])
+		close(pip->b[1]);
+}
+
+
 void pipes(t_cmd *cmd, t_env **ev)
 {
 	t_pipe pip;
@@ -49,7 +64,7 @@ void pipes(t_cmd *cmd, t_env **ev)
 		pip.pid = fork();
 		if (pip.pid < 0)
 		{
-			strerror(-1);
+			crush_fork(&pip);
 			return;
 		}
 		if (!pip.pid)
