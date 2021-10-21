@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-static void print_variables(t_env *temp)
+static void	print_variables(t_env *temp)
 {
 	while (temp && temp->back_alpha)
 		temp = temp->back_alpha;
@@ -8,7 +8,8 @@ static void print_variables(t_env *temp)
 	{
 		if (temp->variable && temp->variable[0])
 			printf("declare -x %s", temp->variable);
-		if (temp->variable && temp->value && *temp->value && !ft_strcmp(temp->value, "\"\""))
+		if (temp->variable && temp->value && *temp->value && \
+		!ft_strcmp(temp->value, "\"\""))
 			printf("=\"\"\n");
 		else if (temp->variable && temp->value && *temp->value)
 			printf("=\"%s\"\n", temp->value);
@@ -18,10 +19,11 @@ static void print_variables(t_env *temp)
 	}
 }
 
-static int variable_add_to_export(t_env **ev, char **arg, int i, int *not_valid)
+static int	variable_add_to_export(t_env **ev, char **arg, \
+int i, int *not_valid)
 {
-	char *vals;
-	char *vars;
+	char	*vals;
+	char	*vars;
 
 	if (!args_valid(arg[i]))
 	{
@@ -47,11 +49,11 @@ static int variable_add_to_export(t_env **ev, char **arg, int i, int *not_valid)
 	return (0);
 }
 
-int ft_export(t_env **ev, char **arg)
+int	ft_export(t_env **ev, char **arg)
 {
-	t_env *temp;
-	int i;
-	int not_valid;
+	t_env	*temp;
+	int		i;
+	int		not_valid;
 
 	temp = *ev;
 	not_valid = 0;

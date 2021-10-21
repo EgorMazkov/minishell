@@ -1,7 +1,6 @@
 #include "../include/minishell.h"
 
-
-void env_value_add (t_env **lst, t_env *el)
+void	env_value_add(t_env **lst, t_env *el)
 {
 	if (!el)
 		return ;
@@ -15,13 +14,12 @@ void env_value_add (t_env **lst, t_env *el)
 	*lst = el;
 }
 
-
-
-t_env *new_env_value(char *varias)
+t_env	*new_env_value(char *varias)
 {
-	t_env *str;
-	char *temp = ft_strdup(varias);
+	t_env	*str;
+	char	*temp;
 
+	temp = ft_strdup(varias);
 	str = (t_env *)malloc(sizeof(t_env));
 	str->next = NULL;
 	str->next_alpha = NULL;
@@ -33,10 +31,9 @@ t_env *new_env_value(char *varias)
 	return (str);
 }
 
-
-int lenlist_env (t_env *list)
+int	lenlist_env(t_env *list)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (list->back)
@@ -49,22 +46,21 @@ int lenlist_env (t_env *list)
 	return (i);
 }
 
-char *value_of_variable(char *s)
+char	*value_of_variable(char *s)
 {
-	int len;
+	int	len;
 
 	len = 0;
 	while (s[len] && s[len] != '=')
 		len++;
 	if (!s[len])
 		return (NULL);
-	return (ft_strdup(s + (len + 1)));//eovnkjbev
+	return (ft_strdup(s + (len + 1)));
 }
 
-
-char *name_of_variable(char *s)
+char	*name_of_variable(char *s)
 {
-	int len;
+	int	len;
 
 	len = 0;
 	while (s[len] && s[len] != '=')

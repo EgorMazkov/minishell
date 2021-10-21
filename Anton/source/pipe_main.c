@@ -1,7 +1,6 @@
 #include "../include/minishell.h"
 
-
-static void init_pipe_structure(t_pipe *pipe, t_cmd *cmd)
+static void	init_pipe_structure(t_pipe *pipe, t_cmd *cmd)
 {
 	pipe->flag = 0;
 	pipe->exit_builtin = 0;
@@ -9,10 +8,9 @@ static void init_pipe_structure(t_pipe *pipe, t_cmd *cmd)
 	pipe->out = 0;
 }
 
-
 static void	the_pids_waiting(t_pipe pip)
 {
-	int out;
+	int	out;
 
 	while (pip.len--)
 	{
@@ -22,14 +20,12 @@ static void	the_pids_waiting(t_pipe pip)
 	}
 }
 
-
 t_cmd	*go_back_cmd(t_cmd *cmd)
 {
 	while (cmd->back)
 		cmd = cmd->back;
 	return (cmd);
 }
-
 
 void	crush_fork(t_pipe *pip)
 {
@@ -44,16 +40,14 @@ void	crush_fork(t_pipe *pip)
 		close(pip->b[1]);
 }
 
-
-void pipes(t_cmd *cmd, t_env **ev)
+void	pipes(t_cmd *cmd, t_env **ev)
 {
-	t_pipe pip;
+	t_pipe	pip;
 
 	cmd = go_back_cmd(cmd);
 	init_pipe_structure(&pip, cmd);
 	while (cmd)
 	{
-
 		if (cmd->next)
 		{
 			if (!pip.flag)
@@ -65,7 +59,7 @@ void pipes(t_cmd *cmd, t_env **ev)
 		if (pip.pid < 0)
 		{
 			crush_fork(&pip);
-			return;
+			return ;
 		}
 		if (!pip.pid)
 			pipe_child_process(cmd, ev, &pip);

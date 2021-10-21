@@ -124,11 +124,11 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 	}
 }
 
-int main(int argc, char **argv, char **ev)
+int	main(int argc, char **argv, char **ev)
 {
-	t_cmd *cmd;
-	t_env *env;
-	t_ms *minishell;
+	t_cmd	*cmd;
+	t_env	*env;
+	t_ms	*minishell;
 
 	(void)argc, (void)argv;
 	env = NULL;
@@ -137,7 +137,8 @@ int main(int argc, char **argv, char **ev)
 		exit(1);
 	while (1)
 	{
-		signal(SIGINT, cmd_c), signal(SIGQUIT, SIG_IGN);
+		signal(SIGINT, cmd_c);
+		signal(SIGQUIT, SIG_IGN);
 		minishell = null_struct();
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
 		signal(SIGINT, cmd_c_fork), signal(SIGQUIT, cmd_c_sl);

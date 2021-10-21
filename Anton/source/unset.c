@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void null_env(t_env **del)
+void	null_env(t_env **del)
 {
 	(*del)->next = NULL;
 	(*del)->next_alpha = NULL;
@@ -8,9 +8,9 @@ void null_env(t_env **del)
 	(*del)->back_alpha = NULL;
 }
 
-void cut_and_free_varias(t_env **env, t_env *temp)
+void	cut_and_free_varias(t_env **env, t_env *temp)
 {
-	t_env *del;
+	t_env	*del;
 
 	del = *env;
 	*env = (*env)->next;
@@ -18,7 +18,7 @@ void cut_and_free_varias(t_env **env, t_env *temp)
 	if (!*env && !temp)
 	{
 		free_env(&del);
-		return;
+		return ;
 	}
 	if (temp)
 		temp->next = *env;
@@ -30,13 +30,13 @@ void cut_and_free_varias(t_env **env, t_env *temp)
 		del->back_alpha->next_alpha = NULL;
 	if (del->next_alpha)
 		del->next_alpha->back_alpha = NULL;
-	null_env(&del); //!!!!!!
+	null_env(&del);
 	free_env(&del);
 }
 
-void value_delete(t_env **env, char *value)
+void	value_delete(t_env **env, char *value)
 {
-	t_env *temp;
+	t_env	*temp;
 
 	while ((*env)->back)
 		*env = (*env)->back;
@@ -46,7 +46,7 @@ void value_delete(t_env **env, char *value)
 		if (!ft_strcmp((*env)->variable, value))
 		{
 			cut_and_free_varias(env, temp);
-			return;
+			return ;
 		}
 		*env = (*env)->next;
 	}
@@ -54,9 +54,9 @@ void value_delete(t_env **env, char *value)
 		*env = temp;
 }
 
-void ft_unset(t_env **env, char **value)
+void	ft_unset(t_env **env, char **value)
 {
-	int str;
+	int	str;
 
 	str = 0;
 	if (value && value[0])
@@ -68,3 +68,5 @@ void ft_unset(t_env **env, char **value)
 		alpha_variables(*env);
 	}
 }
+
+// 33

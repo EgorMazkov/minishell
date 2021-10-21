@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void last_command(t_pipe *pip)
+void	last_command(t_pipe *pip)
 {
 	if (!pip->flag)
 	{
@@ -14,7 +14,7 @@ void last_command(t_pipe *pip)
 	}
 }
 
-int first_command(t_pipe *pip)
+int	first_command(t_pipe *pip)
 {
 	close(pip->a[0]);
 	if (pip->was_red != RDCT_R && pip->was_red != RDCT_ALL)
@@ -38,15 +38,14 @@ void	mid_command(t_pipe *pip)
 	{
 		if (pip->was_red != RDCT_L && pip->was_red != RDCT_ALL)
 			dup2(pip->a[0], 0);
-		close(pip->a[0]); // rvferrbrbr
+		close(pip->a[0]);
 		close(pip->b[0]);
 		if (pip->was_red != RDCT_R && pip->was_red != RDCT_ALL)
 			dup2(pip->b[1], 1);
 	}
 }
 
-
-void pipe_child_process(t_cmd *cmd, t_env **ev, t_pipe *pip)
+void	pipe_child_process(t_cmd *cmd, t_env **ev, t_pipe *pip)
 {
 	pip->was_red = why_rdct(cmd);
 	if (pip->was_red == -999)

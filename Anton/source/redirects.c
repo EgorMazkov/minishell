@@ -1,8 +1,6 @@
 #include "../include/minishell.h"
 
-
-
-void	files_closes (t_cmd *cmd)
+void	files_closes(t_cmd *cmd)
 {
 	while (cmd->back)
 		cmd = cmd->back;
@@ -16,19 +14,15 @@ void	files_closes (t_cmd *cmd)
 	}
 }
 
-
-void ctrl_wd(int signum)
+void	ctrl_wd(int signum)
 {
 	(void)signum;
 	g_exit = 130;
-	// rl_on_new_line();
-	// rl_replace_line("", 0);
-	// rl_redisplay();
 }
 
-void loop_recording(char *stop, t_pipe pip)
+void	loop_recording(char *stop, t_pipe pip)
 {
-	char *input;
+	char	*input;
 
 	while (1)
 	{
@@ -36,7 +30,7 @@ void loop_recording(char *stop, t_pipe pip)
 		if (!input || !ft_strcmp(input, stop))
 		{
 			free_str(input);
-			break;
+			break ;
 		}
 		ft_putstr_fd(input, pip.a[1]);
 		write(pip.a[1], "\n", 1);
@@ -53,9 +47,9 @@ void loop_recording(char *stop, t_pipe pip)
 	}
 }
 
-void wait_input_and_record(t_cmd *cmd, t_pipe pip)
+void	wait_input_and_record(t_cmd *cmd, t_pipe pip)
 {
-	int out;
+	int	out;
 
 	out = 0;
 	waitpid(0, &out, 0);
@@ -81,14 +75,16 @@ void wait_input_and_record(t_cmd *cmd, t_pipe pip)
 	}
 }
 
-int rdct_left_dock(t_cmd *cmd, char *stop)
+int	rdct_left_dock(t_cmd *cmd, char *stop)
 {
-	t_pipe pip;
+	t_pipe	pip;
+	void	*sgnl;
+
+	sgnl = NULL;
 	pipe(pip.a);
-	/* Делать форки до всего исполнения */
-	void *sgnl = NULL;
 	pip.pid = fork();
-	signal(SIGINT, ctrl_wd), signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, ctrl_wd);
+	signal(SIGQUIT, SIG_IGN);
 	(sgnl = rl_getc_function);
 	rl_getc_function = getc;
 	if (!pip.pid)

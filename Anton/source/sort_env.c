@@ -10,12 +10,11 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (s1[i] - s2[i]);
 }
 
-
-t_env	*get_maxmin_variable (t_env *variable, _Bool min_max)
+t_env	*get_maxmin_variable(t_env *variable, _Bool min_max)
 {
-	t_env *temp;
-	t_env *min;
-	int difference;
+	t_env	*temp;
+	t_env	*min;
+	int		difference;
 
 	temp = variable;
 	min = variable;
@@ -24,9 +23,11 @@ t_env	*get_maxmin_variable (t_env *variable, _Bool min_max)
 		temp = temp->back;
 	while (temp)
 	{
-		if (min_max == MAX && ft_strcmp(min->variable, temp->variable) < difference)
+		if (min_max == MAX && \
+		ft_strcmp(min->variable, temp->variable) < difference)
 			min = temp;
-		if (min_max == MIN && ft_strcmp(min->variable, temp->variable) > difference)
+		if (min_max == MIN && \
+		ft_strcmp(min->variable, temp->variable) > difference)
 			min = temp;
 		temp = temp->next;
 	}
@@ -46,17 +47,18 @@ t_env	*get_up_neighbour(t_env *el)
 		start = start->back;
 	while (start)
 	{
-		if (ft_strcmp(start->variable, tmp->variable) < 0 && ft_strcmp(start->variable, el->variable) > 0)
+		if (ft_strcmp(start->variable, tmp->variable) < 0 \
+		&& ft_strcmp(start->variable, el->variable) > 0)
 			tmp = start;
 		start = start->next;
 	}
 	return (tmp);
 }
 
-void	alpha_variables (t_env *env)
+void	alpha_variables(t_env *env)
 {
-	t_env *min;
-	t_env *max;
+	t_env	*min;
+	t_env	*max;
 
 	min = get_maxmin_variable(env, MIN);
 	max = get_maxmin_variable(env, MAX);
@@ -68,4 +70,3 @@ void	alpha_variables (t_env *env)
 		min = min->next_alpha;
 	}
 }
-

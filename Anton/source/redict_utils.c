@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-int value_redirect_why_rdct(int read, int write)
+int	value_redirect_why_rdct(int read, int write)
 {
 	if (read && write)
 		return (RDCT_ALL);
@@ -11,10 +11,10 @@ int value_redirect_why_rdct(int read, int write)
 	return (0);
 }
 
-int why_rdct(t_cmd *cmd)
+int	why_rdct(t_cmd *cmd)
 {
-	int read;
-	int write;
+	int	read;
+	int	write;
 
 	read = 0;
 	write = 0;
@@ -35,9 +35,9 @@ int why_rdct(t_cmd *cmd)
 	return (value_redirect_why_rdct(read, write));
 }
 
-int choose_reds(t_cmd **cmd)
+int	choose_reds(t_cmd **cmd)
 {
-	t_cmd *lst;
+	t_cmd	*lst;
 
 	if (g_exit == 258)
 		return (-3);
@@ -54,9 +54,9 @@ int choose_reds(t_cmd **cmd)
 	return (0);
 }
 
-int run_heredoc(char **redict, t_cmd **cmd)
+int	run_heredoc(char **redict, t_cmd **cmd)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	if (redict && *redict)
@@ -74,11 +74,10 @@ int run_heredoc(char **redict, t_cmd **cmd)
 	return (0);
 }
 
-int check_heredoc(t_cmd **cmd)
+int	check_heredoc(t_cmd **cmd)
 {
-	t_cmd *temp;
+	t_cmd	*temp;
 
-	// g_exit = 0;
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
 	temp = *cmd;

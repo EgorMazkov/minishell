@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void redirects_close(t_cmd *cmd, t_pipe *pip)
+void	redirects_close(t_cmd *cmd, t_pipe *pip)
 {
 	if (!pip->flag && cmd->next)
 		pip->flag = 1;
@@ -14,7 +14,7 @@ void redirects_close(t_cmd *cmd, t_pipe *pip)
 		close(cmd->fd_write);
 }
 
-t_cmd *pipe_parent_process(t_cmd *cmd, t_pipe *pip)
+t_cmd	*pipe_parent_process(t_cmd *cmd, t_pipe *pip)
 {
 	if (!pip->flag && !cmd->next)
 	{
@@ -29,15 +29,17 @@ t_cmd *pipe_parent_process(t_cmd *cmd, t_pipe *pip)
 	if (!pip->flag)
 	{
 		if (pip->b[0])
-			close(pip->b[0]); // tbbrbrvbrvr
+			close(pip->b[0]);
 		close(pip->a[1]);
 	}
 	else
 	{
 		if (pip->a[0])
-			close(pip->a[0]); // tkbmltgbkmtlbkm
+			close(pip->a[0]);
 		close(pip->b[1]);
 	}
 	redirects_close(cmd, pip);
 	return (cmd->next);
 }
+
+//32 38

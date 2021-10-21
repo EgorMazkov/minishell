@@ -1,7 +1,6 @@
 #include "../include/minishell.h"
 
-
-int built_in_run(t_cmd *cmd, t_env **ev)
+int	built_in_run(t_cmd *cmd, t_env **ev)
 {
 	if (!cmd || !cmd->argv || !*cmd->argv)
 		return (-999);
@@ -28,11 +27,10 @@ int built_in_run(t_cmd *cmd, t_env **ev)
 	return (0);
 }
 
-
-void cmd_run(t_cmd **cmd)
+void	cmd_run(t_cmd **cmd)
 {
-	t_cmd *temp;
-	char **ar;
+	t_cmd		*temp;
+	char		**ar;
 
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
@@ -43,11 +41,11 @@ void cmd_run(t_cmd **cmd)
 		if (!ar || !*ar)
 		{
 			*cmd = (*cmd)->next;
-			continue;
+			continue ;
 		}
 		(*cmd)->redicts = record_redicts(ar);
 		if (!(*cmd)->redicts)
-			break;
+			break ;
 		(*cmd)->argv = rewrite_cmd(ar);
 		free_argv(ar);
 		*cmd = (*cmd)->next;

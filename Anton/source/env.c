@@ -1,10 +1,9 @@
 #include "../include/minishell.h"
 
-
 int	env_to_lists(t_env **env, char **ev)
 {
-	char *cw;
-	
+	char	*cw;
+
 	if (ev && *ev)
 	{
 		cw = getcwd(NULL, 0);
@@ -20,12 +19,6 @@ int	env_to_lists(t_env **env, char **ev)
 	}
 	return (0);
 }
-
-
-
-
-
-
 
 void	ft_env(t_env *ev)
 {

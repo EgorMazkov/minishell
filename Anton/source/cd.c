@@ -1,13 +1,12 @@
 #include "../include/minishell.h"
 
-int ft_cd_no_args(t_env **env, char *temp)
+int	ft_cd_no_args(t_env **env, char *temp)
 {
 	if (!get_variable_env(*env, "HOME"))
 	{
 		printf("cd: HOME not set\n");
 		return (-1);
 	}
-	// old->oldpwd = getcwd(NULL, 0);
 	temp = getcwd(NULL, 0);
 	overwrite_env(env, "OLDPWD", temp);
 	free_str(temp);
@@ -25,7 +24,7 @@ int ft_cd_no_args(t_env **env, char *temp)
 	return (1);
 }
 
-int ft_cd_tild_util(char *arg, t_env **env, char *temp)
+int	ft_cd_tild_util(char *arg, t_env **env, char *temp)
 {
 	temp = ft_strjoin(get_variable_env(*env, "HOME"), ++arg);
 	if (chdir(temp) == -1)
@@ -41,9 +40,8 @@ int ft_cd_tild_util(char *arg, t_env **env, char *temp)
 	return (1);
 }
 
-int ft_cd_tild(char *arg, t_env **env, char *temp)
+int	ft_cd_tild(char *arg, t_env **env, char *temp)
 {
-	// old->oldpwd = getcwd(NULL, 0);
 	temp = getcwd(NULL, 0);
 	overwrite_env(env, "OLDPWD", temp);
 	free_str(temp);
@@ -67,16 +65,13 @@ int ft_cd_tild(char *arg, t_env **env, char *temp)
 	return (1);
 }
 
-
-
-int ft_cd(char *arg, t_env **env)
+int	ft_cd(char *arg, t_env **env)
 {
-	char *oldpath;
-	char *temp;
+	char	*oldpath;
+	char	*temp;
 
 	oldpath = NULL;
 	temp = NULL;
-	/* если pwd || oldpwd удалены, то их надо добавить снова на следующих выходах и входах в директории*/
 	if (!arg || !arg[0])
 		return (ft_cd_no_args(env, temp));
 	else if (!ft_strncmp(arg, "-", 2))

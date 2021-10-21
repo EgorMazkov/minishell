@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-int is_builtin(char *command)
+int	is_builtin(char *command)
 {
 	if (!command)
 		return (0);
@@ -21,17 +21,9 @@ int is_builtin(char *command)
 	return (0);
 }
 
-
-
-
-
-
-
-
-
-char *level_down(char *s)
+char	*level_down(char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s && s[i])
@@ -42,9 +34,7 @@ char *level_down(char *s)
 	return (s);
 }
 
-
-
-char *get_variable_env(t_env *ev, char *str)
+char	*get_variable_env(t_env *ev, char *str)
 {
 	while (ev && ev->back)
 		ev = ev->back;
@@ -57,14 +47,9 @@ char *get_variable_env(t_env *ev, char *str)
 	return (NULL);
 }
 
-
-
-
-
-
-int args_valid(char *ar)
+int	args_valid(char *ar)
 {
-	int str;
+	int	str;
 
 	str = 0;
 	while (ar[str] && ar[str] != '=')
@@ -76,14 +61,11 @@ int args_valid(char *ar)
 	return (1);
 }
 
-
-
-
 int	export_compare_not_value(t_env **ev, char *s)
 {
-	int i;
-	char *dest;
-	char *s1;
+	int		i;
+	char	*dest;
+	char	*s1;
 
 	i = -1;
 	while (s[++i] && s[i] != '=')
@@ -106,4 +88,3 @@ int	export_compare_not_value(t_env **ev, char *s)
 	}
 	return (0);
 }
-

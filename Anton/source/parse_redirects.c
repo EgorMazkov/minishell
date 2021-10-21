@@ -1,7 +1,6 @@
 #include "../include/minishell.h"
 
-
-int get_descriptor_util(char **redir, int str, t_cmd *cmd)
+int	get_descriptor_util(char **redir, int str, t_cmd *cmd)
 {
 	if (!ft_strcmp(redir[str], "<"))
 	{
@@ -26,9 +25,9 @@ int get_descriptor_util(char **redir, int str, t_cmd *cmd)
 	return (0);
 }
 
-int get_descriptor(char **redir, t_cmd *cmd)
+int	get_descriptor(char **redir, t_cmd *cmd)
 {
-	int str;
+	int	str;
 
 	str = -1;
 	if (redir && *redir)
@@ -40,10 +39,10 @@ int get_descriptor(char **redir, t_cmd *cmd)
 	return (0);
 }
 
-int redirect_count(char **argv)
+int	redirect_count(char **argv)
 {
-	int count;
-	int i;
+	int	count;
+	int	i;
 
 	count = 0;
 	i = -1;
@@ -56,11 +55,11 @@ int redirect_count(char **argv)
 	return (count * 2);
 }
 
-char**	record_redicts(char **argv)
+char	**record_redicts(char **argv)
 {
-	int str;
-	int i;
-	char **temp;
+	int		str;
+	int		i;
+	char	**temp;
 
 	str = 0;
 	i = 0;
@@ -76,7 +75,7 @@ char**	record_redicts(char **argv)
 			temp[i + 1] = ft_strdup(argv[str + 1]);
 			i += 2;
 			str += 2;
-			continue;
+			continue ;
 		}
 		str++;
 	}
@@ -84,15 +83,16 @@ char**	record_redicts(char **argv)
 	return (temp);
 }
 
-char **rewrite_cmd(char **argv)
+char	**rewrite_cmd(char **argv)
 {
-	int i;
-	int str;
-	char **temp;
+	int		i;
+	int		str;
+	char	**temp;
 
 	i = 0;
 	str = 0;
-	temp = (char **)malloc(((len_tab(argv) - redirect_count(argv)) + 1) * sizeof(char *));
+	temp = (char **)malloc(((len_tab(argv) - redirect_count(argv)) + 1) * \
+	sizeof(char *));
 	while (argv[i])
 	{
 		if (!ft_strcmp(argv[i], ">>") || \
@@ -101,7 +101,7 @@ char **rewrite_cmd(char **argv)
 		!ft_strcmp(argv[i], "<<"))
 		{
 			i += 2;
-			continue;
+			continue ;
 		}
 		temp[str] = ft_strdup(argv[i]);
 		str++;
@@ -110,6 +110,3 @@ char **rewrite_cmd(char **argv)
 	temp[str] = NULL;
 	return (temp);
 }
-
-
-

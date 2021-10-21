@@ -1,9 +1,9 @@
 #include "../include/minishell.h"
 
-int is_slash_n(char **str)
+int	is_slash_n(char **str)
 {
-	int i;
-	int ar;
+	int	i;
+	int	ar;
 
 	ar = 0;
 	while (str[ar])
@@ -24,11 +24,11 @@ int is_slash_n(char **str)
 	return (ar);
 }
 
-void ft_echo(char **arg)
+void	ft_echo(char **arg)
 {
-	int str;
-	int line;
-	int flag_n;
+	int	str;
+	int	line;
+	int	flag_n;
 
 	str = is_slash_n(arg);
 	if (str)

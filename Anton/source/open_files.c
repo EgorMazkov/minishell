@@ -1,10 +1,11 @@
 #include "../include/minishell.h"
 
-int rdct_r(char **redir, int str, t_cmd *cmd)
+int	rdct_r(char **redir, int str, t_cmd *cmd)
 {
 	if (cmd->fd_write != -1)
 		close(cmd->fd_write);
-	cmd->fd_write = open(redir[str + 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	cmd->fd_write = open(redir[str + 1], O_WRONLY | \
+	O_TRUNC | O_CREAT, 0666);
 	if (cmd->fd_write == -1)
 	{
 		perror(redir[str + 1]);
@@ -13,11 +14,12 @@ int rdct_r(char **redir, int str, t_cmd *cmd)
 	return (0);
 }
 
-int rdct_rr(char **redir, int str, t_cmd *cmd)
+int	rdct_rr(char **redir, int str, t_cmd *cmd)
 {
 	if (cmd->fd_write != -1)
 		close(cmd->fd_write);
-	cmd->fd_write = open(redir[str + 1], O_WRONLY | O_CREAT | O_APPEND, 0666);
+	cmd->fd_write = open(redir[str + 1], O_WRONLY | \
+	O_CREAT | O_APPEND, 0666);
 	if (cmd->fd_write == -1)
 	{
 		perror(redir[str + 1]);
@@ -26,11 +28,11 @@ int rdct_rr(char **redir, int str, t_cmd *cmd)
 	return (0);
 }
 
-int rdct_l(char **redir, int str, t_cmd *cmd)
+int	rdct_l(char **redir, int str, t_cmd *cmd)
 {
 	if (cmd->fd_read != -1)
 		close(cmd->fd_read);
-	if (!access(redir[str + 1], 0))//wefwefwef
+	if (!access(redir[str + 1], 0))
 		cmd->fd_read = open(redir[str + 1], O_RDONLY);
 	else
 	{
@@ -41,7 +43,7 @@ int rdct_l(char **redir, int str, t_cmd *cmd)
 	return (0);
 }
 
-int rdct_ll(char **redir, int str, t_cmd *cmd)
+int	rdct_ll(char **redir, int str, t_cmd *cmd)
 {
 	if (cmd->fd_read != -1)
 		close(cmd->fd_write);

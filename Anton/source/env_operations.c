@@ -1,18 +1,15 @@
-
 #include "../include/minishell.h"
 
-
-
-char **env_from_lists (t_env *env)
+char	**env_from_lists(t_env *env)
 {
-	char **str;
-	char *join;
-	char *join1;
-	int i = 0;
+	char	**str;
+	char	*join;
+	char	*join1;
+	int		i;
 
+	i = 0;
 	if (!env)
 		return (NULL);
-
 	while (env->back)
 		env = env->back;
 	str = (char **)malloc(sizeof(char *) * lenlist_env(env) + 1);
@@ -30,12 +27,11 @@ char **env_from_lists (t_env *env)
 	}
 	str[i] = NULL;
 	return (str);
-
 }
 
-int lenlist(t_cmd *list)
+int	lenlist(t_cmd *list)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (list->back)
@@ -50,7 +46,7 @@ int lenlist(t_cmd *list)
 
 void	env_record(t_env **env, char **ev)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	if (!ev || !*ev)
@@ -67,22 +63,18 @@ void	env_record(t_env **env, char **ev)
 		*env = (*env)->back;
 }
 
-
-
-
-
-int	overwrite_env(t_env **env, char *variable, char *new_value)//Принимает название переменной и на какое значение изменить ее содержимое
+int	overwrite_env(t_env **env, char *variable, char *new_value)
 {
-	t_env *temp;
-	int concat;
-	char *twin_varbs;
+	t_env	*temp;
+	int		concat;
+	char	*twin_varbs;
 
 	temp = *env;
 	concat = 0;
 	if (variable[ft_strlen(variable) - 1] == '+' && new_value && *new_value)
 	{
 		twin_varbs = variable;
-		free(twin_varbs);//lkjnklkm
+		free(twin_varbs);
 		variable = ft_substr(variable, 0, ft_strlen(variable) - 1);
 		concat++;
 	}
@@ -100,9 +92,9 @@ int	overwrite_env(t_env **env, char *variable, char *new_value)//Принима�
 	return (0);
 }
 
-char *value_of_env(t_env *env, char *value)
+char	*value_of_env(t_env *env, char *value)
 {
-	while(env && env->back)
+	while (env && env->back)
 		env = env->back;
 	while (env)
 	{
@@ -112,4 +104,3 @@ char *value_of_env(t_env *env, char *value)
 	}
 	return (NULL);
 }
-

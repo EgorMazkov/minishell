@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-int ft_cd_home(t_env **env, char *oldpath, char *temp)
+int	ft_cd_home(t_env **env, char *oldpath, char *temp)
 {
 	if (!get_variable_env(*env, "OLDPWD"))
 	{
@@ -28,9 +28,8 @@ int ft_cd_home(t_env **env, char *oldpath, char *temp)
 	return (1);
 }
 
-int ft_cd_no_parse(char *arg, t_env **env, char *temp)
+int	ft_cd_no_parse(char *arg, t_env **env, char *temp)
 {
-	// old->oldpwd = getcwd(NULL, 0) 
 	temp = getcwd(NULL, 0);
 	overwrite_env(env, "OLDPWD", temp);
 	free_str(temp);

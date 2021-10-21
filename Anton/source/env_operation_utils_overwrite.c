@@ -1,23 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_operation_utils_overwrite.c                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tharodon <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/21 23:07:31 by tharodon          #+#    #+#             */
+/*   Updated: 2021/10/21 23:07:34 by tharodon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 t_env	*getback(t_env *temp)
 {
-	while(temp && temp->back)
+	while (temp && temp->back)
 		temp = temp->back;
 	return (temp);
 }
 
-
-int if_not_new_value(t_env *temp)
+int	if_not_new_value(t_env *temp)
 {
 	free_str(temp->value);
 	temp->value = NULL;
 	return (1);
 }
 
-int concat_or_overwrite(t_env *temp, int concat, char *new_value)
+int	concat_or_overwrite(t_env *temp, int concat, char *new_value)
 {
-	char *twin_varbs;
+	char	*twin_varbs;
 
 	if (concat)
 	{

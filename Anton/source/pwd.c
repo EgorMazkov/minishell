@@ -1,8 +1,8 @@
 #include "../include/minishell.h"
 
-int ft_pwd(t_env *env)
+int	ft_pwd(t_env *env)
 {
-	t_env *temp;
+	t_env	*temp;
 
 	temp = env;
 	while (temp && temp->back)
