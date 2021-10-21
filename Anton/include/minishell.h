@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/14 12:28:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/16 15:03:58 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/21 20:19:31 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ char *level_down(char *s);
 t_env	*getback(t_env *temp);
 
 int len_tab(char **str);
-char **jopa(t_ms *minishell, int i);
 char **record_cmd2(t_ms *minishell);
 t_cmd *new_cmd(t_ms *minishell);
 void lst_add (t_cmd **lst, t_cmd *el);
@@ -188,11 +187,41 @@ char	**ft_split_for_minishell(char const *s, char c);
 char    *check_path_for_slash(t_ms *minishell, char **line);
 char	*pwd_check(t_ms *minishell);
 char	*slash_path(char *way, char *line);
-int check_quote(t_ms *minishell);
 void	preparser_dollar(t_cmd **cmd, t_ms *minishell);
 void	record_dollar(t_cmd **cmd, int i, t_ms *minishell);
 char	*dollar_tolower(char **dest);
 void	get_path_dollar(t_cmd **cmd, int a, t_ms *minishell);
 
 
+
+void	record_list_cmd(char *dest, char *line, t_cmd **cmd);
+void	cmd_run(t_cmd **cmd);
+int	check_next_cmd(t_cmd **cmd);
+char	**record_redicts(char **argv);
+char	**rewrite_cmd(char **argv);
+int	redirect_count(char **argv);
+void	record_cmd(t_cmd **cmd, t_ms *minishell, t_env **env);
+void	record_cmd_pipe(t_cmd **cmd, t_ms *minishell);
+char	**record_cmd2(t_ms *minishell);
+int is_builtin (char *command);
+char	*jango(char **j, size_t i);
+size_t	schet(char const *s, char c);
+size_t	len_word(const char *src, size_t start, char c);
+char	**array_shift(t_ms *minishell, int i);
+int		validator(t_ms *minishell, int i);
+int	check_quote(t_ms *minishell);
+
+
+
+
+
+
+
+
+
+
+
+
+// test
+void test(t_cmd **cmd);
 #endif

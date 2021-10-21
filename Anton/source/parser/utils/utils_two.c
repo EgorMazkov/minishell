@@ -1,41 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_ghumbert.c                                   :+:      :+:    :+:   */
+/*   utils_two.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:51:13 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/03 16:22:52 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/21 18:58:07 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../../include/minishell.h"
 
-int check_quote(t_ms *minishell)
+int	check_quote(t_ms *minishell)
 {
- int i;
- int quote;
- int duble_quote;
+	int	i;
+	int	quote;
+	int	duble_quote;
 
- quote = 0;
- duble_quote = 0;
- i = 0;
- while (minishell->input[i])
- {
-  if (minishell->input[i] == '\"')
-   duble_quote++;
-  if (minishell->input[i] == '\'')
-   quote++;
-  i++;
- }
- if (duble_quote % 2 != 0)
-  return (0);
- if (quote % 2 != 0)
-  return (0);
- return (1);
+	quote = 0;
+	duble_quote = 0;
+	i = 0;
+	while (minishell->input[i])
+	{
+		if (minishell->input[i] == '\"')
+			duble_quote++;
+		if (minishell->input[i] == '\'')
+			quote++;
+		i++;
+	}
+	if (duble_quote % 2 != 0)
+		return (0);
+	if (quote % 2 != 0)
+		return (0);
+	return (1);
 }
-
 
 void	lst_add(t_cmd **lst, t_cmd *el)
 {
@@ -51,17 +50,7 @@ void	lst_add(t_cmd **lst, t_cmd *el)
 	*lst = el;
 }
 
-int	len_tab(char **str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-char	**jopa(t_ms *minishell, int i)
+char	**array_shift(t_ms *minishell, int i)
 {
 	char	**dest;
 	int		str;

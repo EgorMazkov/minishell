@@ -40,7 +40,7 @@ int get_descriptor(char **redir, t_cmd *cmd)
 	return (0);
 }
 
-int redirect_count (char **argv)
+int redirect_count(char **argv)
 {
 	int count;
 	int i;

@@ -29,12 +29,6 @@ void test(t_cmd **cmd)
 	}
 }
 
-
-
-
-
-
-
 int bucksonly(char *s)
 {
 	int i;
@@ -110,11 +104,18 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 		printf("exit\n");
 		exit(0);
 	}
+	if (!check_quote(minishell))
+		{
+			printf("Error\n");
+			return ;
+		}
 	if (*minishell->input)
 		add_history(minishell->input);
 	if (minishell->input[0])
 	{
 		minishell->line = ft_split_for_minishell(minishell->input, ' ');
+		if (!validator(minishell, 0))
+			return ;
 		exec(cmd, minishell, env);
 		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_exit);
 	}
@@ -138,11 +139,13 @@ int main(int argc, char **argv, char **ev)
 		minishell = (t_ms *)malloc(sizeof(t_ms));
 		null_struct(minishell, ev);
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		// minishell->input = ft_strdup("\"\"\"\"");
 		signal(SIGINT, cmd_c_fork), signal(SIGQUIT, cmd_c_sl);
 		go_readline_go(&cmd, minishell, &env);
 		free_cmd(&cmd);
 		free_minishell(minishell);
 		free(minishell);
+		// while (1);
 	}
 	free_env(&env);
 }
