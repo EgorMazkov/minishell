@@ -155,6 +155,7 @@ void	free_minishell(t_ms *minishell);
 
 char**	record_redicts(char **argv);
 char **rewrite_cmd(char **argv);
+void	files_closes (t_cmd *cmd);
 
 int rdct_r(char **redir, int str, t_cmd *cmd);
 int rdct_rr(char **redir, int str, t_cmd *cmd);

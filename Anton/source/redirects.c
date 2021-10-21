@@ -1,5 +1,22 @@
 #include "../include/minishell.h"
 
+
+
+void	files_closes (t_cmd *cmd)
+{
+	while (cmd->back)
+		cmd = cmd->back;
+	while (cmd)
+	{
+		if (cmd->fd_read != -1)
+			close(cmd->fd_read);
+		if (cmd->fd_write != -1)
+			close(cmd->fd_write);
+		cmd = cmd->next;
+	}
+}
+
+
 void ctrl_wd(int signum)
 {
 	(void)signum;

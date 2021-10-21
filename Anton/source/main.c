@@ -105,10 +105,10 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 		exit(0);
 	}
 	if (!check_quote(minishell))
-		{
-			printf("Error\n");
-			return ;
-		}
+	{
+		printf("Error\n");
+		return ;
+	}
 	if (*minishell->input)
 		add_history(minishell->input);
 	if (minishell->input[0])
@@ -117,6 +117,7 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 		if (!validator(minishell, 0))
 			return ;
 		exec(cmd, minishell, env);
+		files_closes(*cmd);
 		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_exit);
 	}
 }

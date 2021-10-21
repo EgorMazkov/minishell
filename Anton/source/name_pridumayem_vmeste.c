@@ -73,8 +73,8 @@ void exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 	if (parser_and_validator(cmd, minishell, env))
 		return;
 	// rdct_left_dock(*cmd);
-	test(cmd);
-	return ;
+	// test(cmd);
+	// return ;
 	if (!(*cmd)->next && !(*cmd)->back)
 		built_ex = built_in_run(*cmd, env);
 	if ((*cmd)->next || (*cmd)->back)
