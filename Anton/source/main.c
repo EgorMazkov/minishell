@@ -131,7 +131,6 @@ int main(int argc, char **argv, char **ev)
 	t_ms *minishell;
 
 	(void)argc, (void)argv;
-	// minishell = NULL;
 	env = NULL;
 	cmd = NULL;
 	if (!env_to_lists(&env, ev))
@@ -141,7 +140,6 @@ int main(int argc, char **argv, char **ev)
 		signal(SIGINT, cmd_c), signal(SIGQUIT, SIG_IGN);
 		minishell = null_struct();
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		// minishell->input = ft_strdup("\"\"\"\"");
 		signal(SIGINT, cmd_c_fork), signal(SIGQUIT, cmd_c_sl);
 		go_readline_go(&cmd, minishell, &env);
 		free_cmd(&cmd);
