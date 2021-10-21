@@ -74,7 +74,7 @@ void	path(t_cmd **cmd, t_ms *minishell)
 
 	line = NULL;
 	dest = NULL;
-	while ((*cmd)->argv[0])
+	while ((*cmd)->argv[0] || (*cmd)->redicts[0])
 	{
 		get_path(minishell);
 		if (is_builtin((*cmd)->argv[0]))

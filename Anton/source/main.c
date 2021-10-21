@@ -114,6 +114,8 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 	if (minishell->input[0])
 	{
 		minishell->line = ft_split_for_minishell(minishell->input, ' ');
+		if (!*minishell->line)
+			return ;
 		if (!validator(minishell, 0))
 			return ;
 		exec(cmd, minishell, env);
@@ -129,7 +131,7 @@ int main(int argc, char **argv, char **ev)
 	t_ms *minishell;
 
 	(void)argc, (void)argv;
-	minishell = NULL;
+	// minishell = NULL;
 	env = NULL;
 	cmd = NULL;
 	if (!env_to_lists(&env, ev))
@@ -137,8 +139,7 @@ int main(int argc, char **argv, char **ev)
 	while (1)
 	{
 		signal(SIGINT, cmd_c), signal(SIGQUIT, SIG_IGN);
-		minishell = (t_ms *)malloc(sizeof(t_ms));
-		null_struct(minishell, ev);
+		minishell = null_struct();
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
 		// minishell->input = ft_strdup("\"\"\"\"");
 		signal(SIGINT, cmd_c_fork), signal(SIGQUIT, cmd_c_sl);
@@ -146,7 +147,6 @@ int main(int argc, char **argv, char **ev)
 		free_cmd(&cmd);
 		free_minishell(minishell);
 		free(minishell);
-		// while (1);
 	}
 	free_env(&env);
 }

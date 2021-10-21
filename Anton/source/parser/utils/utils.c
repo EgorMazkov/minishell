@@ -23,13 +23,16 @@ int	check_next_cmd(t_cmd **cmd)
 		return (0);
 }
 
-void	null_struct(t_ms *minishell, char **ev)
+t_ms	*null_struct(void)
 {
-	(void)ev;
+	t_ms *minishell;
+
+	minishell = (t_ms *)malloc(sizeof(t_ms));
 	minishell->input = NULL;
 	minishell->line = NULL;
 	minishell->env = NULL;
 	minishell->way = NULL;
+	return (minishell);
 }
 
 int	len_tab(char **str)

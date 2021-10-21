@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void	free_argv (char **argv)
+void free_argv(char **argv)
 {
 	int i;
 
@@ -8,22 +8,20 @@ void	free_argv (char **argv)
 	if (argv && *argv != '\0')
 	{
 		if (*argv)
-		while (argv[++i])
-			free_str(argv[i]);
+			while (argv[++i])
+				free_str(argv[i]);
 	}
 	if (argv)
 		free(argv);
 }
 
-
-void	free_str(char *string_free)
+void free_str(char *string_free)
 {
 	if (string_free)
 		free(string_free);
 }
 
-
-void	free_cmd(t_cmd **cmd)
+void free_cmd(t_cmd **cmd)
 {
 	t_cmd *temp;
 
@@ -39,8 +37,7 @@ void	free_cmd(t_cmd **cmd)
 	}
 }
 
-
-void	free_env(t_env **env)
+void free_env(t_env **env)
 {
 	t_env *temp;
 
@@ -53,11 +50,10 @@ void	free_env(t_env **env)
 		free_str(temp->variable);
 		free_str(temp->value);
 		free(temp);
-	}		
+	}
 }
 
-
-void	free_minishell(t_ms *minishell)
+void free_minishell(t_ms *minishell)
 {
 	free_str(minishell->input);
 	free_argv(minishell->env);
@@ -65,28 +61,24 @@ void	free_minishell(t_ms *minishell)
 	free_argv(minishell->way);
 }
 
-
-
-void	s(t_cmd **lst, t_cmd *el)
+void s(t_cmd **lst, t_cmd *el)
 {
 	if (!el)
-		return ;
+		return;
 	if (!*lst)
 	{
 		*lst = el;
-		return ;
+		return;
 	}
 	el->back = *lst;
 	(*lst)->next = el;
 	*lst = el;
 }
 
-
-
-t_cmd	*cret(char *a)
+t_cmd *cret(char *a)
 {
-	t_cmd	*el;
-	int		j;
+	t_cmd *el;
+	int j;
 
 	j = 0;
 	el = (t_cmd *)malloc(sizeof(t_cmd));
@@ -102,10 +94,7 @@ t_cmd	*cret(char *a)
 	return (el);
 }
 
-
-
-
-//int main ()
+// int main ()
 //{
 //	t_cmd *r;
 //	r = NULL;
@@ -117,4 +106,4 @@ t_cmd	*cret(char *a)
 //	if (!r)
 //		printf("Complete!\n");
 //	while (1);
-//}
+// }

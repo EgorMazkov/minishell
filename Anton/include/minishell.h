@@ -183,7 +183,7 @@ void	path(t_cmd **cmd, t_ms *minishell);
 int	check_bin(t_cmd *cmd);
 char	*right_way(t_cmd *cmd, t_ms *minishell);
 void	get_path(t_ms *minishell);
-void	null_struct(t_ms *minishell, char **ev);
+t_ms	*null_struct(void);
 char	**ft_split_for_minishell(char const *s, char c);
 char    *check_path_for_slash(t_ms *minishell, char **line);
 char	*pwd_check(t_ms *minishell);

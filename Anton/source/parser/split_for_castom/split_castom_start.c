@@ -54,6 +54,11 @@ static char	**cikl(char const *s, char c, size_t i, char **mass)
 	{
 		if (s[i] == '\"' || s[i] == '\'')
 		{
+			if (s[i + 1] == 34 || s[i + 1] == 39 || s[i + 1] == '\0')
+			{
+				i++;
+				continue ;
+			}
 			if (s[i] == '\'')
 				mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
 			else
