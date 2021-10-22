@@ -1,36 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/08 13:42:36 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/12 17:58:01 by ghumbert         ###   ########.fr       */
+/*   Created: 2021/10/22 22:02:54 by ghumbert          #+#    #+#             */
+/*   Updated: 2021/10/22 22:02:55 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../include/minishell.h"
 
-int	ft_atoi(const char *str)
+int	ft_pwd(t_env *env)
 {
-	int	r;
-	int	n;
+	t_env	*temp;
 
-	n = 1;
-	r = 0;
-	if (!str)
-		return (0);
-	while ((*str >= 9 && *str <= 13) || *str == 32)
-		++str;
-	if (*str == '-')
-		n = -1;
-	if (*str == '-' || *str == '+')
-		++str;
-	while (*str && *str >= '0' && *str <= '9')
+	temp = env;
+	while (temp && temp->back)
+		temp = temp->back;
+	while (temp)
 	{
-		r = r * 10 + (*str - 48);
-		++str;
+		if (!ft_strcmp("PWD", temp->variable))
+		{
+			ft_putstr_fd(temp->value, 1);
+			ft_putstr_fd("\n", 1);
+		}
+		temp = temp->next;
 	}
-	return (r * n);
+	return (1);
 }

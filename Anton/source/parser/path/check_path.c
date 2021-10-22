@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 15:45:27 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 19:14:49 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/22 14:25:10 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@ void	path(t_cmd **cmd, t_ms *minishell)
 
 	line = NULL;
 	dest = NULL;
-	while ((*cmd)->argv[0])
+	while (((*cmd)->argv && (*cmd)->argv[0]) || ((*cmd)->redicts && \
+	(*cmd)->redicts[0]))
 	{
 		get_path(minishell);
 		if (is_builtin((*cmd)->argv[0]))

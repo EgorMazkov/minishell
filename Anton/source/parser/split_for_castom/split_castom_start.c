@@ -6,20 +6,46 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 21:50:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 19:28:59 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/22 23:15:23 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
 
-size_t	cikl_two(char const *s, char c, size_t i)
+int	chek_qoute(char const *s, int *i, int flag, char c)
 {
-	while (s[i] != c && s[i] != '\0')
+	if ((s[*i + 1] == '\"' && flag == 34) || \
+	(flag == 39 && s[*i + 1] == '\''))
 	{
-		if (s[i + 1] == '\"' || s[i + 1] == '\'')
-		{
+		(*i)++;
+		if (s[*i + 1] == c)
 			i++;
+		return (1);
+	}
+	(*i)++;
+	return (0);
+}
+
+size_t	cikl_two(char const *s, char c, int i, int flag)
+{
+	while (s[i])
+	{
+		if (flag)
+		{
+			if (!chek_qoute(s, &i, flag, c))
+				continue ;
 			return (i);
+		}
+		else
+		{
+			if (s[i + 1] != c)
+				i++;
+			else
+			{
+				i++;
+				return (i);
+			}
+			continue ;
 		}
 		i++;
 	}
@@ -45,54 +71,21 @@ int	mass_word(char **mass, size_t word, char const *s, int i)
 	return (0);
 }
 
-static char	**cikl(char const *s, char c, size_t i, char **mass)
+char	**record_mass(char const *s, char **mass, t_dollar *dollar, int *i)
 {
-	size_t	word;
-
-	word = 0;
-	while (s[i])
+	if (s[*i] == '\'')
 	{
-		if (s[i] == '\"' || s[i] == '\'')
-		{
-			if (s[i] == '\'')
-				mass[word] = ft_substr(s, i, len_word(s, i + 1, '\'') + 2);
-			else
-				mass[word] = ft_substr(s, i, len_word(s, i + 1, '\"') + 2);
-			i++;
-			if (mass[word] == NULL)
-				jango(mass, word);
-			word++;
-		}
-		else if (s[i] != c)
-			word = cikl_three(s, i, mass, word);
-		i = cikl_two(s, c, i);
-		if (mass_word(mass, word, s, i))
-			return (mass);
-		i++;
+		mass[dollar->j] = ft_substr(s, *i, dollar->a);
+		dollar->flag = 39;
 	}
-	mass[word] = NULL;
-	return (mass);
-}
-
-char	**ft_split_for_minishell(char const *s, char c)
-{
-	size_t	i;
-	char	**mass;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	mass = (char **)malloc((schet(s, c) + 2) * sizeof(char *));
-	if (mass == NULL)
-		return (NULL);
-	mass[schet(s, c)] = NULL;
-	while (s[i] == c && s[i] != '\0')
+	else
 	{
-		if (s[i + 1] == '\0')
-			return (mass);
-		i++;
+		mass[dollar->j] = ft_substr(s, *i, dollar->a);
+		dollar->flag = 34;
 	}
-	mass = cikl(s, c, i, mass);
-	i = 0;
+	*i += dollar->a;
+	if (mass[dollar->j] == NULL)
+		jango(mass, dollar->j);
+	dollar->j++;
 	return (mass);
 }

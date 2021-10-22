@@ -1,41 +1,70 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rdct.c                                             :+:      :+:    :+:   */
+/*   parse_redirects.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/20 15:53:12 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 16:00:49 by ghumbert         ###   ########.fr       */
+/*   Created: 2021/10/22 22:02:28 by ghumbert          #+#    #+#             */
+/*   Updated: 2021/10/22 22:02:29 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "../include/minishell.h"
 
-void	cmd_run(t_cmd **cmd)
+int	get_descriptor_util(char **redir, int str, t_cmd *cmd)
 {
-	t_cmd	*temp;
-	char	**ar;
-
-	while ((*cmd)->back)
-		*cmd = (*cmd)->back;
-	temp = *cmd;
-	while (*cmd)
+	if (!ft_strcmp(redir[str], "<"))
 	{
-		ar = (*cmd)->argv;
-		if (!ar || !*ar)
-		{
-			*cmd = (*cmd)->next;
-			continue ;
-		}
-		(*cmd)->redicts = record_redicts(ar);
-		if (!(*cmd)->redicts)
-			break ;
-		(*cmd)->argv = rewrite_cmd(ar);
-		free_argv(ar);
-		*cmd = (*cmd)->next;
+		if (rdct_l(redir, str, cmd) == -3)
+			return (-3);
 	}
-	*cmd = temp;
+	else if (!ft_strcmp(redir[str], ">"))
+	{
+		if (rdct_r(redir, str, cmd) == -3)
+			return (-3);
+	}
+	else if (!ft_strcmp(redir[str], ">>"))
+	{
+		if (rdct_rr(redir, str, cmd) == -3)
+			return (-3);
+	}
+	else if (!ft_strcmp(redir[str], "<<"))
+	{
+		if (rdct_ll(redir, str, cmd) == -3)
+			return (-3);
+	}
+	return (0);
+}
+
+int	get_descriptor(char **redir, t_cmd *cmd)
+{
+	int	str;
+
+	str = -1;
+	if (redir && *redir)
+	{
+		while (redir[++str])
+			if (get_descriptor_util(redir, str, cmd) == -3)
+				return (-3);
+	}
+	return (0);
+}
+
+int	redirect_count(char **argv)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = -1;
+	while (argv[++i])
+		if (!ft_strcmp(argv[i], ">>") || \
+		!ft_strcmp(argv[i], ">") || \
+		!ft_strcmp(argv[i], "<") || \
+		!ft_strcmp(argv[i], "<<"))
+			count++;
+	return (count * 2);
 }
 
 char	**record_redicts(char **argv)
@@ -74,8 +103,8 @@ char	**rewrite_cmd(char **argv)
 
 	i = 0;
 	str = 0;
-	temp = (char **)malloc(((len_tab(argv) - \
-	redirect_count(argv)) + 1) * sizeof(char *));
+	temp = (char **)malloc(((len_tab(argv) - redirect_count(argv)) + 1) * \
+	sizeof(char *));
 	while (argv[i])
 	{
 		if (!ft_strcmp(argv[i], ">>") || \
@@ -92,20 +121,4 @@ char	**rewrite_cmd(char **argv)
 	}
 	temp[str] = NULL;
 	return (temp);
-}
-
-int	redirect_count(char **argv)
-{
-	int	count;
-	int	i;
-
-	count = 0;
-	i = -1;
-	while (argv[++i])
-		if (!ft_strcmp(argv[i], ">>") || \
-		!ft_strcmp(argv[i], ">") || \
-		!ft_strcmp(argv[i], "<") || \
-		!ft_strcmp(argv[i], "<<"))
-			count++;
-	return (count * 2);
 }

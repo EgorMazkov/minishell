@@ -1,36 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/08 13:42:36 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/09/12 17:58:01 by ghumbert         ###   ########.fr       */
+/*   Created: 2021/10/22 22:02:56 by ghumbert          #+#    #+#             */
+/*   Updated: 2021/10/22 22:02:57 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../include/minishell.h"
 
-int	ft_atoi(const char *str)
+void	cmd_c_sl(int signum)
 {
-	int	r;
-	int	n;
+	(void)signum;
+	printf("Quit :3\n");
+}
 
-	n = 1;
-	r = 0;
-	if (!str)
-		return (0);
-	while ((*str >= 9 && *str <= 13) || *str == 32)
-		++str;
-	if (*str == '-')
-		n = -1;
-	if (*str == '-' || *str == '+')
-		++str;
-	while (*str && *str >= '0' && *str <= '9')
-	{
-		r = r * 10 + (*str - 48);
-		++str;
-	}
-	return (r * n);
+void	cmd_c_fork(int signum)
+{
+	(void)signum;
+	g_exit = 130;
+	write(1, "\n", 1);
+}
+
+void	cmd_c(int signum)
+{
+	(void)signum;
+	g_exit = 1;
+	rl_on_new_line();
+	rl_redisplay();
+	write(1, "  \n", 3);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }

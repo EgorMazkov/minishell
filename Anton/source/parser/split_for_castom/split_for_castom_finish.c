@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   split_for_castom_end.c                             :+:      :+:    :+:   */
+/*   split_for_castom_finish.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 19:24:38 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 19:25:07 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/22 16:00:46 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
 
-static char	*jango(char **j, size_t i)
+char	*jango(char **j, size_t i)
 {
 	while (i >= 0 && j[i])
 	{
@@ -48,7 +48,7 @@ size_t	schet_two(char const *s, size_t i, size_t sep, char c)
 	return (i);
 }
 
-static size_t	schet(char const *s, char c)
+size_t	schet(char const *s, char c)
 {
 	size_t	i;
 	size_t	sep;
@@ -77,7 +77,7 @@ static size_t	schet(char const *s, char c)
 	return (sep);
 }
 
-static size_t	len_word(const char *src, size_t start, char c)
+size_t	len_word(const char *src, size_t start, char c)
 {
 	size_t	i;
 
