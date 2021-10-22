@@ -54,6 +54,8 @@ int	args_valid(char *ar)
 	str = 0;
 	while (ar[str] && ar[str] != '=')
 	{
+		if (ar[str] == '+' && ar[str + 1] == '=')
+			return (1);
 		if (!ft_isalpha(ar[str]))
 			return (0);
 		str++;

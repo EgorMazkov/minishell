@@ -17,7 +17,7 @@ void	files_closes(t_cmd *cmd)
 void	ctrl_wd(int signum)
 {
 	(void)signum;
-	g_exit = 130;
+	g_parms.gexit = 130;
 }
 
 void	loop_recording(char *stop, t_pipe pip)
@@ -38,7 +38,7 @@ void	loop_recording(char *stop, t_pipe pip)
 	}
 	close(pip.a[1]);
 	close(pip.a[0]);
-	if (g_exit == 130)
+	if (g_parms.gexit == 130)
 		exit(130);
 	else
 	{
@@ -54,8 +54,8 @@ void	wait_input_and_record(t_cmd *cmd, t_pipe pip)
 	out = 0;
 	waitpid(0, &out, 0);
 	if (WIFEXITED(out))
-		g_exit = WEXITSTATUS(out);
-	if (g_exit == 130)
+		g_parms.gexit = WEXITSTATUS(out);
+	if (g_parms.gexit == 130)
 	{
 		close(pip.a[0]);
 		close(pip.a[1]);

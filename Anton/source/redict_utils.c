@@ -39,7 +39,7 @@ int	choose_reds(t_cmd **cmd)
 {
 	t_cmd	*lst;
 
-	if (g_exit == 258)
+	if (g_parms.gexit == 258)
 		return (-3);
 	while ((*cmd)->back)
 		*cmd = (*cmd)->back;
@@ -66,7 +66,7 @@ int	run_heredoc(char **redict, t_cmd **cmd)
 			if (!ft_strcmp("<<", redict[i]))
 			{
 				rdct_left_dock(*cmd, redict[i + 1]);
-				if (g_exit == 130)
+				if (g_parms.gexit == 130)
 					return (130);
 			}
 		}

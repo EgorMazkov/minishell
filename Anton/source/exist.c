@@ -42,12 +42,14 @@ static int	ft_exit_util(char **code)
 {
 	if (is_numbers_to_string(*code))
 	{
-		printf("exit: too many arguments\n");
+		ft_putstr_fd("exit: too many arguments\n", g_parms.fd1_copy);
 		return (-1);
 	}
 	else
 	{
-		printf("exit\nexit: %s: numeric argument required", *code);
+		ft_putstr_fd("exit\nexit: ", g_parms.fd1_copy);
+		ft_putstr_fd(*code, g_parms.fd1_copy);
+		ft_putstr_fd(": numeric argument required\n", g_parms.fd1_copy);
 		exit(255);
 	}
 	return (0);
@@ -61,7 +63,9 @@ int	ft_exit(char **code)
 	{
 		if (!is_numbers_to_string(*code))
 		{
-			printf("exit\nexit: %s: numeric argument required", *code);
+			ft_putstr_fd("exit\nexit: ", g_parms.fd1_copy);
+			ft_putstr_fd(*code, g_parms.fd1_copy);
+			ft_putstr_fd(": numeric argument required\n", g_parms.fd1_copy);
 			exit(255);
 		}
 		else

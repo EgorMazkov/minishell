@@ -8,7 +8,7 @@ int	rdct_r(char **redir, int str, t_cmd *cmd)
 	O_TRUNC | O_CREAT, 0666);
 	if (cmd->fd_write == -1)
 	{
-		perror(redir[str + 1]);
+		ft_str_err(redir[str + 1]);
 		return (-3);
 	}
 	return (0);
@@ -22,7 +22,7 @@ int	rdct_rr(char **redir, int str, t_cmd *cmd)
 	O_CREAT | O_APPEND, 0666);
 	if (cmd->fd_write == -1)
 	{
-		perror(redir[str + 1]);
+		ft_str_err(redir[str + 1]);
 		return (-3);
 	}
 	return (0);
@@ -37,7 +37,7 @@ int	rdct_l(char **redir, int str, t_cmd *cmd)
 	else
 	{
 		cmd->fd_read = -999;
-		perror(redir[str + 1]);
+		ft_str_err(redir[str + 1]);
 		return (-3);
 	}
 	return (0);
@@ -50,7 +50,7 @@ int	rdct_ll(char **redir, int str, t_cmd *cmd)
 	cmd->fd_read = cmd->fd_her;
 	if (cmd->fd_read == -1)
 	{
-		perror(redir[str + 1]);
+		ft_str_err(redir[str + 1]);
 		return (-3);
 	}
 	return (0);

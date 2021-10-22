@@ -23,10 +23,11 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <string.h>
+#include <errno.h>
+# include "../readline/include/readline/readline.h"
 # define MAX 1
 # define MIN 0
 
-# include "../readline/include/readline/readline.h"
 
 # define RDCT_R 112
 # define RDCT_RR 113
@@ -79,12 +80,18 @@ typedef struct s_pipe
 } t_pipe;
 
 
+typedef struct g_parm
+{
+	int gexit;
+	int fd0_copy;
+	int fd1_copy;
+} t_parm;
 
-int g_exit;
+extern t_parm g_parms;
 
 
 void exec(t_cmd **cmd, t_ms *minishell, t_env **env);
-int bucksonly(char *s);
+
 int check_heredoc(t_cmd **cmd);
 int run_heredoc(char **redict, t_cmd **cmd);
 void cmd_run(t_cmd **cmd);
@@ -171,6 +178,7 @@ int	export_compare_not_value(t_env **ev, char *s);
 int args_valid(char *ar);
 char *level_down(char *s);
 
+void	ft_str_err(char *strerr);
 t_env	*getback(t_env *temp);
 
 int len_tab(char **str);

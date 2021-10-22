@@ -9,14 +9,14 @@ void	cmd_c_sl(int signum)
 void	cmd_c_fork(int signum)
 {
 	(void)signum;
-	g_exit = 130;
+	g_parms.gexit = 130;
 	write(1, "\n", 1);
 }
 
 void	cmd_c(int signum)
 {
 	(void)signum;
-	g_exit = 1;
+	g_parms.gexit = 1;
 	rl_on_new_line();
 	rl_redisplay();
 	write(1, "  \n", 3);

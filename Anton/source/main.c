@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-int g_exit;
+t_parm g_parms;
 
 
 
@@ -27,70 +27,6 @@ void test(t_cmd **cmd)
 		temp = temp->next;
 		i = -1;
 	}
-}
-
-int bucksonly(char *s)
-{
-	int i;
-
-	i = -1;
-	while (s[++i])
-		if (s[i] != '$')
-			return (0);
-	return (1);
-}
-
-void three_hundred_bucks(t_cmd **cmd, t_env **env)
-{
-	int i;
-	char *temp;
-	t_cmd *first_command;
-
-	while ((*cmd)->back)
-		*cmd = (*cmd)->back;
-	first_command = *cmd;
-	while (*cmd)
-	{
-		i = -1;
-		if (!(*cmd)->argv || !(*cmd)->argv[0])
-		{
-			*cmd = (*cmd)->next;
-			continue;
-		}
-		while ((*cmd)->argv[++i])
-		{
-			if ((*cmd)->argv[i][0] == '\'')
-			{
-				temp = (*cmd)->argv[i];
-				(*cmd)->argv[i] = ft_strtrim((*cmd)->argv[i], "\'");
-				free_str(temp);
-			}
-			else if ((*cmd)->argv[i][0] == '\"')
-			{
-				temp = (*cmd)->argv[i];
-				(*cmd)->argv[i] = ft_strtrim((*cmd)->argv[i], "\"");
-				free_str(temp);
-			}
-			if (!ft_strcmp((*cmd)->argv[i], "$?"))
-			{
-				temp = (*cmd)->argv[i];
-				(*cmd)->argv[i] = ft_itoa(g_exit);
-				free(temp);
-				continue;
-			}
-			if ((*cmd)->argv[i][0] == '$')
-			{
-				temp = (*cmd)->argv[i];
-				if (bucksonly(temp))
-					break;
-				(*cmd)->argv[i] = ft_strdup(get_variable_env(*env, (*cmd)->argv[i] + 1));
-				// printf("%s\n", (*cmd)->argv[i]);
-				free(temp);
-			}
-		}
-		*cmd = (*cmd)->next;
-	}
-	*cmd = first_command;
 }
 
 
@@ -120,7 +56,7 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 			return ;
 		exec(cmd, minishell, env);
 		files_closes(*cmd);
-		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_exit);
+		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_parms.gexit);
 	}
 }
 

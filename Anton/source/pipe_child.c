@@ -57,7 +57,7 @@ void	pipe_child_process(t_cmd *cmd, t_env **ev, t_pipe *pip)
 	else if (!pip->flag || pip->flag)
 		mid_command(pip);
 	pip->exit_builtin = built_in_run(cmd, ev);
-	if (g_exit == 130)
+	if (g_parms.gexit == 130)
 		exit(1);
 	if (pip->exit_builtin == -1)
 		exit(1);
@@ -67,7 +67,7 @@ void	pipe_child_process(t_cmd *cmd, t_env **ev, t_pipe *pip)
 	{
 		if (execve(cmd->argv[0], cmd->argv, env_from_lists(*ev)) == -1)
 		{
-			perror(*cmd->argv);
+			ft_putstr_fd(strerror(errno), 1);
 			exit(127);
 		}
 	}

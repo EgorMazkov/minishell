@@ -14,8 +14,8 @@ int	ft_cd_home(t_env **env, char *oldpath, char *temp)
 		free_str(oldpath);
 		temp = getcwd(NULL, 0);
 		overwrite_env(env, "PWD", temp);
-		printf("newerni put\n");
-		printf("%s\n", temp);
+		ft_putstr_fd(temp, g_parms.fd1_copy);
+		ft_putstr_fd("\n", g_parms.fd1_copy);
 		free_str(temp);
 		return (-1);
 	}
@@ -23,7 +23,8 @@ int	ft_cd_home(t_env **env, char *oldpath, char *temp)
 	free_str(oldpath);
 	temp = getcwd(NULL, 0);
 	overwrite_env(env, "PWD", temp);
-	printf("%s\n", temp);
+	ft_putstr_fd(temp, g_parms.fd1_copy);
+	ft_putstr_fd("\n", g_parms.fd1_copy);
 	free_str(temp);
 	return (1);
 }
@@ -37,7 +38,9 @@ int	ft_cd_no_parse(char *arg, t_env **env, char *temp)
 	{
 		temp = getcwd(NULL, 0);
 		overwrite_env(env, "PWD", temp);
-		printf("no such file in directory: %s\n", arg);
+		ft_putstr_fd("cd: No such file or directory: ", g_parms.fd1_copy);
+		ft_putstr_fd(arg, g_parms.fd1_copy);
+		ft_putstr_fd("\n", g_parms.fd1_copy);
 		free_str(temp);
 		return (-1);
 	}

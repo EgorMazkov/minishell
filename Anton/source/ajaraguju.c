@@ -27,6 +27,14 @@ int	built_in_run(t_cmd *cmd, t_env **ev)
 	return (0);
 }
 
+void	ft_str_err(char *strerr)
+{
+	ft_putstr_fd(strerror(errno), g_parms.fd1_copy);
+	ft_putstr_fd(": ", g_parms.fd1_copy);
+	ft_putstr_fd(strerr, g_parms.fd1_copy);
+	ft_putstr_fd("\n", g_parms.fd1_copy);
+}
+
 void	cmd_run(t_cmd **cmd)
 {
 	t_cmd		*temp;

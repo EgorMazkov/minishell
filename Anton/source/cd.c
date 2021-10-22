@@ -4,7 +4,7 @@ int	ft_cd_no_args(t_env **env, char *temp)
 {
 	if (!get_variable_env(*env, "HOME"))
 	{
-		printf("cd: HOME not set\n");
+		ft_putstr_fd("cd: HOME not set\n", g_parms.fd1_copy);
 		return (-1);
 	}
 	temp = getcwd(NULL, 0);
@@ -13,7 +13,8 @@ int	ft_cd_no_args(t_env **env, char *temp)
 	if (chdir(get_variable_env(*env, "HOME")) == -1)
 	{
 		temp = getcwd(NULL, 0);
-		printf("newerni put\n");
+		ft_putstr_fd("cd: No such file or directory: HOME", g_parms.fd1_copy);
+		ft_putstr_fd("\n", g_parms.fd1_copy);
 		overwrite_env(env, "PWD", temp);
 		free_str(temp);
 		return (-1);
@@ -32,7 +33,9 @@ int	ft_cd_tild_util(char *arg, t_env **env, char *temp)
 		free_str(temp);
 		temp = getcwd(NULL, 0);
 		overwrite_env(env, "PWD", temp);
-		printf("newerni put\n");
+		ft_putstr_fd("cd: No such file or directory: ", g_parms.fd1_copy);
+		ft_putstr_fd(arg, g_parms.fd1_copy);
+		ft_putstr_fd("\n", g_parms.fd1_copy);
 		free_str(temp);
 		return (-1);
 	}
@@ -49,8 +52,9 @@ int	ft_cd_tild(char *arg, t_env **env, char *temp)
 	{
 		if (chdir(get_variable_env(*env, "HOME")) == -1)
 		{
-			printf("newerni put\n");
-			printf("no such file in directory: %s\n", arg);
+			ft_putstr_fd("cd: No such file or directory: ", g_parms.fd1_copy);
+			ft_putstr_fd(arg, g_parms.fd1_copy);
+			ft_putstr_fd("\n", g_parms.fd1_copy);
 			return (-1);
 		}
 	}

@@ -16,7 +16,7 @@ static void	the_pids_waiting(t_pipe pip)
 	{
 		waitpid(0, &out, 0);
 		if (WIFEXITED(out))
-			g_exit = WEXITSTATUS(out);
+			g_parms.gexit = WEXITSTATUS(out);
 	}
 }
 
