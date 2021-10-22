@@ -1,9 +1,22 @@
 #include "../include/minishell.h"
 
+void	null_dollar(t_dollar *dollar)
+{
+	dollar->a = 0;
+	dollar->flag = 0;
+	dollar->i = 0;
+	dollar->j = 0;
+}
+
 int parser_and_validator(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	minishell->env = env_from_lists(*env);
 	record_cmd(cmd, minishell, env);
+	if (!validator(*cmd))
+	{
+		printf("Error bleat\n");
+		return (1);
+	}
 	cmd_run(cmd);
 	path(cmd, minishell);
 	if (check_heredoc(cmd) == 130 || (choose_reds(cmd) == -3 && !(*cmd)->back && !(*cmd)->next)) /* Сделать отдельное условие для << */
@@ -11,7 +24,8 @@ int parser_and_validator(t_cmd **cmd, t_ms *minishell, t_env **env)
 		g_parms.gexit = 1;
 		return (1);
 	}
-	three_hundred_bucks(cmd, env);
+	three_hundred_bucks_util(cmd, 0);
+	dollar(cmd, env);
 	return (0);
 }
 

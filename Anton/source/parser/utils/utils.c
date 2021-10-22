@@ -74,3 +74,23 @@ t_cmd	*new_cmd(t_ms *minishell)
 	el->argv = record_cmd2(minishell);
 	return (el);
 }
+
+void	dollar(t_cmd **cmd, t_env **env)
+{
+	t_dollar dollar;
+	char *temp;
+
+	null_dollar(&dollar);
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	torsion_cmd(cmd, &dollar);
+	if (!dollar.flag)
+		return ;
+	if (!ft_strcmp((*cmd)->argv[dollar.i], "$?"))
+	{
+		temp = (*cmd)->argv[dollar.i];
+		(*cmd)->argv[dollar.i] = ft_itoa(g_parms.gexit);
+		free(temp);
+	}
+	trimmer(cmd, &dollar, env);
+}

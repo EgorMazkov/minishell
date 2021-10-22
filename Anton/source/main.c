@@ -52,7 +52,7 @@ void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 		minishell->line = ft_split_for_minishell(minishell->input, ' ');
 		if (!*minishell->line)
 			return ;
-		if (!validator(minishell, 0))
+		if (!validator_pipe(minishell))
 			return ;
 		exec(cmd, minishell, env);
 		files_closes(*cmd);

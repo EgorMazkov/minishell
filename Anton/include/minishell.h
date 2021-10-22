@@ -87,6 +87,15 @@ typedef struct g_parm
 	int fd1_copy;
 } t_parm;
 
+typedef struct s_dollar
+{
+	int	i;
+	int	j;
+	int a;
+	int	flag;
+}	t_dollar ;
+
+
 extern t_parm g_parms;
 
 
@@ -217,17 +226,35 @@ char	*jango(char **j, size_t i);
 size_t	schet(char const *s, char c);
 size_t	len_word(const char *src, size_t start, char c);
 char	**array_shift(t_ms *minishell, int i);
-int		validator(t_ms *minishell, int i);
 int	check_quote(t_ms *minishell);
 
 
 
+void	trim(t_cmd **cmd, t_dollar *dollar);
+void	trim_two(t_cmd **cmd, t_dollar *dollar, t_env **env);
+int	check_dollar_null(t_cmd **cmd, t_dollar *dollar, t_env **env);
+void		check_j(t_cmd **cmd, t_dollar *dollar, t_env **env);
+void	torsion_cmd(t_cmd **cmd, t_dollar *dollar);
+void	trimmer(t_cmd **cmd, t_dollar *dollar, t_env **env);
+void	three_hundred_bucks_util(t_cmd **cmd, int i);
+void	null_dollar(t_dollar *dollar);
+char	**torsion_i(char const *s, char **mass, int i, t_dollar *dollar);
+char	**ft_split_for_minishell(char const *s, char c);
+// static char	**cikl(char const *s, char c, int i, char **mass);
+int	chek_qoute(char const *s, int *i, int flag, char c);
+size_t	cikl_two(char const *s, char c, int i, int flag);
+size_t	cikl_three(char const *s, size_t i, char **mass, size_t word);
+int	mass_word(char **mass, size_t word, char const *s, int i);
+char	**record_mass(char const *s, char **mass, t_dollar *dollar, int *i);
 
+int	validator(t_cmd *cmd);
 
-
-
-
-
+int	valid_two(t_cmd **cmd, int *i);
+int	val_three(t_cmd *cmd, int *i);
+int	valid_four(t_cmd **cmd, int *i);
+int	is_rdct(char *dest);
+int	validator_pipe(t_ms *minishell);
+void	dollar(t_cmd **cmd, t_env **env);
 
 
 
