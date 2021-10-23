@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 18:53:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/22 23:38:44 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 14:32:35 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@ int	validator_pipe(t_ms *minishell)
 	if (minishell->line[0][0] == '|')
 	{
 		g_parms.gexit = 258;
-		printf("\033[0;32mDungeonMaster\033[0;29m: syntax \
-		error near unexpected token `|' \n");
+		printf("\033[0;32mDungeonMaster\033[0;29m: Input not valid\n");
 		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_parms.gexit);
 		return (0);
 	}

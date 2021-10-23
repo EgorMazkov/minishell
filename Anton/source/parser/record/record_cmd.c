@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 15:51:21 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 16:10:57 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 14:33:47 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ char	**record_cmd2(t_ms *minishell)
 	while (minishell->line[i] && minishell->line[i][0] != '|')
 		i++;
 	dest = (char **)malloc((sizeof(char *) * i) + 1);
+	if (dest == NULL)
+		return (NULL);
 	i = 0;
 	while (minishell->line[i] && minishell->line[i][0] != '|' && \
 	*minishell->line[i] != '\0')

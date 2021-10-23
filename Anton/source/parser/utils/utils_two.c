@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/03 15:51:13 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/21 18:58:07 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 14:34:09 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ char	**array_shift(t_ms *minishell, int i)
 
 	str = 0;
 	dest = malloc(sizeof(char *) * len_tab(minishell->line + i + 1) + 1);
+	if (dest == NULL)
+		return (NULL);
 	i++;
 	while (minishell->line[i] != '\0')
 	{

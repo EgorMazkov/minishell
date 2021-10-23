@@ -1,37 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/23 14:32:09 by ghumbert          #+#    #+#             */
+/*   Updated: 2021/10/23 14:32:10 by ghumbert         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-t_parm g_parms;
+t_parm	g_parms;
 
-
-
-
-
-
-
-
-void test(t_cmd **cmd)
-{
-	t_cmd *temp;
-	int i = -1;
-	while ((*cmd)->back)
-		*cmd = (*cmd)->back;
-	temp = *cmd;
-	while (temp)
-	{
-		while (temp->argv[++i])
-			printf("%s\n", temp->argv[i]);
-		i = -1;
-		while (temp->redicts && temp->redicts[++i])
-			printf("%s\n", temp->redicts[i]);
-		printf("----------------((Anton))------------------\n");
-		temp = temp->next;
-		i = -1;
-	}
-}
-
-
-
-void go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
+void	go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
 	if (!minishell->input)
 	{
@@ -77,7 +60,8 @@ int	main(int argc, char **argv, char **ev)
 		signal(SIGQUIT, SIG_IGN);
 		minishell = null_struct();
 		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		signal(SIGINT, cmd_c_fork), signal(SIGQUIT, cmd_c_sl);
+		signal(SIGINT, cmd_c_fork);
+		signal(SIGQUIT, cmd_c_sl);
 		go_readline_go(&cmd, minishell, &env);
 		free_cmd(&cmd);
 		free_minishell(minishell);
@@ -85,5 +69,3 @@ int	main(int argc, char **argv, char **ev)
 	}
 	free_env(&env);
 }
-// export a+=b
-//  fd = open("our way",  O_WRONLY | O_TRUNC | O_CREAT, 0666);

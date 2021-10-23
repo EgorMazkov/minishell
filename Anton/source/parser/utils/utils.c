@@ -6,7 +6,7 @@
 /*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 16:27:08 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/20 16:28:37 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 14:27:32 by ghumbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	check_next_cmd(t_cmd **cmd)
 
 t_ms	*null_struct(void)
 {
-	t_ms *minishell;
+	t_ms	*minishell;
 
 	minishell = (t_ms *)malloc(sizeof(t_ms));
 	minishell->input = NULL;
@@ -73,24 +73,4 @@ t_cmd	*new_cmd(t_ms *minishell)
 	el->redicts = NULL;
 	el->argv = record_cmd2(minishell);
 	return (el);
-}
-
-void	dollar(t_cmd **cmd, t_env **env)
-{
-	t_dollar dollar;
-	char *temp;
-
-	null_dollar(&dollar);
-	while ((*cmd)->back)
-		*cmd = (*cmd)->back;
-	torsion_cmd(cmd, &dollar);
-	if (!dollar.flag)
-		return ;
-	if (!ft_strcmp((*cmd)->argv[dollar.i], "$?"))
-	{
-		temp = (*cmd)->argv[dollar.i];
-		(*cmd)->argv[dollar.i] = ft_itoa(g_parms.gexit);
-		free(temp);
-	}
-	trimmer(cmd, &dollar, env);
 }
