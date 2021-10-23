@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gavn.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 20:34:00 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/22 22:01:16 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 17:26:53 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ int	check_dollar_null(t_cmd **cmd, t_dollar *dollar, t_env **env)
 {
 	char	*dest;
 
-	if ((*cmd)->argv[dollar->i][0] == '$')
+	if ((*cmd)->argv[dollar->i][0] == '$' && \
+	(*cmd)->argv[dollar->i][1] && (*cmd)->argv[dollar->i][1] != ' ')
 	{
 		dest = (*cmd)->argv[dollar->i];
 		(*cmd)->argv[dollar->i] = ft_strdup(get_variable_env \

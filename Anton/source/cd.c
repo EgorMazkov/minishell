@@ -6,7 +6,7 @@
 /*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 16:19:46 by tharodon          #+#    #+#             */
-/*   Updated: 2021/10/23 16:19:47 by tharodon         ###   ########.fr       */
+/*   Updated: 2021/10/23 18:01:06 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ int	ft_cd_tild_util(char *arg, t_env **env, char *temp)
 int	ft_cd_tild(char *arg, t_env **env, char *temp)
 {
 	temp = getcwd(NULL, 0);
-	overwrite_env(env, "OLDPWD", temp);
+	if (temp && *temp)
+		overwrite_env(env, "OLDPWD", temp);
 	free_str(temp);
 	if (arg[1] == '\0')
 	{
@@ -76,7 +77,8 @@ int	ft_cd_tild(char *arg, t_env **env, char *temp)
 			return (-1);
 	}
 	temp = getcwd(NULL, 0);
-	overwrite_env(env, "PWD", temp);
+	if (temp && *temp)
+		overwrite_env(env, "PWD", temp);
 	free_str(temp);
 	return (1);
 }

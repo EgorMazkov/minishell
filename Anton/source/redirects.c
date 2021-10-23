@@ -6,7 +6,7 @@
 /*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 16:20:02 by tharodon          #+#    #+#             */
-/*   Updated: 2021/10/23 16:20:03 by tharodon         ###   ########.fr       */
+/*   Updated: 2021/10/23 17:35:11 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	files_closes(t_cmd *cmd)
 {
-	while (cmd->back)
+	while (cmd && cmd->back)
 		cmd = cmd->back;
 	while (cmd)
 	{

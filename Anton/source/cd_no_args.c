@@ -6,7 +6,7 @@
 /*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 16:19:47 by tharodon          #+#    #+#             */
-/*   Updated: 2021/10/23 16:19:48 by tharodon         ###   ########.fr       */
+/*   Updated: 2021/10/23 17:57:43 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ int	ft_cd_home(t_env **env, char *oldpath, char *temp)
 int	ft_cd_no_parse(char *arg, t_env **env, char *temp)
 {
 	temp = getcwd(NULL, 0);
-	overwrite_env(env, "OLDPWD", temp);
+	if (temp && *temp)
+		overwrite_env(env, "OLDPWD", temp);
 	free_str(temp);
 	if (chdir(arg) == -1)
 	{
@@ -57,7 +58,8 @@ int	ft_cd_no_parse(char *arg, t_env **env, char *temp)
 		return (-1);
 	}
 	temp = getcwd(NULL, 0);
-	overwrite_env(env, "PWD", temp);
+	if (temp && *temp)
+		overwrite_env(env, "PWD", temp);
 	free_str(temp);
 	return (1);
 }

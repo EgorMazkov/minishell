@@ -6,7 +6,7 @@
 /*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 16:20:01 by tharodon          #+#    #+#             */
-/*   Updated: 2021/10/23 16:20:02 by tharodon         ###   ########.fr       */
+/*   Updated: 2021/10/23 17:13:58 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ int	choose_reds(t_cmd **cmd)
 	lst = *cmd;
 	while (*cmd)
 	{
-		if (get_descriptor((*cmd)->redicts, *cmd))
+		if (get_descriptor((*cmd)->redicts, *cmd) && \
+		!(*cmd)->next && !(*cmd)->back)
 			return (-3);
 		*cmd = (*cmd)->next;
 	}

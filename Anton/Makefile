@@ -63,7 +63,7 @@ all:		$(NAME)
 
 %.o:		%.c
 			$(CC) $(CFLAGS) $(INCLUDE) -c -g $< -o $@
-$(NAME):	$(OBJS)
+$(NAME):	$(OBJS) ./include/minishell.h
 			$(MAKE) -C $(dir $(LIB))
 			$(CC) $(INCLUDE) ${READLINE} $(LIB) -o $(NAME) $(OBJS)
 			@echo "\033[36;1m\nCompiled\n\033[0m"
