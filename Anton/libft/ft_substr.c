@@ -18,7 +18,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	size_t	a;
 	char	*str;
 
-	if (!s)
+	if (!s || start >= ft_strlen(s))
 		return (NULL);
 	if (len > ft_strlen(s))
 		len = ft_strlen(s);
@@ -36,6 +36,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		}
 		i++;
 	}
-	str[a] = 0;
+	str[a] = '\0';
 	return (str);
 }

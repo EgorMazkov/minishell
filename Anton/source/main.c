@@ -1,128 +1,72 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/23 16:16:51 by tharodon          #+#    #+#             */
+/*   Updated: 2021/10/23 16:22:17 by tharodon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-void    ft_pwd(char **env)
+t_parm	g_parms;
+
+void	go_readline_go(t_cmd **cmd, t_ms *minishell, t_env **env)
 {
-	if (!*env)
+	if (!minishell->input)
 	{
+		free_cmd(cmd);
+		free_minishell(minishell);
+		printf("exit...\n");
 		exit(0);
 	}
-		printf("%s\n", getcwd(NULL, 0));
-	// printf("%s\n", getenv("PWD"));
+	if (!check_quote(minishell))
+	{
+		printf("Error\n");
+		return ;
+	}
+	if (*minishell->input)
+		add_history(minishell->input);
+	if (minishell->input[0])
+	{
+		minishell->input = space_between_redirect_and_file(minishell->input);
+		minishell->line = ft_split_for_minishell(minishell->input, ' ');
+		if (!*minishell->line)
+			return ;
+		if (!validator_pipe(minishell))
+			return ;
+		exec(cmd, minishell, env);
+		printf("\033[3;34mEXITCODE:    %d\n\033[0;29m", g_parms.gexit);
+	}
 }
 
-char *level_down(char *s)
+int	main(int argc, char **argv, char **ev)
 {
-	int i;
+	t_cmd	*cmd;
+	t_env	*env;
+	t_ms	*minishell;
 
-	i = 0;
-	while (s[i])
-		i++;
-	while (s[i] != '/')
-		i--;
-	s[i] = '\0';
-	return (s);
-}
-
-typedef struct s_built
-{
-	char *oldpwd;
-} t_built;
-
-void	ft_cd(char *arg, char **env, t_built *old)
-{
-	char *oldpath;
-	(void)env;
-
-	if (!arg || !arg[0])
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(getenv("HOME"));
-	}
-	else if (!ft_strncmp(arg, "..", 3))
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(level_down(getcwd(NULL, 0)));
-	}
-	else if (!ft_strncmp(arg, "-", 2))
-	{
-		oldpath = old->oldpwd;
-		old->oldpwd = getcwd(NULL, 0);
-		chdir(oldpath);
-	}
-	else if (!ft_strncmp(arg, "~", 1))
-	{
-		old->oldpwd = getcwd(NULL, 0);
-		if (arg[1] == '\0')
-			chdir(getenv("HOME"));
-		else
-			chdir(ft_strjoin(getenv("HOME"), ++arg));
-	}
-	else
-		chdir(arg);
-		/*
-		необходимо допилить: изменение путия в env;
-		*/
-}
-
-void	ft_echo(char *arg)
-{
-	int i;
-
-	i = 0;
-	if (!ft_strncmp(arg, "-n", 2))
-	{
-		while (arg[++i]== 'n')
-			;
-		i++;
-	}
-	while (arg[i])
-		write(1, &arg[i++], 1);
-	if (ft_strncmp(arg, "-n", 2))
-		write(1, "\n", 1);
-	/*
-	можно сделать двойным массивом аргументы
-	*/
-}
-
-void	jopa(int signum)
-{
-	(void)signum;
-	// g_param->ret = 1;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-
-int main (int argc, char **argv, char **ev)
-{
-	// int fd_output;
-	int fd1;
-	char *cat[] = {"/bin/cat", NULL};
-	t_built built;
 	(void)argc, (void)argv;
-	char *input;
-
-	built.oldpwd = getcwd(NULL, 0);
+	env = NULL;
+	cmd = NULL;
+	if (!env_to_lists(&env, ev))
+		exit(1);
 	while (1)
 	{
-		signal(SIGINT, jopa);
+		signal(SIGINT, cmd_c);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
-		if (input[0])
-		{
-			if (!ft_strncmp(input, "pwd", 4))
-				ft_pwd(ev);
-			else if (!ft_strncmp(input, "cd", 2))
-				ft_cd(input + 3, ev, &built);
-			else if (!ft_strncmp(input, "cat", 3))
-			{
-				fd1 = open("123",  O_WRONLY | O_TRUNC | O_CREAT, 0666);
-				execve(cat[0], cat, ev);
-			}
-		}
+		minishell = null_struct();
+		minishell->input = readline("\033[0;32mDungeonMaster $> \033[0;29m");
+		signal(SIGINT, cmd_c_fork);
+		signal(SIGQUIT, cmd_c_sl);
+		go_readline_go(&cmd, minishell, &env);
+		files_closes(cmd);
+		free_cmd(&cmd);
+		free_minishell(minishell);
+		free(minishell);
 	}
+	free_env(&env);
 }
-
-	// fd = open("our way",  O_WRONLY | O_TRUNC | O_CREAT, 0666);

@@ -10,9 +10,9 @@ GCC			=	gcc
 ARRC		=	ar rc
 RLIB		=	ranlib
 RM			=	rm -f
-CFLAGS		=	-Wall -Wextra -Werror
+CFLAGS		=	-Wall -Wextra -Werror -g
 .c.o:
-				${GCC} ${CFLAGS} -c $< -o ${<:.c=.o} -I${INCS}
+				@${GCC} ${CFLAGS} -c $< -o ${<:.c=.o} -I${INCS}
 
 all:			${NAME}
 
