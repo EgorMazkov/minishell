@@ -16,7 +16,7 @@ CFLAGS		=	-Wall -Wextra -Werror -g
 
 all:			${NAME}
 
-${NAME}:		${OBJS} ./libft.h
+${NAME}:		${OBJS}
 				${ARRC} ${NAME} ${OBJS}
 				${RLIB} ${NAME}
 
