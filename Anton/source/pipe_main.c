@@ -6,7 +6,7 @@
 /*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 16:19:59 by tharodon          #+#    #+#             */
-/*   Updated: 2021/10/23 16:20:00 by tharodon         ###   ########.fr       */
+/*   Updated: 2021/10/23 21:57:39 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ static void	init_pipe_structure(t_pipe *pipe, t_cmd *cmd)
 	pipe->exit_builtin = 0;
 	pipe->len = lenlist(cmd);
 	pipe->out = 0;
+	pipe->a[0] = 0;
+	pipe->a[1] = 0;
+	pipe->b[0] = 0;
+	pipe->b[1] = 0;
 }
 
 static void	the_pids_waiting(t_pipe pip)

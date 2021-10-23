@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_three.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ghumbert <ghumbert@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tharodon <tharodon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/23 14:27:09 by ghumbert          #+#    #+#             */
-/*   Updated: 2021/10/23 14:28:15 by ghumbert         ###   ########.fr       */
+/*   Updated: 2021/10/23 21:51:40 by tharodon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,12 @@ void	exec(t_cmd **cmd, t_ms *minishell, t_env **env)
 		swapping_fd(g_parms.fd0_copy, g_parms.fd1_copy);
 		return ;
 	}
+	while ((*cmd)->back)
+		*cmd = (*cmd)->back;
+	// int i = -1;
+	// while ((*cmd)->argv[++i])
+	// 	printf("%s\n", (*cmd)->argv[i]);
+	// return ;
 	if (!(*cmd)->next && !(*cmd)->back)
 		built_ex = built_in_run(*cmd, env);
 	if ((*cmd)->next || (*cmd)->back)
